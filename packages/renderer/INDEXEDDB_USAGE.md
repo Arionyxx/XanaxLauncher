@@ -9,11 +9,13 @@ The application uses a single database: `MediaManagerDB`
 ### Tables
 
 #### Settings
+
 - `key`: string (primary key)
 - `value`: any
 - `updatedAt`: number (timestamp)
 
 #### Sources
+
 - `id`: string (primary key)
 - `name`: string
 - `url`: string
@@ -22,6 +24,7 @@ The application uses a single database: `MediaManagerDB`
 - `data`: any
 
 #### Jobs
+
 - `id`: string (primary key)
 - `provider`: string
 - `status`: string
@@ -123,6 +126,7 @@ The database is automatically initialized when the application starts in `packag
 ## Testing
 
 Test buttons are available in the Settings section of the application to verify persistence:
+
 - Save/Load Settings
 - Add/List Sources
 - Add/List Jobs
@@ -134,9 +138,11 @@ All data persists across application restarts.
 Currently using version 1 of the database schema. Future migrations can be added in `packages/renderer/src/db/schema.ts` by adding additional version definitions:
 
 ```typescript
-this.version(2).stores({
-  // Updated schema
-}).upgrade(tx => {
-  // Migration logic
-})
+this.version(2)
+  .stores({
+    // Updated schema
+  })
+  .upgrade((tx) => {
+    // Migration logic
+  })
 ```
