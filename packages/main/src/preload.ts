@@ -7,6 +7,14 @@ import {
   SettingsSetRequest,
   SettingsSetResponse,
   AppVersionResponse,
+  ProviderStartJobRequest,
+  ProviderStartJobResponse,
+  ProviderGetStatusRequest,
+  ProviderGetStatusResponse,
+  ProviderCancelJobRequest,
+  ProviderCancelJobResponse,
+  ProviderTestConnectionRequest,
+  ProviderTestConnectionResponse,
 } from './ipc/schemas'
 
 const api = {
@@ -29,6 +37,33 @@ const api = {
 
   getVersion: async (): Promise<AppVersionResponse> => {
     return await ipcRenderer.invoke(IPC_CHANNELS.APP_VERSION)
+  },
+
+  providerStartJob: async (
+    request: ProviderStartJobRequest
+  ): Promise<ProviderStartJobResponse> => {
+    return await ipcRenderer.invoke(IPC_CHANNELS.PROVIDER_START_JOB, request)
+  },
+
+  providerGetStatus: async (
+    request: ProviderGetStatusRequest
+  ): Promise<ProviderGetStatusResponse> => {
+    return await ipcRenderer.invoke(IPC_CHANNELS.PROVIDER_GET_STATUS, request)
+  },
+
+  providerCancelJob: async (
+    request: ProviderCancelJobRequest
+  ): Promise<ProviderCancelJobResponse> => {
+    return await ipcRenderer.invoke(IPC_CHANNELS.PROVIDER_CANCEL_JOB, request)
+  },
+
+  providerTestConnection: async (
+    request: ProviderTestConnectionRequest
+  ): Promise<ProviderTestConnectionResponse> => {
+    return await ipcRenderer.invoke(
+      IPC_CHANNELS.PROVIDER_TEST_CONNECTION,
+      request
+    )
   },
 }
 

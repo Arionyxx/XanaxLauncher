@@ -77,7 +77,7 @@ export default function Home() {
           transition={{ duration: 0.3 }}
           className="p-8"
         >
-          {activeSection === 'home' && <HomeSection />}
+          {activeSection === 'home' && <HomeSection router={router} />}
           {activeSection === 'catalog' && <CatalogSection />}
           {activeSection === 'downloads' && <DownloadsSection />}
         </motion.div>
@@ -86,7 +86,7 @@ export default function Home() {
   )
 }
 
-function HomeSection() {
+function HomeSection({ router }: { router: ReturnType<typeof useRouter> }) {
   return (
     <div className="space-y-6">
       <div>
@@ -145,6 +145,18 @@ function HomeSection() {
               Browse Catalog
             </Button>
             <span className="text-subtext0">Explore your media collection</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button
+              color="warning"
+              size="sm"
+              onPress={() => router.push('/provider-test')}
+            >
+              Test Providers
+            </Button>
+            <span className="text-subtext0">
+              Test provider framework with mock jobs
+            </span>
           </div>
         </CardBody>
       </Card>

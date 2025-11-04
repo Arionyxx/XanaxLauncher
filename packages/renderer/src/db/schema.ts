@@ -20,6 +20,7 @@ export interface Job {
   provider: string
   status: string
   progress: number
+  files: any[]
   metadata: any
   createdAt: number
   updatedAt: number

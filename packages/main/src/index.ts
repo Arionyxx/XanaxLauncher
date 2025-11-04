@@ -6,6 +6,10 @@ import {
   handleSettingsGet,
   handleSettingsSet,
   handleAppVersion,
+  handleProviderStartJob,
+  handleProviderGetStatus,
+  handleProviderCancelJob,
+  handleProviderTestConnection,
 } from './ipc/handlers'
 
 let mainWindow: BrowserWindow | null = null
@@ -48,6 +52,45 @@ function registerIpcHandlers() {
       throw error
     }
   })
+
+  ipcMain.handle(IPC_CHANNELS.PROVIDER_START_JOB, async (_event, data) => {
+    try {
+      return await handleProviderStartJob(data)
+    } catch (error) {
+      console.error('Error in provider:start-job handler:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(IPC_CHANNELS.PROVIDER_GET_STATUS, async (_event, data) => {
+    try {
+      return await handleProviderGetStatus(data)
+    } catch (error) {
+      console.error('Error in provider:get-status handler:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(IPC_CHANNELS.PROVIDER_CANCEL_JOB, async (_event, data) => {
+    try {
+      return await handleProviderCancelJob(data)
+    } catch (error) {
+      console.error('Error in provider:cancel-job handler:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(
+    IPC_CHANNELS.PROVIDER_TEST_CONNECTION,
+    async (_event, data) => {
+      try {
+        return await handleProviderTestConnection(data)
+      } catch (error) {
+        console.error('Error in provider:test-connection handler:', error)
+        throw error
+      }
+    }
+  )
 }
 
 function createWindow() {
