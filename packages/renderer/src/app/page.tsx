@@ -183,6 +183,7 @@ function HomeSection({ router }: { router: ReturnType<typeof useRouter> }) {
 }
 
 function CatalogSection() {
+  const router = useRouter()
   const { games, loading, error, refresh } = useGames()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSource, setSelectedSource] = useState<string>('all')
@@ -372,14 +373,16 @@ function CatalogSection() {
           }}
           className="w-full md:w-48"
         >
-          <SelectItem key="all" value="all">
-            All sources
-          </SelectItem>
-          {uniqueSources.map((source) => (
-            <SelectItem key={source} value={source}>
-              {source}
-            </SelectItem>
-          ))}
+          {[
+            <SelectItem key="all" value="all">
+              All sources
+            </SelectItem>,
+            ...uniqueSources.map((source) => (
+              <SelectItem key={source} value={source}>
+                {source}
+              </SelectItem>
+            )),
+          ]}
         </Select>
 
         <Select

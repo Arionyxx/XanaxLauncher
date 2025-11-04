@@ -29,10 +29,25 @@ export interface Job {
   updatedAt: number
 }
 
+export interface OnboardingState {
+  key: 'onboarding'
+  completed: boolean
+  currentStep: number
+  data: {
+    downloadDir?: string
+    tempDir?: string
+    sourceUrl?: string
+    torboxToken?: string
+    realDebridToken?: string
+  }
+  updatedAt: number
+}
+
 export class MediaManagerDatabase extends Dexie {
   settings!: Table<Setting, string>
   sources!: Table<Source, string>
   jobs!: Table<Job, string>
+  onboarding!: Table<OnboardingState, string>
 
   constructor() {
     super('MediaManagerDB')
@@ -41,6 +56,13 @@ export class MediaManagerDatabase extends Dexie {
       settings: 'key, updatedAt',
       sources: 'id, name, status, lastSyncAt',
       jobs: 'id, provider, status, createdAt, updatedAt',
+    })
+
+    this.version(2).stores({
+      settings: 'key, updatedAt',
+      sources: 'id, name, status, lastSyncAt',
+      jobs: 'id, provider, status, createdAt, updatedAt',
+      onboarding: 'key, updatedAt',
     })
   }
 }
