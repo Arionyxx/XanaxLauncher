@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
@@ -12,11 +12,14 @@ import {
   Select,
   SelectItem,
   Pagination,
+  Tooltip,
 } from '@nextui-org/react'
 import { useGames, GameEntry } from '@/hooks/useGames'
 import { GameCard } from '@/components/catalog/GameCard'
 import { GameDetailModal } from '@/components/catalog/GameDetailModal'
 import { EmptyState } from '@/components/catalog/EmptyState'
+import { SkeletonGrid } from '@/components/catalog/SkeletonCard'
+import { useDebounce } from '@/hooks/useDebounce'
 import { db } from '@/db/db'
 
 type Section = 'home' | 'catalog' | 'downloads' | 'settings'
@@ -81,7 +84,18 @@ export default function Home() {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-surface0">
+        <div className="p-4 border-t border-surface0 space-y-3">
+          <Tooltip content="Help & Keyboard Shortcuts" placement="right">
+            <Button
+              color="default"
+              variant="flat"
+              onPress={() => router.push('/help')}
+              className="w-full"
+              startContent={<span>❓</span>}
+            >
+              Help & About
+            </Button>
+          </Tooltip>
           <p className="text-xs text-subtext0 text-center">v0.1.0</p>
         </div>
       </motion.aside>
@@ -186,6 +200,7 @@ function CatalogSection() {
   const router = useRouter()
   const { games, loading, error, refresh } = useGames()
   const [searchQuery, setSearchQuery] = useState('')
+  const debouncedSearchQuery = useDebounce(searchQuery, 300)
   const [selectedSource, setSelectedSource] = useState<string>('all')
   const [sortBy, setSortBy] = useState<string>('name')
   const [currentPage, setCurrentPage] = useState(1)
@@ -226,8 +241,8 @@ function CatalogSection() {
   const filteredAndSortedGames = useMemo(() => {
     let filtered = games
 
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
+    if (debouncedSearchQuery.trim()) {
+      const query = debouncedSearchQuery.toLowerCase()
       filtered = filtered.filter((game) =>
         game.title.toLowerCase().includes(query)
       )
@@ -251,7 +266,7 @@ function CatalogSection() {
     })
 
     return sorted
-  }, [games, searchQuery, selectedSource, sortBy])
+  }, [games, debouncedSearchQuery, selectedSource, sortBy])
 
   const totalPages = Math.ceil(filteredAndSortedGames.length / ITEMS_PER_PAGE)
   const paginatedGames = useMemo(() => {
@@ -262,22 +277,22 @@ function CatalogSection() {
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [searchQuery, selectedSource, sortBy])
+  }, [debouncedSearchQuery, selectedSource, sortBy])
 
-  const handleGameClick = (game: GameEntry) => {
+  const handleGameClick = useCallback((game: GameEntry) => {
     setSelectedGame(game)
     setIsModalOpen(true)
-  }
+  }, [])
 
-  const handleDownloadStart = () => {
+  const handleDownloadStart = useCallback(() => {
     router.push('/downloads')
-  }
+  }, [router])
 
-  const handleClearFilters = () => {
+  const handleClearFilters = useCallback(() => {
     setSearchQuery('')
     setSelectedSource('all')
     setSortBy('name')
-  }
+  }, [])
 
   if (!hasCheckedSources) {
     return (
@@ -309,6 +324,7 @@ function CatalogSection() {
           <h2 className="text-3xl font-bold text-text mb-2">Catalog</h2>
           <p className="text-subtext0">Loading games...</p>
         </div>
+        <SkeletonGrid count={12} />
       </div>
     )
   }
@@ -347,67 +363,73 @@ function CatalogSection() {
 
       {/* Search and Filters */}
       <div className="flex flex-col md:flex-row gap-4">
-        <Input
-          id="search-input"
-          type="text"
-          placeholder="Search games... (Press / to focus)"
-          value={searchQuery}
-          onValueChange={setSearchQuery}
-          classNames={{
-            inputWrapper: 'bg-surface0 border-surface1',
-          }}
-          startContent={<span className="text-subtext0">🔍</span>}
-          className="flex-1"
-        />
+        <Tooltip content="Search by title (Ctrl+F or / to focus)">
+          <Input
+            id="search-input"
+            type="text"
+            placeholder="Search games... (Press / to focus)"
+            value={searchQuery}
+            onValueChange={setSearchQuery}
+            classNames={{
+              inputWrapper: 'bg-surface0 border-surface1',
+            }}
+            startContent={<span className="text-subtext0">🔍</span>}
+            className="flex-1"
+          />
+        </Tooltip>
 
-        <Select
-          label="Source"
-          placeholder="All sources"
-          selectedKeys={selectedSource ? [selectedSource] : []}
-          onSelectionChange={(keys) => {
-            const selected = Array.from(keys)[0] as string
-            setSelectedSource(selected || 'all')
-          }}
-          classNames={{
-            trigger: 'bg-surface0 border-surface1',
-          }}
-          className="w-full md:w-48"
-        >
-          {[
-            <SelectItem key="all" value="all">
-              All sources
-            </SelectItem>,
-            ...uniqueSources.map((source) => (
-              <SelectItem key={source} value={source}>
-                {source}
-              </SelectItem>
-            )),
-          ]}
-        </Select>
+        <Tooltip content="Filter by content source">
+          <Select
+            label="Source"
+            placeholder="All sources"
+            selectedKeys={selectedSource ? [selectedSource] : []}
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0] as string
+              setSelectedSource(selected || 'all')
+            }}
+            classNames={{
+              trigger: 'bg-surface0 border-surface1',
+            }}
+            className="w-full md:w-48"
+          >
+            {[
+              <SelectItem key="all" value="all">
+                All sources
+              </SelectItem>,
+              ...uniqueSources.map((source) => (
+                <SelectItem key={source} value={source}>
+                  {source}
+                </SelectItem>
+              )),
+            ]}
+          </Select>
+        </Tooltip>
 
-        <Select
-          label="Sort by"
-          placeholder="Sort by"
-          selectedKeys={sortBy ? [sortBy] : []}
-          onSelectionChange={(keys) => {
-            const selected = Array.from(keys)[0] as string
-            setSortBy(selected || 'name')
-          }}
-          classNames={{
-            trigger: 'bg-surface0 border-surface1',
-          }}
-          className="w-full md:w-48"
-        >
-          <SelectItem key="name" value="name">
-            Name (A-Z)
-          </SelectItem>
-          <SelectItem key="name-desc" value="name-desc">
-            Name (Z-A)
-          </SelectItem>
-          <SelectItem key="source" value="source">
-            Source
-          </SelectItem>
-        </Select>
+        <Tooltip content="Sort results">
+          <Select
+            label="Sort by"
+            placeholder="Sort by"
+            selectedKeys={sortBy ? [sortBy] : []}
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0] as string
+              setSortBy(selected || 'name')
+            }}
+            classNames={{
+              trigger: 'bg-surface0 border-surface1',
+            }}
+            className="w-full md:w-48"
+          >
+            <SelectItem key="name" value="name">
+              Name (A-Z)
+            </SelectItem>
+            <SelectItem key="name-desc" value="name-desc">
+              Name (Z-A)
+            </SelectItem>
+            <SelectItem key="source" value="source">
+              Source
+            </SelectItem>
+          </Select>
+        </Tooltip>
       </div>
 
       {/* Results Info */}
@@ -417,14 +439,16 @@ function CatalogSection() {
           games
         </p>
         {(searchQuery || selectedSource !== 'all') && (
-          <Button
-            size="sm"
-            color="default"
-            variant="flat"
-            onPress={handleClearFilters}
-          >
-            Clear Filters
-          </Button>
+          <Tooltip content="Reset all filters to defaults">
+            <Button
+              size="sm"
+              color="default"
+              variant="flat"
+              onPress={handleClearFilters}
+            >
+              Clear Filters
+            </Button>
+          </Tooltip>
         )}
       </div>
 

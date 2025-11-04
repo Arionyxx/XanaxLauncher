@@ -13,6 +13,7 @@ import {
 } from '@nextui-org/react'
 import { Source } from '@/db/schema'
 import { sourceFormSchema, SourceFormData } from '@/types/source'
+import { SecurityWarning } from '@/components/SecurityWarning'
 
 interface SourceDialogProps {
   isOpen: boolean
@@ -33,6 +34,7 @@ export function SourceDialog({
     control,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<SourceFormData>({
     resolver: zodResolver(sourceFormSchema),
@@ -42,6 +44,8 @@ export function SourceDialog({
       autoSync: source?.autoSync ?? true,
     },
   })
+
+  const watchedUrl = watch('url')
 
   useEffect(() => {
     if (isOpen) {
@@ -122,6 +126,8 @@ export function SourceDialog({
                 )}
               />
             </div>
+
+            {watchedUrl && <SecurityWarning url={watchedUrl} type="http" />}
 
             <div className="flex items-center justify-between p-3 bg-surface1 rounded-lg">
               <div>

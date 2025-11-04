@@ -1,4 +1,4 @@
-import { Card, CardBody, Button, Chip } from '@nextui-org/react'
+import { Card, CardBody, Button, Chip, Tooltip } from '@nextui-org/react'
 import { motion } from 'framer-motion'
 import { GameEntry } from '@/hooks/useGames'
 
@@ -14,14 +14,14 @@ export function GameCard({ game, onClick }: GameCardProps) {
 
   return (
     <motion.div
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.2 }}
+      whileHover={{ y: -4, scale: 1.02 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
       className="h-full"
     >
       <Card
         isPressable
         onPress={onClick}
-        className="bg-surface0 border-surface1 hover:border-blue transition-all h-full"
+        className="bg-surface0 border-surface1 hover:border-blue hover:shadow-lg hover:shadow-blue/20 transition-all h-full"
       >
         <CardBody className="p-0 flex flex-col">
           {/* Cover Image */}
@@ -30,6 +30,7 @@ export function GameCard({ game, onClick }: GameCardProps) {
               <img
                 src={coverImage}
                 alt={game.title}
+                loading="lazy"
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -37,13 +38,15 @@ export function GameCard({ game, onClick }: GameCardProps) {
             )}
             {/* Source Badge */}
             <div className="absolute top-2 right-2">
-              <Chip
-                size="sm"
-                className="bg-mantle/90 text-text font-medium"
-                variant="flat"
-              >
-                {game.sourceName}
-              </Chip>
+              <Tooltip content={`From source: ${game.sourceName}`}>
+                <Chip
+                  size="sm"
+                  className="bg-mantle/90 text-text font-medium"
+                  variant="flat"
+                >
+                  {game.sourceName}
+                </Chip>
+              </Tooltip>
             </div>
           </div>
 
@@ -56,31 +59,39 @@ export function GameCard({ game, onClick }: GameCardProps) {
             {/* Meta Info */}
             <div className="flex flex-wrap gap-1">
               {platform && (
-                <Chip size="sm" color="primary" variant="flat">
-                  {platform}
-                </Chip>
+                <Tooltip content="Platform">
+                  <Chip size="sm" color="primary" variant="flat">
+                    {platform}
+                  </Chip>
+                </Tooltip>
               )}
               {size && (
-                <Chip size="sm" color="secondary" variant="flat">
-                  {size}
-                </Chip>
+                <Tooltip content="File size">
+                  <Chip size="sm" color="secondary" variant="flat">
+                    {size}
+                  </Chip>
+                </Tooltip>
               )}
               {game.links.length > 1 && (
-                <Chip size="sm" color="warning" variant="flat">
-                  {game.links.length} links
-                </Chip>
+                <Tooltip content="Multiple download sources available">
+                  <Chip size="sm" color="warning" variant="flat">
+                    {game.links.length} links
+                  </Chip>
+                </Tooltip>
               )}
             </div>
 
             {/* Download Button */}
-            <Button
-              color="primary"
-              size="sm"
-              className="w-full mt-2"
-              onPress={onClick}
-            >
-              Download
-            </Button>
+            <Tooltip content="View details and start download">
+              <Button
+                color="primary"
+                size="sm"
+                className="w-full mt-2"
+                onPress={onClick}
+              >
+                Download
+              </Button>
+            </Tooltip>
           </div>
         </CardBody>
       </Card>

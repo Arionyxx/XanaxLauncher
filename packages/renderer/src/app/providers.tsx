@@ -6,6 +6,14 @@ import { Toaster } from 'sonner'
 import { initializeDatabase } from '@/db/db'
 import { autoSyncSources } from '@/services/source-sync'
 import { OnboardingGate } from '@/components/onboarding/OnboardingGate'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { useGlobalKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
+
+function AppContent({ children }: { children: ReactNode }) {
+  useGlobalKeyboardShortcuts()
+
+  return <>{children}</>
+}
 
 export function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -30,21 +38,25 @@ export function Providers({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <NextUIProvider className="h-full">
-      <div className="dark text-foreground bg-background h-full">
-        <OnboardingGate>{children}</OnboardingGate>
-        <Toaster
-          position="bottom-right"
-          theme="dark"
-          toastOptions={{
-            style: {
-              background: 'rgb(var(--surface0))',
-              border: '1px solid rgb(var(--surface1))',
-              color: 'rgb(var(--text))',
-            },
-          }}
-        />
-      </div>
-    </NextUIProvider>
+    <ErrorBoundary>
+      <NextUIProvider className="h-full">
+        <div className="dark text-foreground bg-background h-full">
+          <AppContent>
+            <OnboardingGate>{children}</OnboardingGate>
+          </AppContent>
+          <Toaster
+            position="bottom-right"
+            theme="dark"
+            toastOptions={{
+              style: {
+                background: 'rgb(var(--surface0))',
+                border: '1px solid rgb(var(--surface1))',
+                color: 'rgb(var(--text))',
+              },
+            }}
+          />
+        </div>
+      </NextUIProvider>
+    </ErrorBoundary>
   )
 }

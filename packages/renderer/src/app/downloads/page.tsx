@@ -6,6 +6,7 @@ import { jobOrchestrator } from '@/services/job-orchestrator'
 import { JobCard } from '@/components/downloads/JobCard'
 import { JobDetailDrawer } from '@/components/downloads/JobDetailDrawer'
 import { StatsHeader } from '@/components/downloads/StatsHeader'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 import {
   Button,
   Input,
@@ -16,6 +17,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Tooltip,
   useDisclosure,
 } from '@nextui-org/react'
 
@@ -291,28 +293,29 @@ export default function DownloadsPage() {
 
           <div className="flex gap-2">
             {hasCompletedJobs && (
-              <Button
-                color="warning"
-                variant="flat"
-                onPress={handleClearCompleted}
-              >
-                Clear Completed
-              </Button>
+              <Tooltip content="Remove completed downloads from the list">
+                <Button
+                  color="warning"
+                  variant="flat"
+                  onPress={handleClearCompleted}
+                >
+                  Clear Completed
+                </Button>
+              </Tooltip>
             )}
             {hasActiveJobs && (
-              <Button color="danger" variant="flat" onPress={onCancelAllOpen}>
-                Cancel All
-              </Button>
+              <Tooltip content="Cancel all active downloads">
+                <Button color="danger" variant="flat" onPress={onCancelAllOpen}>
+                  Cancel All
+                </Button>
+              </Tooltip>
             )}
           </div>
         </div>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <div className="text-4xl mb-4">⏳</div>
-              <p className="text-subtext0">Loading downloads...</p>
-            </div>
+            <LoadingSpinner size="lg" text="Loading downloads..." />
           </div>
         ) : filteredJobs.length === 0 ? (
           <div className="flex items-center justify-center py-20">
