@@ -1,0 +1,5 @@
+export { GeneralPanel } from './GeneralPanel'
+export { BehaviorPanel } from './BehaviorPanel'
+export { ThemePanel } from './ThemePanel'
+export { IntegrationsPanel } from './IntegrationsPanel'
+export { AccountPanel } from './AccountPanel'
