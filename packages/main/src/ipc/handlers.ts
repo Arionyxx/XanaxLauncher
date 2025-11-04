@@ -6,10 +6,22 @@ import {
   settingsSetRequestSchema,
   settingsSetResponseSchema,
   appVersionResponseSchema,
+  providerStartJobRequestSchema,
+  providerStartJobResponseSchema,
+  providerGetStatusRequestSchema,
+  providerGetStatusResponseSchema,
+  providerCancelJobRequestSchema,
+  providerCancelJobResponseSchema,
+  providerTestConnectionRequestSchema,
+  providerTestConnectionResponseSchema,
   DialogSelectFolderResponse,
   SettingsGetResponse,
   SettingsSetResponse,
   AppVersionResponse,
+  ProviderStartJobResponse,
+  ProviderGetStatusResponse,
+  ProviderCancelJobResponse,
+  ProviderTestConnectionResponse,
 } from './schemas'
 
 const settings: Map<string, unknown> = new Map()
@@ -60,6 +72,61 @@ export async function handleAppVersion(): Promise<AppVersionResponse> {
     electron: process.versions.electron,
     chrome: process.versions.chrome,
     node: process.versions.node,
+  })
+
+  return response
+}
+
+export async function handleProviderStartJob(
+  data: unknown
+): Promise<ProviderStartJobResponse> {
+  const validated = providerStartJobRequestSchema.parse(data)
+
+  const response = providerStartJobResponseSchema.parse({
+    jobId: validated.provider,
+    status: 'QUEUED',
+  })
+
+  return response
+}
+
+export async function handleProviderGetStatus(
+  data: unknown
+): Promise<ProviderGetStatusResponse> {
+  const validated = providerGetStatusRequestSchema.parse(data)
+
+  const response = providerGetStatusResponseSchema.parse({
+    id: validated.jobId,
+    status: 'QUEUED',
+    progress: 0,
+    files: [],
+    metadata: {},
+  })
+
+  return response
+}
+
+export async function handleProviderCancelJob(
+  data: unknown
+): Promise<ProviderCancelJobResponse> {
+  const validated = providerCancelJobRequestSchema.parse(data)
+
+  const response = providerCancelJobResponseSchema.parse({
+    success: true,
+    message: `Job ${validated.jobId} cancelled`,
+  })
+
+  return response
+}
+
+export async function handleProviderTestConnection(
+  data: unknown
+): Promise<ProviderTestConnectionResponse> {
+  const validated = providerTestConnectionRequestSchema.parse(data)
+
+  const response = providerTestConnectionResponseSchema.parse({
+    success: true,
+    message: `Connected to ${validated.provider}`,
   })
 
   return response
