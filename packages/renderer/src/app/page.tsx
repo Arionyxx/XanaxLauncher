@@ -21,6 +21,8 @@ export default function Home() {
   const handleNavigation = (section: Section) => {
     if (section === 'settings') {
       router.push('/settings')
+    } else if (section === 'downloads') {
+      router.push('/downloads')
     } else {
       setActiveSection(section)
     }
