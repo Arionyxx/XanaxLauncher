@@ -8,6 +8,7 @@ import { BehaviorPanel } from '@/components/settings/BehaviorPanel'
 import { ThemePanel } from '@/components/settings/ThemePanel'
 import { IntegrationsPanel } from '@/components/settings/IntegrationsPanel'
 import { AccountPanel } from '@/components/settings/AccountPanel'
+import { SourcesPanel } from '@/components/settings/SourcesPanel'
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -119,6 +120,20 @@ export default function SettingsPage() {
                 settings={settings.theme}
                 onUpdate={updateThemeSettings}
               />
+            </div>
+          </Tab>
+
+          <Tab
+            key="sources"
+            title={
+              <div className="flex items-center gap-2">
+                <span>📚</span>
+                <span>Sources</span>
+              </div>
+            }
+          >
+            <div className="py-6">
+              <SourcesPanel />
             </div>
           </Tab>
 

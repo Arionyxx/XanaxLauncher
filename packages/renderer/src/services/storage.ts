@@ -67,12 +67,18 @@ export async function getSource(id: string): Promise<Source | undefined> {
   }
 }
 
-export async function addSource(source: Omit<Source, 'id'>): Promise<string> {
+export async function addSource(
+  source: Omit<Source, 'id' | 'lastSyncAt' | 'status' | 'entryCount' | 'data'>
+): Promise<string> {
   try {
     const id = `source_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const newSource: Source = {
       ...source,
       id,
+      lastSyncAt: null,
+      status: 'never_synced',
+      entryCount: 0,
+      data: null,
     }
     await db.sources.add(newSource)
     console.log(`[Storage] Source "${id}" added successfully`)
