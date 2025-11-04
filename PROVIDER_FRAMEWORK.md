@@ -255,13 +255,13 @@ Example:
 ```typescript
 export class TorBoxProvider implements Provider {
   readonly name = 'torbox'
-  
+
   constructor(private config: ProviderConfig) {}
-  
+
   async startJob(payload: StartJobPayload): Promise<StartJobResponse> {
     // Implementation
   }
-  
+
   // ... other methods
 }
 ```
@@ -287,12 +287,7 @@ Invalid transitions throw an error.
 Use `ProviderError` for provider-specific errors:
 
 ```typescript
-throw new ProviderError(
-  'Job not found',
-  'torbox',
-  'NOT_FOUND',
-  404
-)
+throw new ProviderError('Job not found', 'torbox', 'NOT_FOUND', 404)
 ```
 
 ## Next Steps
@@ -309,26 +304,32 @@ throw new ProviderError(
 ## Files
 
 ### Types
+
 - `packages/renderer/src/types/provider.ts` - Core types and interfaces
 
 ### Services
+
 - `packages/renderer/src/services/job-orchestrator.ts` - Job management
 - `packages/renderer/src/services/providers/registry.ts` - Provider registry
 - `packages/renderer/src/services/providers/mock-provider.ts` - Mock implementation
 - `packages/renderer/src/services/providers/index.ts` - Exports
 
 ### Utilities
+
 - `packages/renderer/src/services/providers/utils/rate-limiter.ts` - Rate limiting
 - `packages/renderer/src/services/providers/utils/retry.ts` - Retry logic
 - `packages/renderer/src/services/providers/utils/validator.ts` - Zod schemas
 
 ### UI
+
 - `packages/renderer/src/app/provider-test/page.tsx` - Test UI page
 
 ### IPC
+
 - `packages/main/src/ipc/channels.ts` - Channel definitions
 - `packages/main/src/ipc/schemas.ts` - Request/response schemas
 - `packages/main/src/ipc/handlers.ts` - Handler implementations
 
 ### Database
+
 - `packages/renderer/src/db/schema.ts` - Dexie schema with Jobs table

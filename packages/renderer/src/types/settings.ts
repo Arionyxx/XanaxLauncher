@@ -56,17 +56,23 @@ export const themeSettingsSchema = z.object({
   compactMode: z.boolean(),
 })
 
+export const integrationsSettingsSchema = z.object({
+  torboxApiToken: z.string().optional(),
+})
+
 // Combined settings schema
 export const settingsSchema = z.object({
   general: generalSettingsSchema,
   behavior: behaviorSettingsSchema,
   theme: themeSettingsSchema,
+  integrations: integrationsSettingsSchema,
 })
 
 // TypeScript types
 export type GeneralSettings = z.infer<typeof generalSettingsSchema>
 export type BehaviorSettings = z.infer<typeof behaviorSettingsSchema>
 export type ThemeSettings = z.infer<typeof themeSettingsSchema>
+export type IntegrationsSettings = z.infer<typeof integrationsSettingsSchema>
 export type Settings = z.infer<typeof settingsSchema>
 
 // Default settings
@@ -86,5 +92,8 @@ export const defaultSettings: Settings = {
     flavor: 'macchiato',
     accentColor: 'blue',
     compactMode: false,
+  },
+  integrations: {
+    torboxApiToken: undefined,
   },
 }

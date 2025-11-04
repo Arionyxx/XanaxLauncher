@@ -16,10 +16,13 @@ import {
 import { jobOrchestrator } from '@/services/job-orchestrator'
 import { providerRegistry } from '@/services/providers/registry'
 import { MockProvider } from '@/services/providers/mock-provider'
+import { TorBoxProvider } from '@/services/providers/torbox'
 import { Job, JobStatus } from '@/types/provider'
+import { useSettings } from '@/hooks/useSettings'
 
 export default function ProviderTestPage() {
   const router = useRouter()
+  const { settings } = useSettings()
   const [mounted, setMounted] = useState(false)
   const [selectedProvider, setSelectedProvider] = useState('mock')
   const [testUrl, setTestUrl] = useState('https://example.com/test-file.zip')
@@ -29,16 +32,24 @@ export default function ProviderTestPage() {
   const [connectionStatus, setConnectionStatus] = useState<string | null>(null)
 
   useEffect(() => {
+    const initializeProviders = () => {
+      if (!providerRegistry.hasProvider('mock')) {
+        providerRegistry.registerProvider('mock', new MockProvider())
+      }
+
+      const torboxToken = settings.integrations.torboxApiToken
+      if (torboxToken && !providerRegistry.hasProvider('torbox')) {
+        providerRegistry.registerProvider(
+          'torbox',
+          new TorBoxProvider({ apiToken: torboxToken })
+        )
+      }
+    }
+
     setMounted(true)
     initializeProviders()
     loadJobs()
-  }, [])
-
-  const initializeProviders = () => {
-    if (!providerRegistry.hasProvider('mock')) {
-      providerRegistry.registerProvider('mock', new MockProvider())
-    }
-  }
+  }, [settings.integrations.torboxApiToken])
 
   const loadJobs = async () => {
     try {
@@ -51,7 +62,7 @@ export default function ProviderTestPage() {
 
   const handleStartJob = async () => {
     if (!testUrl) {
-      setError('Please enter a URL')
+      setError('Please enter a URL or magnet link')
       return
     }
 
@@ -59,9 +70,13 @@ export default function ProviderTestPage() {
     setError(null)
 
     try {
+      const payload = testUrl.startsWith('magnet:')
+        ? { magnet: testUrl }
+        : { url: testUrl }
+
       await jobOrchestrator.createJob({
         provider: selectedProvider,
-        payload: { url: testUrl },
+        payload,
       })
 
       await loadJobs()
@@ -206,7 +221,7 @@ export default function ProviderTestPage() {
 
             <Input
               label="URL or Magnet Link"
-              placeholder="https://example.com/file.zip"
+              placeholder="https://example.com/file.zip or magnet:?xt=..."
               value={testUrl}
               onValueChange={setTestUrl}
               className="max-w-2xl"
