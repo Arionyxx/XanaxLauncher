@@ -71,6 +71,25 @@ export interface ProviderTestConnectionResponse {
   }
 }
 
+export interface LogsGetPathResponse {
+  path: string
+}
+
+export interface LogsOpenFolderResponse {
+  success: boolean
+}
+
+export interface UpdateCheckResponse {
+  available: boolean
+  version: string | null
+  releaseDate: string | null
+  releaseNotes?: string | null
+}
+
+export interface UpdateInstallResponse {
+  success: boolean
+}
+
 export interface ElectronAPI {
   selectFolder: () => Promise<DialogSelectFolderResponse>
   getSettings: (key: string) => Promise<SettingsGetResponse>
@@ -88,6 +107,14 @@ export interface ElectronAPI {
   providerTestConnection: (
     request: ProviderTestConnectionRequest
   ) => Promise<ProviderTestConnectionResponse>
+  logs: {
+    getPath: () => Promise<LogsGetPathResponse>
+    openFolder: () => Promise<LogsOpenFolderResponse>
+  }
+  updates: {
+    check: () => Promise<UpdateCheckResponse>
+    install: () => Promise<UpdateInstallResponse>
+  }
 }
 
 declare global {

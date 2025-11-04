@@ -1,4 +1,6 @@
-import { dialog, app } from 'electron'
+import { dialog, app, shell } from 'electron'
+import log from 'electron-log'
+import { autoUpdater } from 'electron-updater'
 import {
   dialogSelectFolderResponseSchema,
   settingsGetRequestSchema,
@@ -14,6 +16,10 @@ import {
   providerCancelJobResponseSchema,
   providerTestConnectionRequestSchema,
   providerTestConnectionResponseSchema,
+  logsGetPathResponseSchema,
+  logsOpenFolderResponseSchema,
+  updateCheckResponseSchema,
+  updateInstallResponseSchema,
   DialogSelectFolderResponse,
   SettingsGetResponse,
   SettingsSetResponse,
@@ -22,6 +28,10 @@ import {
   ProviderGetStatusResponse,
   ProviderCancelJobResponse,
   ProviderTestConnectionResponse,
+  LogsGetPathResponse,
+  LogsOpenFolderResponse,
+  UpdateCheckResponse,
+  UpdateInstallResponse,
 } from './schemas'
 
 const settings: Map<string, unknown> = new Map()
@@ -130,4 +140,74 @@ export async function handleProviderTestConnection(
   })
 
   return response
+}
+
+export async function handleLogsGetPath(): Promise<LogsGetPathResponse> {
+  const logPath = log.transports.file.getFile().path
+
+  const response = logsGetPathResponseSchema.parse({
+    path: logPath,
+  })
+
+  return response
+}
+
+export async function handleLogsOpenFolder(): Promise<LogsOpenFolderResponse> {
+  const logPath = log.transports.file.getFile().path
+  const logDir = logPath.substring(0, logPath.lastIndexOf('/'))
+
+  await shell.openPath(logDir)
+
+  const response = logsOpenFolderResponseSchema.parse({
+    success: true,
+  })
+
+  return response
+}
+
+export async function handleUpdateCheck(): Promise<UpdateCheckResponse> {
+  try {
+    const updateCheckResult = await autoUpdater.checkForUpdates()
+
+    const response = updateCheckResponseSchema.parse({
+      available: updateCheckResult !== null,
+      version: updateCheckResult?.updateInfo.version ?? null,
+      releaseDate: updateCheckResult?.updateInfo.releaseDate ?? null,
+      releaseNotes: updateCheckResult?.updateInfo.releaseNotes as
+        | string
+        | null
+        | undefined,
+    })
+
+    return response
+  } catch (error) {
+    log.error('Update check failed:', error)
+
+    return updateCheckResponseSchema.parse({
+      available: false,
+      version: null,
+      releaseDate: null,
+      releaseNotes: null,
+    })
+  }
+}
+
+export async function handleUpdateInstall(): Promise<UpdateInstallResponse> {
+  try {
+    autoUpdater.quitAndInstall()
+
+    const response = updateInstallResponseSchema.parse({
+      success: true,
+    })
+
+    return response
+  } catch (error) {
+    log.error('Update install failed:', error)
+
+    const response = updateInstallResponseSchema.parse({
+      success: false,
+    })
+
+    return response
+  }
 }

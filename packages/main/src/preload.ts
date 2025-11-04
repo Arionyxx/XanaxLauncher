@@ -15,6 +15,10 @@ import {
   ProviderCancelJobResponse,
   ProviderTestConnectionRequest,
   ProviderTestConnectionResponse,
+  LogsGetPathResponse,
+  LogsOpenFolderResponse,
+  UpdateCheckResponse,
+  UpdateInstallResponse,
 } from './ipc/schemas'
 
 const api = {
@@ -64,6 +68,26 @@ const api = {
       IPC_CHANNELS.PROVIDER_TEST_CONNECTION,
       request
     )
+  },
+
+  logs: {
+    getPath: async (): Promise<LogsGetPathResponse> => {
+      return await ipcRenderer.invoke(IPC_CHANNELS.LOGS_GET_PATH)
+    },
+
+    openFolder: async (): Promise<LogsOpenFolderResponse> => {
+      return await ipcRenderer.invoke(IPC_CHANNELS.LOGS_OPEN_FOLDER)
+    },
+  },
+
+  updates: {
+    check: async (): Promise<UpdateCheckResponse> => {
+      return await ipcRenderer.invoke(IPC_CHANNELS.UPDATE_CHECK)
+    },
+
+    install: async (): Promise<UpdateInstallResponse> => {
+      return await ipcRenderer.invoke(IPC_CHANNELS.UPDATE_INSTALL)
+    },
   },
 }
 

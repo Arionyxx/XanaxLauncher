@@ -9,6 +9,7 @@ import { ThemePanel } from '@/components/settings/ThemePanel'
 import { IntegrationsPanel } from '@/components/settings/IntegrationsPanel'
 import { AccountPanel } from '@/components/settings/AccountPanel'
 import { SourcesPanel } from '@/components/settings/SourcesPanel'
+import { PrivacyPanel } from '@/components/settings/PrivacyPanel'
 import { AdvancedPanel } from '@/components/settings/AdvancedPanel'
 
 export default function SettingsPage() {
@@ -20,6 +21,7 @@ export default function SettingsPage() {
     updateGeneralSettings,
     updateBehaviorSettings,
     updateThemeSettings,
+    updatePrivacySettings,
   } = useSettings()
 
   if (isLoading) {
@@ -163,6 +165,23 @@ export default function SettingsPage() {
           >
             <div className="py-6">
               <AccountPanel />
+            </div>
+          </Tab>
+
+          <Tab
+            key="privacy"
+            title={
+              <div className="flex items-center gap-2">
+                <span>🔒</span>
+                <span>Privacy</span>
+              </div>
+            }
+          >
+            <div className="py-6">
+              <PrivacyPanel
+                settings={settings.privacy}
+                onUpdate={updatePrivacySettings}
+              />
             </div>
           </Tab>
 

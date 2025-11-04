@@ -1,12 +1,13 @@
 {
   "name": "main",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Electron main process",
   "main": "dist/index.js",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "tsc"
+    "build": "tsc",
+    "package": "electron-builder --config electron-builder.yml"
   },
   "devDependencies": {
     "electron": "^28.2.0",
@@ -14,6 +15,8 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "electron-log": "^5.4.3",
+    "electron-updater": "^6.6.2",
     "zod": "^4.1.12"
   }
 }

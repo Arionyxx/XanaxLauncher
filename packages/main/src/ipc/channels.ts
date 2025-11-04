@@ -7,6 +7,10 @@ export const IPC_CHANNELS = {
   PROVIDER_GET_STATUS: 'provider:get-status',
   PROVIDER_CANCEL_JOB: 'provider:cancel-job',
   PROVIDER_TEST_CONNECTION: 'provider:test-connection',
+  LOGS_OPEN_FOLDER: 'logs:openFolder',
+  LOGS_GET_PATH: 'logs:getPath',
+  UPDATE_CHECK: 'update:check',
+  UPDATE_INSTALL: 'update:install',
 } as const
 
 export type IpcChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS]

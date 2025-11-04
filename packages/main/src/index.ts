@@ -1,5 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import * as path from 'path'
+import log from 'electron-log'
+import { autoUpdater } from 'electron-updater'
 import { IPC_CHANNELS } from './ipc/channels'
 import {
   handleDialogSelectFolder,
@@ -10,11 +12,27 @@ import {
   handleProviderGetStatus,
   handleProviderCancelJob,
   handleProviderTestConnection,
+  handleLogsGetPath,
+  handleLogsOpenFolder,
+  handleUpdateCheck,
+  handleUpdateInstall,
 } from './ipc/handlers'
 
 let mainWindow: BrowserWindow | null = null
 
 const isDev = process.env.NODE_ENV !== 'production'
+
+log.transports.file.level = 'info'
+log.transports.console.level = 'debug'
+log.info('Application starting...')
+
+autoUpdater.logger = log
+autoUpdater.autoDownload = false
+autoUpdater.autoInstallOnAppQuit = false
+
+if (process.argv.includes('--safe-mode')) {
+  log.info('Running in safe mode')
+}
 
 function registerIpcHandlers() {
   ipcMain.handle(IPC_CHANNELS.DIALOG_SELECT_FOLDER, async () => {
@@ -91,6 +109,42 @@ function registerIpcHandlers() {
       }
     }
   )
+
+  ipcMain.handle(IPC_CHANNELS.LOGS_GET_PATH, async () => {
+    try {
+      return await handleLogsGetPath()
+    } catch (error) {
+      console.error('Error in logs:getPath handler:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(IPC_CHANNELS.LOGS_OPEN_FOLDER, async () => {
+    try {
+      return await handleLogsOpenFolder()
+    } catch (error) {
+      console.error('Error in logs:openFolder handler:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(IPC_CHANNELS.UPDATE_CHECK, async () => {
+    try {
+      return await handleUpdateCheck()
+    } catch (error) {
+      console.error('Error in update:check handler:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(IPC_CHANNELS.UPDATE_INSTALL, async () => {
+    try {
+      return await handleUpdateInstall()
+    } catch (error) {
+      console.error('Error in update:install handler:', error)
+      throw error
+    }
+  })
 }
 
 function createWindow() {
