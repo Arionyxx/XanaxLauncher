@@ -61,12 +61,19 @@ export const integrationsSettingsSchema = z.object({
   realDebridApiToken: z.string().optional(),
 })
 
+export const privacySettingsSchema = z.object({
+  telemetryEnabled: z.boolean(),
+  crashReportsEnabled: z.boolean(),
+  usageStatsEnabled: z.boolean(),
+})
+
 // Combined settings schema
 export const settingsSchema = z.object({
   general: generalSettingsSchema,
   behavior: behaviorSettingsSchema,
   theme: themeSettingsSchema,
   integrations: integrationsSettingsSchema,
+  privacy: privacySettingsSchema,
 })
 
 // TypeScript types
@@ -74,6 +81,7 @@ export type GeneralSettings = z.infer<typeof generalSettingsSchema>
 export type BehaviorSettings = z.infer<typeof behaviorSettingsSchema>
 export type ThemeSettings = z.infer<typeof themeSettingsSchema>
 export type IntegrationsSettings = z.infer<typeof integrationsSettingsSchema>
+export type PrivacySettings = z.infer<typeof privacySettingsSchema>
 export type Settings = z.infer<typeof settingsSchema>
 
 // Default settings
@@ -97,5 +105,10 @@ export const defaultSettings: Settings = {
   integrations: {
     torboxApiToken: undefined,
     realDebridApiToken: undefined,
+  },
+  privacy: {
+    telemetryEnabled: false,
+    crashReportsEnabled: false,
+    usageStatsEnabled: false,
   },
 }

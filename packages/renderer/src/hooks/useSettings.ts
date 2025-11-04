@@ -6,6 +6,7 @@ import {
   BehaviorSettings,
   ThemeSettings,
   IntegrationsSettings,
+  PrivacySettings,
   defaultSettings,
 } from '@/types/settings'
 
@@ -97,6 +98,18 @@ export function useSettings() {
     [settings, saveSettings]
   )
 
+  // Update privacy settings
+  const updatePrivacySettings = useCallback(
+    async (privacySettings: Partial<PrivacySettings>) => {
+      const newSettings = {
+        ...settings,
+        privacy: { ...settings.privacy, ...privacySettings },
+      }
+      await saveSettings(newSettings)
+    },
+    [settings, saveSettings]
+  )
+
   // Update any settings
   const updateSettings = useCallback(
     async (partialSettings: Partial<Settings>) => {
@@ -122,6 +135,7 @@ export function useSettings() {
     updateBehaviorSettings,
     updateThemeSettings,
     updateIntegrationsSettings,
+    updatePrivacySettings,
     updateSettings,
     resetSettings,
   }

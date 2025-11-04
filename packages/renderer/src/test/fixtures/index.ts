@@ -62,6 +62,11 @@ export const createMockSettings = (
     torboxApiToken: undefined,
     realDebridApiToken: undefined,
   },
+  privacy: {
+    telemetryEnabled: false,
+    crashReportsEnabled: false,
+    usageStatsEnabled: false,
+  },
   ...overrides,
 })
 

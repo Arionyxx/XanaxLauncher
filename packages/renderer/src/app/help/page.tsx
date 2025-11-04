@@ -16,13 +16,14 @@ import {
 
 export default function HelpPage() {
   const router = useRouter()
-  const [appVersion, setAppVersion] = useState<string>('0.1.0')
+  const [appVersion, setAppVersion] = useState<string>('1.0.0')
+  const [isCheckingUpdate, setIsCheckingUpdate] = useState(false)
 
   useEffect(() => {
     const fetchVersion = async () => {
       try {
-        if (window.api?.app?.getVersion) {
-          const version = await window.api.app.getVersion()
+        if (window.api?.getVersion) {
+          const version = await window.api.getVersion()
           setAppVersion(version.version)
         }
       } catch (error) {
@@ -31,6 +32,29 @@ export default function HelpPage() {
     }
     fetchVersion()
   }, [])
+
+  const handleCheckForUpdates = async () => {
+    setIsCheckingUpdate(true)
+    try {
+      if (window.api?.updates?.check) {
+        const result = await window.api.updates.check()
+        if (result.available) {
+          alert(
+            `Update available: ${result.version}\n\nGo to Settings to install the update.`
+          )
+        } else {
+          alert('You are running the latest version.')
+        }
+      } else {
+        alert('Update checking not available in development mode.')
+      }
+    } catch (error) {
+      console.error('Failed to check for updates:', error)
+      alert('Failed to check for updates. See logs for details.')
+    } finally {
+      setIsCheckingUpdate(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-base">
@@ -123,7 +147,18 @@ export default function HelpPage() {
                     <h3 className="text-lg font-semibold text-blue mb-2">
                       Version
                     </h3>
-                    <Code className="bg-mantle text-text">{appVersion}</Code>
+                    <div className="flex items-center gap-3">
+                      <Code className="bg-mantle text-text">{appVersion}</Code>
+                      <Button
+                        size="sm"
+                        color="primary"
+                        variant="flat"
+                        onPress={handleCheckForUpdates}
+                        isLoading={isCheckingUpdate}
+                      >
+                        Check for Updates
+                      </Button>
+                    </div>
                   </div>
 
                   <div>
@@ -228,8 +263,8 @@ export default function HelpPage() {
                   <Divider className="bg-surface1" />
                   <FeatureItem
                     icon="🔒"
-                    title="Privacy First"
-                    description="All data stored locally, no telemetry or tracking"
+                    title="Privacy Focused"
+                    description="All data stored locally. Optional telemetry (opt-in only)"
                   />
                 </CardBody>
               </Card>

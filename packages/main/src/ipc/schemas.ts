@@ -84,6 +84,25 @@ export const providerTestConnectionResponseSchema = z.object({
     .optional(),
 })
 
+export const logsGetPathResponseSchema = z.object({
+  path: z.string(),
+})
+
+export const logsOpenFolderResponseSchema = z.object({
+  success: z.boolean(),
+})
+
+export const updateCheckResponseSchema = z.object({
+  available: z.boolean(),
+  version: z.string().nullable(),
+  releaseDate: z.string().nullable(),
+  releaseNotes: z.union([z.string(), z.any()]).nullable().optional(),
+})
+
+export const updateInstallResponseSchema = z.object({
+  success: z.boolean(),
+})
+
 export type DialogSelectFolderResponse = z.infer<
   typeof dialogSelectFolderResponseSchema
 >
@@ -116,3 +135,9 @@ export type ProviderTestConnectionRequest = z.infer<
 export type ProviderTestConnectionResponse = z.infer<
   typeof providerTestConnectionResponseSchema
 >
+export type LogsGetPathResponse = z.infer<typeof logsGetPathResponseSchema>
+export type LogsOpenFolderResponse = z.infer<
+  typeof logsOpenFolderResponseSchema
+>
+export type UpdateCheckResponse = z.infer<typeof updateCheckResponseSchema>
+export type UpdateInstallResponse = z.infer<typeof updateInstallResponseSchema>

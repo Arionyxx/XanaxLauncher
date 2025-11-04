@@ -44,6 +44,20 @@ next-env.d.ts
 coverage/
 .nyc_output/
 
+# Electron builder output
+dist/
+*.exe
+*.dmg
+*.AppImage
+*.deb
+*.rpm
+*.snap
+release/
+
+# Code signing certificates (NEVER commit these)
+*.pfx
+*.p12
+
 # Misc
 .cache/
 .temp/
