@@ -3,25 +3,29 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+  /* Catppuccin Macchiato colors */
+  --ctp-base: #24273a;
+  --ctp-mantle: #1e2030;
+  --ctp-crust: #181926;
+  --ctp-text: #cad3f5;
+  --ctp-subtext0: #a5adcb;
+  --ctp-subtext1: #b8c0e0;
+  --ctp-surface0: #363a4f;
+  --ctp-surface1: #494d64;
+  --ctp-surface2: #5b6078;
+  --ctp-overlay0: #6e738d;
+  --ctp-overlay1: #8087a2;
+  --ctp-overlay2: #939ab7;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  margin: 0;
+  padding: 0;
+  background-color: #24273a;
+  color: #cad3f5;
+  overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
 }
