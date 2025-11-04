@@ -5,6 +5,7 @@ import {
   GeneralSettings,
   BehaviorSettings,
   ThemeSettings,
+  IntegrationsSettings,
   defaultSettings,
 } from '@/types/settings'
 
@@ -84,6 +85,30 @@ export function useSettings() {
     [settings, saveSettings]
   )
 
+  // Update integrations settings
+  const updateIntegrationsSettings = useCallback(
+    async (integrationsSettings: Partial<IntegrationsSettings>) => {
+      const newSettings = {
+        ...settings,
+        integrations: { ...settings.integrations, ...integrationsSettings },
+      }
+      await saveSettings(newSettings)
+    },
+    [settings, saveSettings]
+  )
+
+  // Update any settings
+  const updateSettings = useCallback(
+    async (partialSettings: Partial<Settings>) => {
+      const newSettings = {
+        ...settings,
+        ...partialSettings,
+      }
+      await saveSettings(newSettings)
+    },
+    [settings, saveSettings]
+  )
+
   // Reset to defaults
   const resetSettings = useCallback(async () => {
     await saveSettings(defaultSettings)
@@ -96,6 +121,8 @@ export function useSettings() {
     updateGeneralSettings,
     updateBehaviorSettings,
     updateThemeSettings,
+    updateIntegrationsSettings,
+    updateSettings,
     resetSettings,
   }
 }
