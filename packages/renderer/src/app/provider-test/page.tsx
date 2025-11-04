@@ -17,6 +17,7 @@ import { jobOrchestrator } from '@/services/job-orchestrator'
 import { providerRegistry } from '@/services/providers/registry'
 import { MockProvider } from '@/services/providers/mock-provider'
 import { TorBoxProvider } from '@/services/providers/torbox'
+import { RealDebridProvider } from '@/services/providers/realdebrid'
 import { Job, JobStatus } from '@/types/provider'
 import { useSettings } from '@/hooks/useSettings'
 
@@ -44,12 +45,23 @@ export default function ProviderTestPage() {
           new TorBoxProvider({ apiToken: torboxToken })
         )
       }
+
+      const realDebridToken = settings.integrations.realDebridApiToken
+      if (realDebridToken && !providerRegistry.hasProvider('realdebrid')) {
+        providerRegistry.registerProvider(
+          'realdebrid',
+          new RealDebridProvider({ apiToken: realDebridToken })
+        )
+      }
     }
 
     setMounted(true)
     initializeProviders()
     loadJobs()
-  }, [settings.integrations.torboxApiToken])
+  }, [
+    settings.integrations.torboxApiToken,
+    settings.integrations.realDebridApiToken,
+  ])
 
   const loadJobs = async () => {
     try {
