@@ -5,6 +5,7 @@ import { ReactNode, useEffect } from 'react'
 import { Toaster } from 'sonner'
 import { initializeDatabase } from '@/db/db'
 import { autoSyncSources } from '@/services/source-sync'
+import { OnboardingGate } from '@/components/onboarding/OnboardingGate'
 
 export function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -31,7 +32,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <NextUIProvider className="h-full">
       <div className="dark text-foreground bg-background h-full">
-        {children}
+        <OnboardingGate>{children}</OnboardingGate>
         <Toaster
           position="bottom-right"
           theme="dark"

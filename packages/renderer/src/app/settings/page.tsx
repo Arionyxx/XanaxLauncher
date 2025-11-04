@@ -9,6 +9,7 @@ import { ThemePanel } from '@/components/settings/ThemePanel'
 import { IntegrationsPanel } from '@/components/settings/IntegrationsPanel'
 import { AccountPanel } from '@/components/settings/AccountPanel'
 import { SourcesPanel } from '@/components/settings/SourcesPanel'
+import { AdvancedPanel } from '@/components/settings/AdvancedPanel'
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -162,6 +163,20 @@ export default function SettingsPage() {
           >
             <div className="py-6">
               <AccountPanel />
+            </div>
+          </Tab>
+
+          <Tab
+            key="advanced"
+            title={
+              <div className="flex items-center gap-2">
+                <span>🔧</span>
+                <span>Advanced</span>
+              </div>
+            }
+          >
+            <div className="py-6">
+              <AdvancedPanel />
             </div>
           </Tab>
         </Tabs>
