@@ -210,6 +210,10 @@ function SettingsSection() {
   const [selectedFolder, setSelectedFolder] = useState<string>('')
   const [appVersion, setAppVersion] = useState<string>('')
   const [testSetting, setTestSetting] = useState<string>('')
+  const [dbSetting, setDbSetting] = useState<string>('')
+  const [sourcesList, setSourcesList] = useState<string>('')
+  const [jobsList, setJobsList] = useState<string>('')
+  const [allSettings, setAllSettings] = useState<string>('')
 
   const handleSelectFolder = async () => {
     try {
@@ -253,6 +257,87 @@ function SettingsSection() {
     }
   }
 
+  const handleSaveDbSetting = async () => {
+    try {
+      const { setSetting } = await import('@/services/storage')
+      await setSetting('appTheme', 'catppuccin-macchiato')
+      await setSetting('lastUsed', new Date().toISOString())
+      setDbSetting('Settings saved to IndexedDB!')
+    } catch (error) {
+      console.error('Error saving to IndexedDB:', error)
+      setDbSetting('Error saving settings')
+    }
+  }
+
+  const handleLoadDbSettings = async () => {
+    try {
+      const { getAllSettings } = await import('@/services/storage')
+      const settings = await getAllSettings()
+      setAllSettings(JSON.stringify(settings, null, 2))
+      console.log('Loaded settings:', settings)
+    } catch (error) {
+      console.error('Error loading from IndexedDB:', error)
+      setAllSettings('Error loading settings')
+    }
+  }
+
+  const handleAddSource = async () => {
+    try {
+      const { addSource } = await import('@/services/storage')
+      const id = await addSource({
+        name: `Test Source ${Date.now()}`,
+        url: 'https://example.com',
+        lastSyncAt: Date.now(),
+        status: 'active',
+        data: { type: 'test', items: [] },
+      })
+      setSourcesList(`Source added with ID: ${id}`)
+    } catch (error) {
+      console.error('Error adding source:', error)
+      setSourcesList('Error adding source')
+    }
+  }
+
+  const handleListSources = async () => {
+    try {
+      const { getSources } = await import('@/services/storage')
+      const sources = await getSources()
+      setSourcesList(JSON.stringify(sources, null, 2))
+      console.log('Sources:', sources)
+    } catch (error) {
+      console.error('Error listing sources:', error)
+      setSourcesList('Error listing sources')
+    }
+  }
+
+  const handleAddJob = async () => {
+    try {
+      const { addJob } = await import('@/services/storage')
+      const id = await addJob({
+        provider: 'test-provider',
+        status: 'pending',
+        progress: 0,
+        metadata: { task: 'test-task', priority: 'high' },
+      })
+      setJobsList(`Job added with ID: ${id}`)
+    } catch (error) {
+      console.error('Error adding job:', error)
+      setJobsList('Error adding job')
+    }
+  }
+
+  const handleListJobs = async () => {
+    try {
+      const { getJobs } = await import('@/services/storage')
+      const jobs = await getJobs()
+      setJobsList(JSON.stringify(jobs, null, 2))
+      console.log('Jobs:', jobs)
+    } catch (error) {
+      console.error('Error listing jobs:', error)
+      setJobsList('Error listing jobs')
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -263,7 +348,82 @@ function SettingsSection() {
       <div className="space-y-4">
         <Card className="bg-surface0 border-surface1">
           <CardHeader>
-            <h3 className="text-xl font-semibold text-text">IPC Test</h3>
+            <h3 className="text-xl font-semibold text-text">
+              IndexedDB Test (Persistent)
+            </h3>
+          </CardHeader>
+          <CardBody className="space-y-4">
+            <div>
+              <h4 className="text-sm font-semibold text-blue mb-2">
+                Settings Storage
+              </h4>
+              <div className="flex gap-2 flex-wrap">
+                <Button color="primary" size="sm" onClick={handleSaveDbSetting}>
+                  Save Test Settings
+                </Button>
+                <Button
+                  color="secondary"
+                  size="sm"
+                  onClick={handleLoadDbSettings}
+                >
+                  Load All Settings
+                </Button>
+              </div>
+              {dbSetting && (
+                <p className="text-sm text-green mt-2">{dbSetting}</p>
+              )}
+              {allSettings && (
+                <pre className="text-xs text-subtext0 mt-2 p-2 bg-surface1 rounded overflow-auto max-h-40">
+                  {allSettings}
+                </pre>
+              )}
+            </div>
+
+            <div>
+              <h4 className="text-sm font-semibold text-mauve mb-2">
+                Sources Storage
+              </h4>
+              <div className="flex gap-2 flex-wrap">
+                <Button color="primary" size="sm" onClick={handleAddSource}>
+                  Add Test Source
+                </Button>
+                <Button color="secondary" size="sm" onClick={handleListSources}>
+                  List All Sources
+                </Button>
+              </div>
+              {sourcesList && (
+                <pre className="text-xs text-subtext0 mt-2 p-2 bg-surface1 rounded overflow-auto max-h-40">
+                  {sourcesList}
+                </pre>
+              )}
+            </div>
+
+            <div>
+              <h4 className="text-sm font-semibold text-peach mb-2">
+                Jobs Storage
+              </h4>
+              <div className="flex gap-2 flex-wrap">
+                <Button color="primary" size="sm" onClick={handleAddJob}>
+                  Add Test Job
+                </Button>
+                <Button color="secondary" size="sm" onClick={handleListJobs}>
+                  List All Jobs
+                </Button>
+              </div>
+              {jobsList && (
+                <pre className="text-xs text-subtext0 mt-2 p-2 bg-surface1 rounded overflow-auto max-h-40">
+                  {jobsList}
+                </pre>
+              )}
+            </div>
+          </CardBody>
+        </Card>
+
+        <Card className="bg-surface0 border-surface1">
+          <CardHeader>
+            <h3 className="text-xl font-semibold text-text">
+              IPC Test (Main Process)
+            </h3>
           </CardHeader>
           <CardBody className="space-y-4">
             <div>
