@@ -10,8 +10,11 @@ export interface Source {
   id: string
   name: string
   url: string
-  lastSyncAt: number
-  status: string
+  autoSync: boolean
+  lastSyncAt: number | null
+  status: 'never_synced' | 'syncing' | 'synced' | 'error'
+  errorMessage?: string
+  entryCount: number
   data: any
 }
 

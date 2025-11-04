@@ -1,0 +1,169 @@
+import { useState } from 'react'
+import { Card, CardBody, Chip, Button, Spinner } from '@nextui-org/react'
+import { Source } from '@/db/schema'
+
+interface SourceListItemProps {
+  source: Source
+  onSync: (id: string) => Promise<void>
+  onEdit: (source: Source) => void
+  onRemove: (id: string) => void
+}
+
+function formatTimestamp(timestamp: number | null): string {
+  if (timestamp === null) return 'Never'
+
+  const now = Date.now()
+  const diff = now - timestamp
+  const seconds = Math.floor(diff / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  const days = Math.floor(hours / 24)
+
+  if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`
+  if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`
+  if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`
+  if (seconds > 0) return `${seconds} second${seconds > 1 ? 's' : ''} ago`
+  return 'Just now'
+}
+
+function getStatusColor(
+  status: Source['status']
+): 'default' | 'success' | 'danger' | 'warning' {
+  switch (status) {
+    case 'synced':
+      return 'success'
+    case 'error':
+      return 'danger'
+    case 'syncing':
+      return 'warning'
+    default:
+      return 'default'
+  }
+}
+
+function getStatusLabel(status: Source['status']): string {
+  switch (status) {
+    case 'synced':
+      return 'Synced'
+    case 'error':
+      return 'Error'
+    case 'syncing':
+      return 'Syncing...'
+    default:
+      return 'Never Synced'
+  }
+}
+
+export function SourceListItem({
+  source,
+  onSync,
+  onEdit,
+  onRemove,
+}: SourceListItemProps) {
+  const [isSyncing, setIsSyncing] = useState(false)
+  const [showError, setShowError] = useState(false)
+
+  const handleSync = async () => {
+    setIsSyncing(true)
+    try {
+      await onSync(source.id)
+    } catch (error) {
+      console.error('Failed to sync source:', error)
+    } finally {
+      setIsSyncing(false)
+    }
+  }
+
+  return (
+    <Card className="bg-surface1 border-surface2" shadow="none">
+      <CardBody className="space-y-3">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <h4 className="text-base font-semibold text-text truncate">
+                {source.name}
+              </h4>
+              <Chip
+                size="sm"
+                color={getStatusColor(source.status)}
+                variant="flat"
+              >
+                {getStatusLabel(source.status)}
+              </Chip>
+              {source.autoSync && (
+                <Chip size="sm" variant="flat" className="bg-blue/20 text-blue">
+                  Auto-sync
+                </Chip>
+              )}
+            </div>
+            <p className="text-xs text-subtext0 font-mono truncate">
+              {source.url}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <Button
+              size="sm"
+              variant="flat"
+              onPress={handleSync}
+              isDisabled={isSyncing || source.status === 'syncing'}
+              startContent={
+                isSyncing || source.status === 'syncing' ? (
+                  <Spinner size="sm" />
+                ) : (
+                  <span>🔄</span>
+                )
+              }
+              className="bg-surface0"
+            >
+              Sync
+            </Button>
+            <Button
+              size="sm"
+              variant="flat"
+              onPress={() => onEdit(source)}
+              className="bg-surface0"
+            >
+              Edit
+            </Button>
+            <Button
+              size="sm"
+              color="danger"
+              variant="flat"
+              onPress={() => onRemove(source.id)}
+            >
+              Remove
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-6 text-xs text-subtext0">
+          <div>
+            <span className="font-medium">Last sync:</span>{' '}
+            {formatTimestamp(source.lastSyncAt)}
+          </div>
+          <div>
+            <span className="font-medium">Entries:</span>{' '}
+            <span className="text-text">{source.entryCount}</span>
+          </div>
+        </div>
+
+        {source.status === 'error' && source.errorMessage && (
+          <div className="space-y-1">
+            <button
+              onClick={() => setShowError(!showError)}
+              className="text-xs text-red hover:underline focus:outline-none"
+            >
+              {showError ? '▼' : '▶'} Error details
+            </button>
+            {showError && (
+              <div className="bg-red/10 border border-red/30 rounded p-2 text-xs text-red">
+                {source.errorMessage}
+              </div>
+            )}
+          </div>
+        )}
+      </CardBody>
+    </Card>
+  )
+}
