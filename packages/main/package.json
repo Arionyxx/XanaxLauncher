@@ -2,8 +2,15 @@
   "name": "main",
   "version": "0.1.0",
   "private": true,
-  "description": "Main process package (placeholder for future Electron integration)",
+  "description": "Electron main process",
+  "main": "dist/index.js",
   "scripts": {
-    "typecheck": "echo 'No TypeScript files to check yet'"
+    "typecheck": "tsc --noEmit",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "electron": "^28.2.0",
+    "electron-builder": "^24.9.1",
+    "typescript": "^5.3.3"
   }
 }

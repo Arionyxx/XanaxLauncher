@@ -1,5 +1,18 @@
 # Main Process Package
 
-This package is a placeholder for future Electron main process code.
+This package contains the Electron main process code.
 
-Electron will be added in a future iteration.
+## Structure
+
+- `src/index.ts` - Main entry point that creates the BrowserWindow and loads the Next.js renderer
+- `src/preload.ts` - Preload script that exposes a minimal API to the renderer using contextBridge
+- `electron-builder.yml` - Configuration for electron-builder packaging
+
+## Development
+
+The main process is automatically compiled and started when you run `pnpm dev` from the root.
+
+## Scripts
+
+- `pnpm typecheck` - Type check the TypeScript code
+- `pnpm build` - Compile TypeScript to JavaScript (output to `dist/`)

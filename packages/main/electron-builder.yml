@@ -1,0 +1,10 @@
+appId: com.example.app
+productName: ElectronApp
+directories:
+  output: ../../dist
+  buildResources: build
+files:
+  - dist/**/*
+  - package.json
+extraMetadata:
+  main: dist/index.js
