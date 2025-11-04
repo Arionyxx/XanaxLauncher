@@ -207,6 +207,52 @@ function DownloadsSection() {
 }
 
 function SettingsSection() {
+  const [selectedFolder, setSelectedFolder] = useState<string>('')
+  const [appVersion, setAppVersion] = useState<string>('')
+  const [testSetting, setTestSetting] = useState<string>('')
+
+  const handleSelectFolder = async () => {
+    try {
+      const result = await window.api.selectFolder()
+      if (!result.canceled && result.filePaths.length > 0) {
+        setSelectedFolder(result.filePaths[0])
+        console.log('Selected folder:', result.filePaths[0])
+      }
+    } catch (error) {
+      console.error('Error selecting folder:', error)
+    }
+  }
+
+  const handleGetVersion = async () => {
+    try {
+      const version = await window.api.getVersion()
+      const versionInfo = `App: ${version.version} | Electron: ${version.electron} | Node: ${version.node}`
+      setAppVersion(versionInfo)
+      console.log('App version:', version)
+    } catch (error) {
+      console.error('Error getting version:', error)
+    }
+  }
+
+  const handleSaveSetting = async () => {
+    try {
+      await window.api.setSettings('testKey', 'testValue123')
+      console.log('Setting saved successfully')
+    } catch (error) {
+      console.error('Error saving setting:', error)
+    }
+  }
+
+  const handleLoadSetting = async () => {
+    try {
+      const result = await window.api.getSettings('testKey')
+      setTestSetting(result.value as string)
+      console.log('Setting loaded:', result)
+    } catch (error) {
+      console.error('Error loading setting:', error)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -215,6 +261,45 @@ function SettingsSection() {
       </div>
 
       <div className="space-y-4">
+        <Card className="bg-surface0 border-surface1">
+          <CardHeader>
+            <h3 className="text-xl font-semibold text-text">IPC Test</h3>
+          </CardHeader>
+          <CardBody className="space-y-4">
+            <div>
+              <Button color="primary" onClick={handleSelectFolder}>
+                Select Folder
+              </Button>
+              {selectedFolder && (
+                <p className="text-sm text-green mt-2">
+                  Selected: {selectedFolder}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Button color="secondary" onClick={handleGetVersion}>
+                Get App Version
+              </Button>
+              {appVersion && (
+                <p className="text-sm text-blue mt-2">{appVersion}</p>
+              )}
+            </div>
+
+            <div className="flex gap-2">
+              <Button color="success" onClick={handleSaveSetting}>
+                Save Test Setting
+              </Button>
+              <Button color="warning" onClick={handleLoadSetting}>
+                Load Test Setting
+              </Button>
+              {testSetting && (
+                <p className="text-sm text-mauve mt-2">Value: {testSetting}</p>
+              )}
+            </div>
+          </CardBody>
+        </Card>
+
         <Card className="bg-surface0 border-surface1">
           <CardHeader>
             <h3 className="text-xl font-semibold text-text">Appearance</h3>
