@@ -12,6 +12,7 @@ import {
 } from '@nextui-org/react'
 import { useSettings } from '@/hooks/useSettings'
 import { TorBoxProvider } from '@/services/providers/torbox'
+import { RealDebridProvider } from '@/services/providers/realdebrid'
 
 type IntegrationStatus = 'not_configured' | 'configured' | 'error' | 'testing'
 
@@ -24,6 +25,13 @@ export function IntegrationsPanel() {
     useState<IntegrationStatus>('not_configured')
   const [torboxMessage, setTorboxMessage] = useState<string>('')
   const [isTesting, setIsTesting] = useState(false)
+
+  const [realDebridToken, setRealDebridToken] = useState(
+    settings.integrations.realDebridApiToken || ''
+  )
+  const [realDebridStatus, setRealDebridStatus] =
+    useState<IntegrationStatus>('not_configured')
+  const [realDebridMessage, setRealDebridMessage] = useState<string>('')
 
   const getStatusColor = (
     status: IntegrationStatus
@@ -124,6 +132,81 @@ export function IntegrationsPanel() {
       integrations: {
         ...settings.integrations,
         torboxApiToken: undefined,
+      },
+    })
+  }
+
+  const handleRealDebridSave = async () => {
+    if (!realDebridToken.trim()) {
+      setRealDebridStatus('error')
+      setRealDebridMessage('API token is required')
+      return
+    }
+
+    await updateSettings({
+      integrations: {
+        ...settings.integrations,
+        realDebridApiToken: realDebridToken.trim(),
+      },
+    })
+
+    setRealDebridMessage('API token saved')
+    setRealDebridStatus('not_configured')
+  }
+
+  const handleRealDebridTest = async () => {
+    if (!realDebridToken.trim()) {
+      setRealDebridStatus('error')
+      setRealDebridMessage('Please enter an API token')
+      return
+    }
+
+    setIsTesting(true)
+    setRealDebridStatus('testing')
+    setRealDebridMessage('')
+
+    try {
+      const provider = new RealDebridProvider({
+        apiToken: realDebridToken.trim(),
+      })
+
+      const result = await provider.testConnection()
+
+      if (result.success) {
+        setRealDebridStatus('configured')
+        setRealDebridMessage(
+          `Connected successfully${result.user?.username ? ` as ${result.user.username}` : ''}`
+        )
+
+        await updateSettings({
+          integrations: {
+            ...settings.integrations,
+            realDebridApiToken: realDebridToken.trim(),
+          },
+        })
+      } else {
+        setRealDebridStatus('error')
+        setRealDebridMessage(result.message || 'Connection failed')
+      }
+    } catch (error) {
+      setRealDebridStatus('error')
+      setRealDebridMessage(
+        error instanceof Error ? error.message : 'Connection test failed'
+      )
+    } finally {
+      setIsTesting(false)
+    }
+  }
+
+  const handleRealDebridClear = async () => {
+    setRealDebridToken('')
+    setRealDebridStatus('not_configured')
+    setRealDebridMessage('')
+
+    await updateSettings({
+      integrations: {
+        ...settings.integrations,
+        realDebridApiToken: undefined,
       },
     })
   }
@@ -230,21 +313,81 @@ export function IntegrationsPanel() {
             <CardBody>
               <div className="flex items-start gap-4">
                 <div className="text-4xl">⚡</div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className="text-base font-semibold text-text">
-                      Real-Debrid
-                    </h4>
-                    <Chip size="sm" color="default" variant="flat">
-                      Coming Soon
-                    </Chip>
+                <div className="flex-1 space-y-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="text-base font-semibold text-text">
+                        Real-Debrid
+                      </h4>
+                      <Chip
+                        size="sm"
+                        color={getStatusColor(realDebridStatus)}
+                        variant="flat"
+                      >
+                        {getStatusLabel(realDebridStatus)}
+                      </Chip>
+                    </div>
+                    <p className="text-sm text-subtext0 mb-3">
+                      Unrestricted downloader for premium links
+                    </p>
                   </div>
-                  <p className="text-sm text-subtext0 mb-3">
-                    Unrestricted downloader for premium links
-                  </p>
-                  <Button size="sm" color="primary" variant="flat" isDisabled>
-                    Configure
-                  </Button>
+
+                  <Input
+                    label="API Token"
+                    placeholder="Enter your Real-Debrid API token"
+                    value={realDebridToken}
+                    onValueChange={setRealDebridToken}
+                    type="password"
+                    size="sm"
+                    classNames={{
+                      input: 'font-mono text-xs',
+                    }}
+                  />
+
+                  {realDebridMessage && (
+                    <p
+                      className={`text-sm ${
+                        realDebridStatus === 'configured'
+                          ? 'text-green'
+                          : realDebridStatus === 'error'
+                            ? 'text-red'
+                            : 'text-subtext0'
+                      }`}
+                    >
+                      {realDebridMessage}
+                    </p>
+                  )}
+
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      color="primary"
+                      variant="flat"
+                      onPress={handleRealDebridTest}
+                      isDisabled={!realDebridToken.trim() || isTesting}
+                      startContent={isTesting ? <Spinner size="sm" /> : null}
+                    >
+                      Test Connection
+                    </Button>
+                    <Button
+                      size="sm"
+                      color="secondary"
+                      variant="flat"
+                      onPress={handleRealDebridSave}
+                      isDisabled={!realDebridToken.trim() || isTesting}
+                    >
+                      Save Token
+                    </Button>
+                    <Button
+                      size="sm"
+                      color="danger"
+                      variant="flat"
+                      onPress={handleRealDebridClear}
+                      isDisabled={!realDebridToken.trim() || isTesting}
+                    >
+                      Clear
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardBody>

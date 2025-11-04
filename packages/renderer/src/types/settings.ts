@@ -58,6 +58,7 @@ export const themeSettingsSchema = z.object({
 
 export const integrationsSettingsSchema = z.object({
   torboxApiToken: z.string().optional(),
+  realDebridApiToken: z.string().optional(),
 })
 
 // Combined settings schema
@@ -95,5 +96,6 @@ export const defaultSettings: Settings = {
   },
   integrations: {
     torboxApiToken: undefined,
+    realDebridApiToken: undefined,
   },
 }
