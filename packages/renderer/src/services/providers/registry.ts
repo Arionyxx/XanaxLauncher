@@ -94,6 +94,15 @@ class ProviderRegistry {
   get size(): number {
     return this.providers.size
   }
+
+  /**
+   * Get list of available (registered) provider names
+   * Alias for listProviders()
+   * @returns Array of provider names
+   */
+  getAvailableProviders(): string[] {
+    return this.listProviders()
+  }
 }
 
 export const providerRegistry = new ProviderRegistry()

@@ -1,9 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Card, CardBody, CardHeader, Button } from '@nextui-org/react'
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Button,
+  Input,
+  Select,
+  SelectItem,
+  Pagination,
+} from '@nextui-org/react'
+import { useGames, GameEntry } from '@/hooks/useGames'
+import { GameCard } from '@/components/catalog/GameCard'
+import { GameDetailModal } from '@/components/catalog/GameDetailModal'
+import { EmptyState } from '@/components/catalog/EmptyState'
+import { db } from '@/db/db'
 
 type Section = 'home' | 'catalog' | 'downloads' | 'settings'
 
@@ -14,8 +28,10 @@ const navItems: { id: Section; label: string; icon: string }[] = [
   { id: 'settings', label: 'Settings', icon: '⚙️' },
 ]
 
+const ITEMS_PER_PAGE = 20
+
 export default function Home() {
-  const [activeSection, setActiveSection] = useState<Section>('home')
+  const [activeSection, setActiveSection] = useState<Section>('catalog')
   const router = useRouter()
 
   const handleNavigation = (section: Section) => {
@@ -167,31 +183,288 @@ function HomeSection({ router }: { router: ReturnType<typeof useRouter> }) {
 }
 
 function CatalogSection() {
+  const { games, loading, error, refresh } = useGames()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedSource, setSelectedSource] = useState<string>('all')
+  const [sortBy, setSortBy] = useState<string>('name')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [selectedGame, setSelectedGame] = useState<GameEntry | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [hasCheckedSources, setHasCheckedSources] = useState(false)
+  const [hasSources, setHasSources] = useState(false)
+
+  useEffect(() => {
+    const checkSources = async () => {
+      const sources = await db.sources.toArray()
+      setHasSources(sources.length > 0)
+      setHasCheckedSources(true)
+    }
+    checkSources()
+  }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.key === '/' || (e.ctrlKey && e.key === 'f')) && !isModalOpen) {
+        e.preventDefault()
+        document.getElementById('search-input')?.focus()
+      }
+      if (e.key === 'Escape' && isModalOpen) {
+        setIsModalOpen(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isModalOpen])
+
+  const uniqueSources = useMemo(() => {
+    const sources = new Set(games.map((game) => game.sourceName))
+    return Array.from(sources).sort()
+  }, [games])
+
+  const filteredAndSortedGames = useMemo(() => {
+    let filtered = games
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter((game) =>
+        game.title.toLowerCase().includes(query)
+      )
+    }
+
+    if (selectedSource !== 'all') {
+      filtered = filtered.filter((game) => game.sourceName === selectedSource)
+    }
+
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return a.title.localeCompare(b.title)
+        case 'name-desc':
+          return b.title.localeCompare(a.title)
+        case 'source':
+          return a.sourceName.localeCompare(b.sourceName)
+        default:
+          return 0
+      }
+    })
+
+    return sorted
+  }, [games, searchQuery, selectedSource, sortBy])
+
+  const totalPages = Math.ceil(filteredAndSortedGames.length / ITEMS_PER_PAGE)
+  const paginatedGames = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE
+    const end = start + ITEMS_PER_PAGE
+    return filteredAndSortedGames.slice(start, end)
+  }, [filteredAndSortedGames, currentPage])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery, selectedSource, sortBy])
+
+  const handleGameClick = (game: GameEntry) => {
+    setSelectedGame(game)
+    setIsModalOpen(true)
+  }
+
+  const handleDownloadStart = () => {
+    router.push('/downloads')
+  }
+
+  const handleClearFilters = () => {
+    setSearchQuery('')
+    setSelectedSource('all')
+    setSortBy('name')
+  }
+
+  if (!hasCheckedSources) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-3xl font-bold text-text mb-2">Catalog</h2>
+          <p className="text-subtext0">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!hasSources) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-3xl font-bold text-text mb-2">Catalog</h2>
+          <p className="text-subtext0">Browse and download games from your sources</p>
+        </div>
+        <EmptyState type="no-sources" />
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-3xl font-bold text-text mb-2">Catalog</h2>
+          <p className="text-subtext0">Loading games...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-3xl font-bold text-text mb-2">Catalog</h2>
+          <p className="text-red">Error: {error}</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (games.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-3xl font-bold text-text mb-2">Catalog</h2>
+          <p className="text-subtext0">Browse and download games from your sources</p>
+        </div>
+        <EmptyState type="no-games" onRefresh={refresh} />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold text-text mb-2">Catalog</h2>
-        <p className="text-subtext0">Browse and manage your media collection</p>
+        <p className="text-subtext0">
+          Browse and download games from your sources ({games.length} total)
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-          <Card
-            key={item}
-            className="bg-surface0 border-surface1 hover:border-blue transition-colors cursor-pointer"
-          >
-            <CardBody className="p-0">
-              <div className="aspect-video bg-surface1 flex items-center justify-center">
-                <span className="text-4xl">🎬</span>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold text-text">Media Item {item}</h3>
-                <p className="text-sm text-subtext0">Placeholder content</p>
-              </div>
-            </CardBody>
-          </Card>
-        ))}
+      {/* Search and Filters */}
+      <div className="flex flex-col md:flex-row gap-4">
+        <Input
+          id="search-input"
+          type="text"
+          placeholder="Search games... (Press / to focus)"
+          value={searchQuery}
+          onValueChange={setSearchQuery}
+          classNames={{
+            inputWrapper: 'bg-surface0 border-surface1',
+          }}
+          startContent={<span className="text-subtext0">🔍</span>}
+          className="flex-1"
+        />
+
+        <Select
+          label="Source"
+          placeholder="All sources"
+          selectedKeys={selectedSource ? [selectedSource] : []}
+          onSelectionChange={(keys) => {
+            const selected = Array.from(keys)[0] as string
+            setSelectedSource(selected || 'all')
+          }}
+          classNames={{
+            trigger: 'bg-surface0 border-surface1',
+          }}
+          className="w-full md:w-48"
+        >
+          <SelectItem key="all" value="all">
+            All sources
+          </SelectItem>
+          {uniqueSources.map((source) => (
+            <SelectItem key={source} value={source}>
+              {source}
+            </SelectItem>
+          ))}
+        </Select>
+
+        <Select
+          label="Sort by"
+          placeholder="Sort by"
+          selectedKeys={sortBy ? [sortBy] : []}
+          onSelectionChange={(keys) => {
+            const selected = Array.from(keys)[0] as string
+            setSortBy(selected || 'name')
+          }}
+          classNames={{
+            trigger: 'bg-surface0 border-surface1',
+          }}
+          className="w-full md:w-48"
+        >
+          <SelectItem key="name" value="name">
+            Name (A-Z)
+          </SelectItem>
+          <SelectItem key="name-desc" value="name-desc">
+            Name (Z-A)
+          </SelectItem>
+          <SelectItem key="source" value="source">
+            Source
+          </SelectItem>
+        </Select>
       </div>
+
+      {/* Results Info */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-subtext0">
+          Showing {paginatedGames.length} of {filteredAndSortedGames.length}{' '}
+          games
+        </p>
+        {(searchQuery || selectedSource !== 'all') && (
+          <Button
+            size="sm"
+            color="default"
+            variant="flat"
+            onPress={handleClearFilters}
+          >
+            Clear Filters
+          </Button>
+        )}
+      </div>
+
+      {/* Games Grid */}
+      {filteredAndSortedGames.length === 0 ? (
+        <EmptyState type="no-results" onRefresh={handleClearFilters} />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+            {paginatedGames.map((game, index) => (
+              <GameCard
+                key={`${game.sourceId}-${index}`}
+                game={game}
+                onClick={() => handleGameClick(game)}
+              />
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-8">
+              <Pagination
+                total={totalPages}
+                page={currentPage}
+                onChange={setCurrentPage}
+                showControls
+                classNames={{
+                  cursor: 'bg-blue text-crust',
+                  item: 'bg-surface0 text-text',
+                }}
+              />
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Game Detail Modal */}
+      <GameDetailModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        game={selectedGame}
+        onDownloadStart={handleDownloadStart}
+      />
     </div>
   )
 }
