@@ -106,7 +106,9 @@ export function CompleteStep({ onFinish, summary }: CompleteStepProps) {
         transition={{ delay: 0.4 }}
         className="space-y-4"
       >
-        <h1 className="text-4xl font-bold text-foreground">You&apos;re All Set!</h1>
+        <h1 className="text-4xl font-bold text-foreground">
+          You&apos;re All Set!
+        </h1>
         <p className="text-xl text-muted-foreground max-w-2xl">
           Media Manager is ready to use. Start browsing your catalog and
           downloading content.

@@ -45,7 +45,7 @@ export function OnboardingWizard() {
     {
       title: 'Ready to Go!',
       description:
-        "You&apos;re all set! Explore your new media manager with a stunning dark interface and smooth animations.",
+        'You&apos;re all set! Explore your new media manager with a stunning dark interface and smooth animations.',
       icon: Sparkles,
       color: 'text-purple-500',
     },

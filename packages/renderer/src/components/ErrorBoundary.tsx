@@ -50,8 +50,8 @@ export class ErrorBoundary extends Component<Props, State> {
                 Oops! Something went wrong
               </h1>
               <p className="text-base-content/70 mb-4">
-                The application encountered an unexpected error. Don&apos;t worry,
-                your data is safe.
+                The application encountered an unexpected error. Don&apos;t
+                worry, your data is safe.
               </p>
               {this.state.error && (
                 <div className="alert alert-error mb-4">

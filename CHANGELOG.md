@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2024-01-XX
 
 ### Added
+
 - Initial release of Media Manager
 - Content catalog with search and filtering
 - Download management with job queue
@@ -40,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Legal compliance notices
 
 ### Security
+
 - Context isolation enabled in Electron
 - Node integration disabled in renderer
 - Secure IPC communication via contextBridge
@@ -47,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - HTTP source warnings
 
 ### Performance
+
 - Debounced search (300ms)
 - Memoized computations for filtering/sorting
 - Lazy loading images
@@ -55,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Exponential backoff retry logic
 
 ### Accessibility
+
 - Keyboard navigation support
 - Focus indicators
 - ARIA labels

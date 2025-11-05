@@ -28,6 +28,7 @@ Consider rolling back when:
 **Stops auto-updates to problematic version**
 
 1. **Navigate to GitHub Releases**
+
    ```
    https://github.com/your-username/media-manager/releases
    ```
@@ -52,6 +53,7 @@ Consider rolling back when:
 **Fixes critical issues quickly**
 
 1. **Create Hotfix Branch**
+
    ```bash
    git checkout v1.2.0  # Checkout problematic tag
    git checkout -b hotfix/v1.2.1
@@ -67,6 +69,7 @@ Consider rolling back when:
    - Update CHANGELOG.md
 
 4. **Build and Test**
+
    ```bash
    npm test
    npm run package
@@ -74,6 +77,7 @@ Consider rolling back when:
    ```
 
 5. **Create Hotfix Release**
+
    ```bash
    git add .
    git commit -m "fix: critical issue in v1.2.0"
@@ -96,6 +100,7 @@ Consider rolling back when:
 ⚠️ **Warning**: Only use if Options 1-2 aren't viable
 
 1. **Create Revert Commit**
+
    ```bash
    git revert v1.2.0..HEAD --no-commit
    git commit -m "revert: rollback to v1.1.0"
@@ -208,6 +213,7 @@ If database migration fails:
    - Always add, rename, or make nullable
 
 2. **Recovery Steps**
+
    ```javascript
    // Example: Rollback migration
    db.version(2).stores({ ... }) // Previous schema
@@ -237,7 +243,7 @@ If settings are lost/corrupted:
 #### GitHub Issue Response
 
 ```markdown
-Thank you for reporting this issue. We've confirmed this is a critical bug 
+Thank you for reporting this issue. We've confirmed this is a critical bug
 affecting v1.2.0 users.
 
 **Immediate Action**:
@@ -245,10 +251,12 @@ We've removed v1.2.0 from auto-updates and are working on a hotfix.
 
 **For Affected Users**:
 Please downgrade to v1.1.0 following these steps:
+
 1. [Uninstall instructions]
 2. [Download link to v1.1.0]
 
 **Timeline**:
+
 - Hotfix v1.2.1 expected within 24 hours
 - We'll update this issue when released
 
@@ -308,6 +316,7 @@ After each rollback, document:
 - **Improvements**: What can we improve in rollback process?
 
 Example:
+
 ```markdown
 ### 2024-01-15: v1.2.0 Rollback
 
@@ -315,11 +324,13 @@ Example:
 
 **Root Cause**: Missing dependency in electron-builder config
 
-**Prevention**: 
+**Prevention**:
+
 - Add Windows 10 VM to test matrix
 - Test on multiple Windows versions before release
 
 **Improvements**:
+
 - Rollback completed in 2 hours
 - User communication was clear and timely
 - 95% of users successfully downgraded

@@ -56,6 +56,7 @@ npm run dev
 ```
 
 This will:
+
 1. Start Next.js dev server on port 3000
 2. Wait for Next.js to be ready
 3. Launch Electron window loading the Next.js app
@@ -238,6 +239,7 @@ interface Provider {
 ```
 
 Currently implemented:
+
 - **TorBoxProvider** - TorBox API integration
 - **MockProvider** - Testing/development
 
@@ -302,6 +304,7 @@ Next.js hot reload works automatically. For Electron main process changes:
 ## 🎯 Development Workflow
 
 1. **Start Development**
+
    ```bash
    npm run dev
    ```
@@ -316,6 +319,7 @@ Next.js hot reload works automatically. For Electron main process changes:
    - Test keyboard shortcuts
 
 4. **Build for Production**
+
    ```bash
    npm run build
    npm run package
@@ -339,6 +343,7 @@ For production deployment:
 ## 🙏 Credits
 
 Built with:
+
 - [Electron](https://www.electronjs.org/)
 - [Next.js](https://nextjs.org/)
 - [DaisyUI](https://daisyui.com/)

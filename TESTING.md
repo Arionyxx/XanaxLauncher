@@ -138,10 +138,10 @@ import { MyComponent } from './MyComponent'
 describe('MyComponent', () => {
   it('should handle button click', () => {
     render(<MyComponent />)
-    
+
     const button = screen.getByRole('button', { name: /submit/i })
     fireEvent.click(button)
-    
+
     expect(screen.getByText(/success/i)).toBeInTheDocument()
   })
 })
@@ -160,13 +160,10 @@ describe('API integration', () => {
     // Override specific handler for this test
     server.use(
       http.get('/api/endpoint', () => {
-        return HttpResponse.json(
-          { error: 'Server error' },
-          { status: 500 }
-        )
+        return HttpResponse.json({ error: 'Server error' }, { status: 500 })
       })
     )
-    
+
     // Test your code that calls the API
   })
 })
@@ -202,7 +199,7 @@ import { launchElectronApp, closeElectronApp } from './electron-helpers'
 
 test('should complete user flow', async () => {
   const { app, page } = await launchElectronApp()
-  
+
   try {
     await page.getByRole('button', { name: /start/i }).click()
     await expect(page.getByText(/success/i)).toBeVisible()

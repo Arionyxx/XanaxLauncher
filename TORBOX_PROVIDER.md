@@ -41,6 +41,7 @@ HTTP client with built-in features:
 - **Error Handling**: Graceful error handling with ProviderError
 
 API Methods:
+
 - `createTorrent()` - Create new torrent from magnet/URL
 - `getTorrents()` - Get list of user's torrents
 - `getTorrent()` - Get specific torrent by ID
@@ -59,6 +60,7 @@ Implements the `Provider` interface:
 - **testConnection()** - Validates API token and retrieves user info
 
 Status Mapping:
+
 - TorBox "downloading" → JobStatus.DOWNLOADING
 - TorBox "completed" → JobStatus.COMPLETED
 - TorBox "metaDL" → JobStatus.RESOLVING
@@ -117,16 +119,16 @@ import { jobOrchestrator } from '@/services/job-orchestrator'
 await jobOrchestrator.createJob({
   provider: 'torbox',
   payload: {
-    magnet: 'magnet:?xt=urn:btih:...'
-  }
+    magnet: 'magnet:?xt=urn:btih:...',
+  },
 })
 
 // Or with torrent URL
 await jobOrchestrator.createJob({
   provider: 'torbox',
   payload: {
-    url: 'https://example.com/file.torrent'
-  }
+    url: 'https://example.com/file.torrent',
+  },
 })
 ```
 

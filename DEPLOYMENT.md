@@ -85,6 +85,7 @@ npm run make
 ```
 
 This creates:
+
 - `packages/renderer/.next/` - Next.js production build
 - `.webpack/` - Webpack-bundled main and preload scripts
 - `out/` - Packaged application and installers
@@ -102,6 +103,7 @@ npm run make
 ```
 
 This command:
+
 1. Builds the renderer (Next.js) if needed
 2. Bundles main process and preload with Webpack
 3. Packages with Electron Forge
@@ -193,6 +195,7 @@ Users can check for updates via Settings > Advanced > Check for Updates
    Forge will use electron-builder's signing configuration internally.
 
 3. **Set Environment Variables**
+
    ```bash
    export CSC_LINK=/path/to/certificate.pfx
    export CSC_KEY_PASSWORD=your_password
@@ -206,6 +209,7 @@ Users can check for updates via Settings > Advanced > Check for Updates
 ### Verification
 
 After signing, verify with:
+
 ```bash
 signtool verify /pa /v "dist/Media Manager-1.0.0-x64.exe"
 ```
@@ -231,6 +235,7 @@ We follow [Semantic Versioning](https://semver.org/):
 - **Major** (x.0.0): Breaking changes
 
 Update versions in:
+
 - `package.json` (root)
 - `packages/main/package.json`
 - `packages/renderer/package.json`
@@ -248,17 +253,20 @@ git commit -m "chore: bump version to 1.1.0"
 #### Option 1: Manual Release
 
 1. **Create Git Tag**
+
    ```bash
    git tag v1.1.0
    git push origin v1.1.0
    ```
 
 2. **Build Installer**
+
    ```bash
    npm run make
    ```
 
 3. **Generate Checksums**
+
    ```bash
    cd out/make/squirrel.windows/x64
    sha256sum "Media-Manager-Setup-1.1.0.exe" > checksums.txt
@@ -281,6 +289,7 @@ git commit -m "chore: bump version to 1.1.0"
 The project includes a release workflow (`.github/workflows/release.yml`):
 
 1. **Trigger Workflow**
+
    ```bash
    git tag v1.1.0
    git push origin v1.1.0
@@ -329,6 +338,7 @@ Users can manually downgrade:
 3. Install previous version
 
 All user data (settings, sources, jobs) is preserved in:
+
 - Windows: `%APPDATA%/media-manager`
 
 ## Troubleshooting
@@ -338,6 +348,7 @@ All user data (settings, sources, jobs) is preserved in:
 **Issue**: `npm run build` fails with errors
 
 **Solution**:
+
 1. Clear caches: `rm -rf node_modules .next packages/*/dist`
 2. Reinstall: `npm install`
 3. Rebuild: `npm run build`
@@ -347,6 +358,7 @@ All user data (settings, sources, jobs) is preserved in:
 **Issue**: `npm run package` or `npm run make` fails
 
 **Solution**:
+
 - Check `packages/main/build/` directory has icon files
 - Verify `forge.config.js` syntax
 - Check Electron Forge logs in terminal
@@ -358,6 +370,7 @@ All user data (settings, sources, jobs) is preserved in:
 **Issue**: App doesn't detect updates
 
 **Solution**:
+
 1. Verify `RELEASES` file and `.nupkg` files are uploaded to GitHub Release
 2. Check `GITHUB_REPOSITORY_OWNER` and `GITHUB_REPOSITORY_NAME` env vars
 3. Ensure release is marked as "Latest" on GitHub
@@ -369,6 +382,7 @@ All user data (settings, sources, jobs) is preserved in:
 **Issue**: Signing fails during build
 
 **Solution**:
+
 - Verify certificate path: `echo $CSC_LINK`
 - Check password: `echo $CSC_KEY_PASSWORD`
 - Ensure certificate hasn't expired
@@ -379,6 +393,7 @@ All user data (settings, sources, jobs) is preserved in:
 **Issue**: Installer exceeds 200MB
 
 **Solution**:
+
 - Check for unnecessary dependencies
 - Review `ignore` patterns in `forge.config.js`
 - Ensure `node_modules` and build artifacts aren't included
@@ -410,11 +425,13 @@ Before releasing, manually test:
 ### Safe Mode
 
 Launch with safe mode to troubleshoot:
+
 ```bash
 "Media Manager.exe" --safe-mode
 ```
 
 This disables:
+
 - Auto-update checks
 - Extension loading
 - Telemetry
@@ -422,6 +439,7 @@ This disables:
 ### Crash Reports
 
 If telemetry is enabled, crash reports are sent to:
+
 - electron-log file
 - Optional: External crash reporting service (configure separately)
 
