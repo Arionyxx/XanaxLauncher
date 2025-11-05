@@ -1,242 +1,353 @@
-# npm Workspace with Next.js and Electron
+# XanaxLauncher - Media Manager
 
-A modern monorepo setup using npm workspaces, Next.js with App Router, Electron, TypeScript, and Tailwind CSS.
+A modern media management application built with Electron, Next.js 14, and DaisyUI.
 
-## 📁 Workspace Structure
+## 🎉 Complete Rewrite - v2.0
 
-```
-.
-├── packages/
-│   ├── renderer/          # Next.js application (React 18 + TypeScript)
-│   │   ├── src/
-│   │   │   └── app/       # Next.js App Router
-│   │   ├── next.config.js
-│   │   ├── tailwind.config.ts
-│   │   └── package.json
-│   └── main/              # Electron main process
-│       ├── src/
-│       │   ├── index.ts   # Main entry point
-│       │   ├── preload.ts # Preload script
-│       │   └── ipc/       # IPC handlers and schemas
-│       ├── build/         # Build resources (icons, etc.)
-│       └── package.json
-├── forge.config.js        # Electron Forge configuration
-├── package.json           # Root workspace configuration
-└── tsconfig.json          # Base TypeScript configuration
-```
+This is a complete ground-up rewrite of XanaxLauncher with a simplified, reliable tech stack:
 
-## 🚀 Getting Started
+### Tech Stack
+
+- **Desktop Framework**: Electron 28 (simple setup, no Electron Forge)
+- **Web Framework**: Next.js 14 with App Router
+- **UI Library**: DaisyUI (Tailwind CSS component library)
+- **Language**: TypeScript 5
+- **Database**: Dexie (IndexedDB wrapper)
+- **Forms**: react-hook-form + Zod validation
+- **Icons**: react-icons (Feather Icons)
+- **Animations**: Framer Motion
+- **Package Manager**: npm with workspaces
+
+### Key Features
+
+✅ **Clean, Simple Setup** - No complex build configurations
+✅ **DaisyUI Components** - Beautiful, accessible UI out of the box
+✅ **Catalog System** - Browse and search media
+✅ **Download Management** - Track downloads with progress bars
+✅ **Provider Framework** - Support for TorBox and other download services
+✅ **Settings System** - Comprehensive settings with IndexedDB persistence
+✅ **Onboarding Flow** - Welcome wizard for first-time users
+✅ **Keyboard Shortcuts** - Navigate efficiently with hotkeys
+✅ **Dark Theme** - Business theme from DaisyUI (dark, professional)
+✅ **Responsive Design** - Works on all screen sizes
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js >= 18.0.0
-- npm >= 9.0.0
+- Node.js 18 or higher
+- npm 7+ (workspaces support)
 
 ### Installation
 
 ```bash
+# Install all dependencies
 npm install
+
+# Build the main process
+npm run build:main
 ```
-
-This should complete in under 2 minutes.
-
-## 📜 Available Scripts
 
 ### Development
 
 ```bash
+# Start development mode (Next.js + Electron)
 npm run dev
-# or
-npm start
 ```
 
-Starts the Electron application with:
+This will:
+1. Start Next.js dev server on port 3000
+2. Wait for Next.js to be ready
+3. Launch Electron window loading the Next.js app
 
-1. Next.js development server on http://localhost:3000
-2. Electron Forge bundles and launches the main process
-3. Electron window loads the Next.js app
-
-The script uses `concurrently` to run both processes and `wait-on` to ensure Next.js is ready before launching Electron.
-
-### Build
+### Production Build
 
 ```bash
-npm run build          # Build Next.js for production
-npm run package        # Package Electron app with Forge
-npm run make           # Create installers (Windows Squirrel, ZIP)
+# Build everything
+npm run build
+
+# Package for distribution
+npm run package
+
+# Platform-specific packaging
+npm run package:win
+npm run package:mac
+npm run package:linux
 ```
 
-### Publishing
+## 📁 Project Structure
 
-```bash
-npm run publish        # Publish to GitHub releases (requires configuration)
+```
+xanax-launcher/
+├── packages/
+│   ├── main/                    # Electron main process
+│   │   ├── src/
+│   │   │   ├── index.ts        # Main entry point
+│   │   │   ├── preload.ts      # Preload script
+│   │   │   └── ipc/            # IPC handlers and schemas
+│   │   ├── dist/               # Compiled output
+│   │   └── tsconfig.json
+│   │
+│   └── renderer/                # Next.js app
+│       ├── src/
+│       │   ├── app/            # Next.js App Router pages
+│       │   │   ├── page.tsx            # Home/Catalog page
+│       │   │   ├── downloads/page.tsx  # Downloads page
+│       │   │   ├── settings/page.tsx   # Settings page
+│       │   │   ├── help/page.tsx       # Help page
+│       │   │   ├── layout.tsx          # Root layout
+│       │   │   ├── providers.tsx       # React providers
+│       │   │   └── globals.css         # Global styles
+│       │   ├── components/     # React components
+│       │   │   ├── AppLayout.tsx       # Main app layout with drawer
+│       │   │   ├── ErrorBoundary.tsx
+│       │   │   ├── catalog/            # Catalog components
+│       │   │   ├── downloads/          # Download components
+│       │   │   ├── onboarding/         # Onboarding wizard
+│       │   │   └── settings/           # Settings panels
+│       │   ├── hooks/          # Custom React hooks
+│       │   │   ├── useSettings.ts
+│       │   │   ├── useOnboarding.ts
+│       │   │   ├── useGames.ts
+│       │   │   ├── useKeyboardShortcuts.ts
+│       │   │   └── useDebounce.ts
+│       │   ├── services/       # Business logic
+│       │   │   ├── providers/          # Provider framework
+│       │   │   ├── job-orchestrator.ts
+│       │   │   └── source-sync.ts
+│       │   ├── db/             # Dexie database
+│       │   ├── types/          # TypeScript types
+│       │   └── utils/          # Utility functions
+│       ├── out/                # Static export output
+│       ├── next.config.js
+│       ├── tailwind.config.ts
+│       └── tsconfig.json
+│
+├── package.json                 # Root package.json
+└── README.md                    # This file
 ```
 
-### Linting
+## 🎨 UI Components
 
-```bash
-npm run lint        # Run ESLint
-npm run lint:fix    # Run ESLint and auto-fix issues
+This app uses DaisyUI, a Tailwind CSS component library. Key components used:
+
+- **Layout**: `drawer`, `navbar`, `sidebar`, `menu`
+- **Forms**: `input`, `select`, `checkbox`, `toggle`, `form-control`
+- **Feedback**: `alert`, `progress`, `loading`, `badge`, `toast`
+- **Data Display**: `card`, `stats`, `table`, `kbd`
+- **Actions**: `btn`, `modal`, `dropdown`
+- **Navigation**: `tabs`, `steps`, `breadcrumbs`
+
+Current theme: `business` (dark theme)
+
+Available themes: dark, business, forest, luxury, dracula, night, coffee
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+Create a `.env.local` file in `packages/renderer/`:
+
+```env
+NEXT_PUBLIC_TORBOX_API_URL=https://api.torbox.app/v1/api
 ```
 
-### Type Checking
+### Settings
 
-```bash
-npm run typecheck
-```
+Settings are stored in IndexedDB and include:
 
-Runs TypeScript compiler to check for type errors across all packages (both renderer and main).
+- **General**: Download directory, temp directory, language
+- **Integrations**: TorBox API token, Real-Debrid API key
+- **Behavior**: Auto-start, minimize to tray, bandwidth limits
+- **Privacy**: Telemetry, crash reports (all opt-in by default)
 
-### Formatting
+## 🎹 Keyboard Shortcuts
 
-```bash
-npm run format        # Format all files with Prettier
-npm run format:check  # Check if files are formatted correctly
-```
+- `Ctrl/Cmd + H` - Navigate to Home
+- `Ctrl/Cmd + J` - Navigate to Downloads
+- `Ctrl/Cmd + ,` - Navigate to Settings
+- `Ctrl/Cmd + F` or `/` - Focus search bar
+- `Ctrl/Cmd + R` - Refresh application
+- `Escape` - Close modals/drawers
 
-## 🛠️ Tech Stack
-
-- **Package Manager**: npm with workspaces
-- **Framework**: Next.js 14 with App Router
-- **Desktop**: Electron 39 with Electron Forge 7
-- **Language**: TypeScript 5
-- **UI Library**: React 18
-- **Styling**: Tailwind CSS 3
-- **Linting**: ESLint with TypeScript support
-- **Formatting**: Prettier
-- **Packaging**: Electron Forge with Webpack plugin
-- **Auto-Updates**: electron-updater
-- **Logging**: electron-log
-
-## 📦 Packages
-
-### renderer
-
-The Next.js application package with:
-
-- App Router for modern React server components
-- TypeScript for type safety
-- Tailwind CSS for utility-first styling
-- Hot module replacement for fast development
-
-### main
-
-Electron main process with:
-
-- BrowserWindow setup (800x600)
-- Preload script with contextBridge for secure IPC
-- Loads Next.js from localhost:3000
-- Context isolation and security enabled
-- TypeScript compilation via Webpack (ts-loader)
-- electron-log for application logging
-- electron-updater for auto-updates
-- IPC handlers for system integration
-
-## 🏗️ Architecture
-
-### Electron Forge Integration
-
-This project uses Electron Forge with the Webpack plugin for building and packaging:
-
-- **Configuration**: `forge.config.js` at project root
-- **Main Process**: Bundled with Webpack (ts-loader + fork-ts-checker-webpack-plugin)
-- **Preload Script**: Bundled with Webpack alongside main process
-- **Renderer**: External Next.js development server (localhost:3000)
-- **Makers**: Squirrel for Windows, ZIP for cross-platform distribution
-- **Publishers**: GitHub releases integration
-
-Webpack provides these globals in the main process:
-- `MAIN_WINDOW_WEBPACK_ENTRY` - Path to compiled main entry
-- `MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY` - Path to compiled preload script
+## 📦 Build System
 
 ### Main Process
 
-The main process (`packages/main/src/index.ts`) is responsible for:
+The Electron main process is built with TypeScript compiler:
 
-- Creating and managing the application window
-- Loading the Next.js renderer from localhost:3000
-- Handling application lifecycle events
-- Registering IPC handlers for renderer communication
-- Initializing electron-log and electron-updater
+```bash
+cd packages/main
+npm run build     # Build once
+npm run dev       # Watch mode
+```
 
-### Preload Script
-
-The preload script (`packages/main/src/preload.ts`) provides a secure API:
-
-- Exposes `window.api` object for IPC communication
-- Uses `contextBridge` for secure main/renderer communication
-- Provides methods for settings, dialogs, providers, updates, logs
-- All communication is typed with TypeScript and validated with Zod
+Output: `packages/main/dist/`
 
 ### Renderer Process
 
-The renderer process (`packages/renderer/`) is a standard Next.js application that runs in the Electron window.
-
-### IPC Communication
-
-IPC channels are organized in `packages/main/src/ipc/`:
-- `channels.ts` - Channel name constants
-- `schemas.ts` - Zod validation schemas
-- `handlers.ts` - Handler implementations
-
-## 📝 Development Notes
-
-### Path Aliases
-
-The renderer package is configured with path aliases:
-
-- `@/*` maps to `./src/*`
-
-### Code Quality
-
-The project includes:
-
-- ESLint for code linting
-- Prettier for code formatting
-- TypeScript strict mode enabled
-- Editor config for consistent coding style
-
-### Workspace Commands
-
-Run commands in specific packages:
+The Next.js app is built for static export:
 
 ```bash
-npm run dev --workspace=packages/renderer
-npm run build --workspace=packages/renderer
-npm run build --workspace=packages/main
+cd packages/renderer
+npm run dev       # Development server
+npm run build     # Production build (exports to ./out)
 ```
 
-Run commands in all packages:
+Output: `packages/renderer/out/`
+
+### Electron Packaging
+
+Uses electron-builder for creating installers:
+
+```json
+{
+  "build": {
+    "appId": "com.xanaxlauncher.app",
+    "productName": "XanaxLauncher",
+    "files": [
+      "packages/main/dist/**/*",
+      "packages/renderer/out/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": ["nsis"]
+    },
+    "mac": {
+      "target": ["dmg"]
+    },
+    "linux": {
+      "target": ["AppImage"]
+    }
+  }
+}
+```
+
+## 🔌 Provider Framework
+
+The app supports multiple download providers through a unified interface:
+
+```typescript
+interface Provider {
+  startJob(payload: JobPayload): Promise<JobStartResponse>
+  getStatus(jobId: string): Promise<JobStatusResponse>
+  cancel(jobId: string): Promise<CancelResponse>
+  getFileLinks(jobId: string): Promise<FileLinksResponse>
+  testConnection(): Promise<TestConnectionResponse>
+}
+```
+
+Currently implemented:
+- **TorBoxProvider** - TorBox API integration
+- **MockProvider** - Testing/development
+
+## 🗄️ Database Schema
+
+Uses Dexie (IndexedDB) with the following tables:
+
+- **settings** - App settings (key-value store)
+- **onboarding** - Onboarding state
+- **sources** - Media sources configuration
+- **sourceEntries** - Cached source feed entries
+- **jobs** - Download jobs and their status
+
+## 🐛 Troubleshooting
+
+### Port Already in Use
+
+If port 3000 is already in use:
 
 ```bash
-npm run typecheck --workspaces --if-present    # Run typecheck in all packages
-npm run build --workspaces --if-present        # Build all packages
+# Change the Next.js port
+cd packages/renderer
+PORT=3001 npm run dev
 ```
 
-## ⚠️ Known Issues
+Then update `packages/main/src/index.ts` to load from port 3001.
 
-- The Electron window loads the Next.js dev server at http://localhost:3000
-- Make sure no other application is using port 3000
-- In production mode, Next.js must be running on localhost:3000
-- Electron Forge may show library errors in test environments (expected)
+### Electron Not Launching
 
-## 🔮 Future Enhancements
+Make sure the main process is compiled:
 
-Possible future additions:
+```bash
+npm run build:main
+```
 
-- Static file serving for production builds
-- Custom application menu and tray
-- Native modules as needed
-- Additional IPC channels
-- Production build optimization
+### Hot Reload Not Working
 
-## 🤝 Contributing
+Next.js hot reload works automatically. For Electron main process changes:
 
-1. Follow the existing code style
-2. Run `npm run lint` before committing
-3. Run `npm run typecheck` to ensure no type errors
-4. Use meaningful commit messages
+1. Stop the dev server
+2. Rebuild the main process: `npm run build:main`
+3. Restart: `npm run dev`
+
+## 📝 Scripts Reference
+
+### Root Scripts
+
+- `npm run dev` - Start development mode (Next.js + Electron)
+- `npm run build` - Build both main and renderer
+- `npm run build:main` - Build main process only
+- `npm run build:renderer` - Build renderer only
+- `npm run package` - Package app with electron-builder
+- `npm run package:win` - Package for Windows
+- `npm run package:mac` - Package for macOS
+- `npm run package:linux` - Package for Linux
+- `npm run lint` - Lint all code
+- `npm run lint:fix` - Fix linting issues
+- `npm run typecheck` - Type check all packages
+- `npm run format` - Format with Prettier
+- `npm run format:check` - Check formatting
+
+## 🎯 Development Workflow
+
+1. **Start Development**
+   ```bash
+   npm run dev
+   ```
+
+2. **Make Changes**
+   - Edit renderer (Next.js) code - hot reloads automatically
+   - Edit main process code - requires restart
+
+3. **Test Your Changes**
+   - Use the app in Electron
+   - Check console for errors
+   - Test keyboard shortcuts
+
+4. **Build for Production**
+   ```bash
+   npm run build
+   npm run package
+   ```
+
+5. **Distribute**
+   - Find installer in `dist/` folder
+   - Test on target platform
+   - Upload to GitHub Releases or distribute directly
+
+## 🚢 Deployment
+
+For production deployment:
+
+1. Update version in `package.json`
+2. Build everything: `npm run build`
+3. Package for your platform: `npm run package:win` (or :mac, :linux)
+4. Find the installer in `dist/` folder
+5. (Optional) Upload to GitHub Releases for auto-updates
+
+## 🙏 Credits
+
+Built with:
+- [Electron](https://www.electronjs.org/)
+- [Next.js](https://nextjs.org/)
+- [DaisyUI](https://daisyui.com/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Dexie.js](https://dexie.org/)
+- [React Hook Form](https://react-hook-form.com/)
+- [Zod](https://zod.dev/)
+- [Framer Motion](https://www.framer.com/motion/)
 
 ## 📄 License
 
-Private project - not licensed for public use.
+MIT License - See LICENSE file for details

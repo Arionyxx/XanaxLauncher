@@ -1,17 +1,5 @@
-import { useState, useMemo } from 'react'
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Select,
-  SelectItem,
-  Chip,
-  Checkbox,
-  CheckboxGroup,
-} from '@nextui-org/react'
+import { useState, useMemo, useEffect } from 'react'
+import { FiX, FiDownload, FiLink } from 'react-icons/fi'
 import { toast } from 'sonner'
 import { GameEntry } from '@/hooks/useGames'
 import { jobOrchestrator } from '@/services/job-orchestrator'
@@ -21,22 +9,29 @@ interface GameDetailModalProps {
   isOpen: boolean
   onClose: () => void
   game: GameEntry | null
-  onDownloadStart?: () => void
+  onDownload?: (game: GameEntry) => void
 }
 
 export function GameDetailModal({
   isOpen,
   onClose,
   game,
-  onDownloadStart,
+  onDownload,
 }: GameDetailModalProps) {
   const [selectedProvider, setSelectedProvider] = useState<string>('')
-  const [selectedLinks, setSelectedLinks] = useState<string[]>([])
+  const [selectedLinks, setSelectedLinks] = useState<Set<string>>(new Set())
   const [isDownloading, setIsDownloading] = useState(false)
 
   const availableProviders = useMemo(() => {
     return providerRegistry.getAvailableProviders()
   }, [])
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedLinks(new Set())
+      setSelectedProvider('')
+    }
+  }, [isOpen])
 
   const handleDownload = async () => {
     if (!game || !selectedProvider) {
@@ -44,7 +39,7 @@ export function GameDetailModal({
       return
     }
 
-    if (selectedLinks.length === 0) {
+    if (selectedLinks.size === 0) {
       toast.error('Please select at least one link to download')
       return
     }
@@ -52,11 +47,9 @@ export function GameDetailModal({
     setIsDownloading(true)
 
     try {
-      for (const link of selectedLinks) {
+      for (const link of Array.from(selectedLinks)) {
         const isMagnet = link.startsWith('magnet:')
-        const payload = isMagnet
-          ? { magnet: link }
-          : { url: link }
+        const payload = isMagnet ? { magnet: link } : { url: link }
 
         const job = await jobOrchestrator.createJob({
           provider: selectedProvider,
@@ -67,14 +60,11 @@ export function GameDetailModal({
       }
 
       toast.success(
-        `Started downloading ${selectedLinks.length} link(s) for ${game.title}`
+        `Started downloading ${selectedLinks.size} link(s) for ${game.title}`
       )
-      
-      onDownloadStart?.()
+
+      onDownload?.(game)
       onClose()
-      
-      setSelectedLinks([])
-      setSelectedProvider('')
     } catch (error) {
       console.error('[GameDetailModal] Download error:', error)
       toast.error(
@@ -85,13 +75,17 @@ export function GameDetailModal({
     }
   }
 
-  const handleClose = () => {
-    setSelectedLinks([])
-    setSelectedProvider('')
-    onClose()
+  const toggleLink = (link: string) => {
+    const newSet = new Set(selectedLinks)
+    if (newSet.has(link)) {
+      newSet.delete(link)
+    } else {
+      newSet.add(link)
+    }
+    setSelectedLinks(newSet)
   }
 
-  if (!game) return null
+  if (!game || !isOpen) return null
 
   const description = game.meta?.description as string | undefined
   const releaseDate = game.meta?.releaseDate as string | undefined
@@ -100,180 +94,130 @@ export function GameDetailModal({
   const version = game.meta?.version as string | undefined
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      size="3xl"
-      scrollBehavior="inside"
-      classNames={{
-        base: 'bg-mantle',
-        header: 'border-b border-surface0',
-        body: 'py-6',
-        footer: 'border-t border-surface0',
-      }}
-    >
-      <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">
-          <h2 className="text-2xl font-bold text-text">{game.title}</h2>
-          <div className="flex flex-wrap gap-2 mt-2">
-            <Chip size="sm" color="default" variant="flat">
-              {game.sourceName}
-            </Chip>
-            {platform && (
-              <Chip size="sm" color="primary" variant="flat">
-                {platform}
-              </Chip>
-            )}
-            {version && (
-              <Chip size="sm" color="secondary" variant="flat">
-                v{version}
-              </Chip>
-            )}
-            {size && (
-              <Chip size="sm" color="warning" variant="flat">
-                {size}
-              </Chip>
-            )}
-          </div>
-        </ModalHeader>
+    <div className="modal modal-open">
+      <div className="modal-box max-w-3xl max-h-[90vh]">
+        <button
+          onClick={onClose}
+          className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+        >
+          <FiX size={20} />
+        </button>
 
-        <ModalBody>
-          {/* Description */}
+        <h2 className="text-2xl font-bold mb-2">{game.title}</h2>
+
+        <div className="flex flex-wrap gap-2 mb-4">
+          <div className="badge badge-neutral">{game.sourceName}</div>
+          {platform && <div className="badge badge-primary">{platform}</div>}
+          {version && <div className="badge badge-secondary">v{version}</div>}
+          {size && <div className="badge badge-accent">{size}</div>}
+        </div>
+
+        <div className="divider"></div>
+
+        <div className="space-y-4 overflow-y-auto max-h-[50vh]">
           {description && (
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold text-text mb-2">
-                Description
-              </h3>
-              <p className="text-subtext0 whitespace-pre-wrap">{description}</p>
-            </div>
-          )}
-
-          {/* Additional Metadata */}
-          {(releaseDate || Object.keys(game.meta || {}).length > 0) && (
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold text-text mb-2">
-                Additional Info
-              </h3>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                {releaseDate && (
-                  <div>
-                    <span className="text-subtext1">Release Date:</span>{' '}
-                    <span className="text-text">{releaseDate}</span>
-                  </div>
-                )}
-                {game.meta &&
-                  Object.entries(game.meta).map(([key, value]) => {
-                    if (
-                      ['description', 'coverImage', 'platform', 'size', 'version', 'releaseDate'].includes(
-                        key
-                      )
-                    ) {
-                      return null
-                    }
-                    return (
-                      <div key={key}>
-                        <span className="text-subtext1 capitalize">
-                          {key.replace(/([A-Z])/g, ' $1').trim()}:
-                        </span>{' '}
-                        <span className="text-text">{String(value)}</span>
-                      </div>
-                    )
-                  })}
-              </div>
-            </div>
-          )}
-
-          {/* Provider Selection */}
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold text-text mb-2">
-              Select Provider
-            </h3>
-            <Select
-              label="Provider"
-              placeholder="Choose a download provider"
-              selectedKeys={selectedProvider ? [selectedProvider] : []}
-              onSelectionChange={(keys) => {
-                const selected = Array.from(keys)[0] as string
-                setSelectedProvider(selected)
-              }}
-              classNames={{
-                trigger: 'bg-surface0 border-surface1',
-              }}
-            >
-              {availableProviders.map((provider) => (
-                <SelectItem key={provider} value={provider}>
-                  {provider.charAt(0).toUpperCase() + provider.slice(1)}
-                </SelectItem>
-              ))}
-            </Select>
-            {availableProviders.length === 0 && (
-              <p className="text-sm text-yellow mt-2">
-                No providers configured. Please configure a provider in Settings
-                → Integrations.
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Description</h3>
+              <p className="text-base-content/70 whitespace-pre-wrap">
+                {description}
               </p>
+            </div>
+          )}
+
+          {releaseDate && (
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Release Date</h3>
+              <p className="text-base-content/70">{releaseDate}</p>
+            </div>
+          )}
+
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Select Provider</h3>
+            <select
+              className="select select-bordered w-full"
+              value={selectedProvider}
+              onChange={(e) => setSelectedProvider(e.target.value)}
+            >
+              <option value="">Choose a download provider</option>
+              {availableProviders.map((provider) => (
+                <option key={provider} value={provider}>
+                  {provider.charAt(0).toUpperCase() + provider.slice(1)}
+                </option>
+              ))}
+            </select>
+            {availableProviders.length === 0 && (
+              <div className="alert alert-warning mt-2">
+                <span className="text-sm">
+                  No providers configured. Please configure a provider in
+                  Settings → Integrations.
+                </span>
+              </div>
             )}
           </div>
 
-          {/* Link Selection */}
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold text-text mb-2">
+          <div>
+            <h3 className="text-lg font-semibold mb-2">
               Download Links ({game.links.length})
             </h3>
-            <CheckboxGroup
-              value={selectedLinks}
-              onValueChange={setSelectedLinks}
-              classNames={{
-                base: 'w-full',
-              }}
-            >
+            <div className="space-y-2">
               {game.links.map((link, index) => (
-                <Checkbox
+                <label
                   key={index}
-                  value={link}
-                  classNames={{
-                    base: 'w-full max-w-full bg-surface0 rounded-lg p-3 mb-2 hover:bg-surface1 transition-colors',
-                    label: 'w-full',
-                  }}
+                  className="flex items-center gap-3 p-3 bg-base-200 hover:bg-base-300 rounded-lg cursor-pointer transition-colors"
                 >
-                  <div className="flex items-center justify-between w-full">
-                    <span className="text-text font-mono text-sm truncate flex-1">
+                  <input
+                    type="checkbox"
+                    className="checkbox checkbox-primary"
+                    checked={selectedLinks.has(link)}
+                    onChange={() => toggleLink(link)}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <span className="font-mono text-sm truncate block">
                       {link.startsWith('magnet:')
                         ? `Magnet Link #${index + 1}`
                         : link}
                     </span>
-                    <Chip
-                      size="sm"
-                      color={link.startsWith('magnet:') ? 'success' : 'primary'}
-                      variant="flat"
-                      className="ml-2"
-                    >
-                      {link.startsWith('magnet:') ? 'Magnet' : 'URL'}
-                    </Chip>
                   </div>
-                </Checkbox>
+                  <div
+                    className={`badge ${link.startsWith('magnet:') ? 'badge-success' : 'badge-info'}`}
+                  >
+                    {link.startsWith('magnet:') ? 'Magnet' : 'URL'}
+                  </div>
+                </label>
               ))}
-            </CheckboxGroup>
+            </div>
           </div>
-        </ModalBody>
+        </div>
 
-        <ModalFooter>
-          <Button color="default" variant="light" onPress={handleClose}>
+        <div className="modal-action">
+          <button className="btn btn-ghost" onClick={onClose}>
             Cancel
-          </Button>
-          <Button
-            color="primary"
-            onPress={handleDownload}
-            isDisabled={
+          </button>
+          <button
+            className="btn btn-primary"
+            onClick={handleDownload}
+            disabled={
               !selectedProvider ||
-              selectedLinks.length === 0 ||
-              availableProviders.length === 0
+              selectedLinks.size === 0 ||
+              availableProviders.length === 0 ||
+              isDownloading
             }
-            isLoading={isDownloading}
           >
-            Download {selectedLinks.length > 0 && `(${selectedLinks.length})`}
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+            {isDownloading ? (
+              <>
+                <span className="loading loading-spinner"></span>
+                Downloading...
+              </>
+            ) : (
+              <>
+                <FiDownload />
+                Download {selectedLinks.size > 0 && `(${selectedLinks.size})`}
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+      <div className="modal-backdrop" onClick={onClose}></div>
+    </div>
   )
 }

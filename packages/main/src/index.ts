@@ -20,11 +20,7 @@ import {
 
 let mainWindow: BrowserWindow | null = null
 
-const isDev = process.env.NODE_ENV !== 'production'
-
-// Declare MAIN_WINDOW_WEBPACK_ENTRY for Forge
-declare const MAIN_WINDOW_WEBPACK_ENTRY: string
-declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string
+const isDev = process.env.NODE_ENV === 'development'
 
 log.transports.file.level = 'info'
 log.transports.console.level = 'debug'
@@ -45,7 +41,7 @@ function registerIpcHandlers() {
     try {
       return await handleDialogSelectFolder()
     } catch (error) {
-      console.error('Error in dialog:selectFolder handler:', error)
+      log.error('Error in dialog:selectFolder handler:', error)
       throw error
     }
   })
@@ -54,7 +50,7 @@ function registerIpcHandlers() {
     try {
       return await handleSettingsGet(data)
     } catch (error) {
-      console.error('Error in settings:get handler:', error)
+      log.error('Error in settings:get handler:', error)
       throw error
     }
   })
@@ -63,7 +59,7 @@ function registerIpcHandlers() {
     try {
       return await handleSettingsSet(data)
     } catch (error) {
-      console.error('Error in settings:set handler:', error)
+      log.error('Error in settings:set handler:', error)
       throw error
     }
   })
@@ -72,7 +68,7 @@ function registerIpcHandlers() {
     try {
       return await handleAppVersion()
     } catch (error) {
-      console.error('Error in app:version handler:', error)
+      log.error('Error in app:version handler:', error)
       throw error
     }
   })
@@ -81,7 +77,7 @@ function registerIpcHandlers() {
     try {
       return await handleProviderStartJob(data)
     } catch (error) {
-      console.error('Error in provider:start-job handler:', error)
+      log.error('Error in provider:start-job handler:', error)
       throw error
     }
   })
@@ -90,7 +86,7 @@ function registerIpcHandlers() {
     try {
       return await handleProviderGetStatus(data)
     } catch (error) {
-      console.error('Error in provider:get-status handler:', error)
+      log.error('Error in provider:get-status handler:', error)
       throw error
     }
   })
@@ -99,7 +95,7 @@ function registerIpcHandlers() {
     try {
       return await handleProviderCancelJob(data)
     } catch (error) {
-      console.error('Error in provider:cancel-job handler:', error)
+      log.error('Error in provider:cancel-job handler:', error)
       throw error
     }
   })
@@ -110,7 +106,7 @@ function registerIpcHandlers() {
       try {
         return await handleProviderTestConnection(data)
       } catch (error) {
-        console.error('Error in provider:test-connection handler:', error)
+        log.error('Error in provider:test-connection handler:', error)
         throw error
       }
     }
@@ -120,7 +116,7 @@ function registerIpcHandlers() {
     try {
       return await handleLogsGetPath()
     } catch (error) {
-      console.error('Error in logs:getPath handler:', error)
+      log.error('Error in logs:getPath handler:', error)
       throw error
     }
   })
@@ -129,7 +125,7 @@ function registerIpcHandlers() {
     try {
       return await handleLogsOpenFolder()
     } catch (error) {
-      console.error('Error in logs:openFolder handler:', error)
+      log.error('Error in logs:openFolder handler:', error)
       throw error
     }
   })
@@ -138,7 +134,7 @@ function registerIpcHandlers() {
     try {
       return await handleUpdateCheck()
     } catch (error) {
-      console.error('Error in update:check handler:', error)
+      log.error('Error in update:check handler:', error)
       throw error
     }
   })
@@ -147,32 +143,45 @@ function registerIpcHandlers() {
     try {
       return await handleUpdateInstall()
     } catch (error) {
-      console.error('Error in update:install handler:', error)
+      log.error('Error in update:install handler:', error)
       throw error
     }
   })
 }
 
 function createWindow() {
+  const preloadPath = isDev
+    ? path.join(__dirname, 'preload.js')
+    : path.join(__dirname, 'preload.js')
+
+  log.info('Preload path:', preloadPath)
+
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
+    minWidth: 800,
+    minHeight: 600,
     show: false,
+    backgroundColor: '#1f2937',
     webPreferences: {
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      preload: preloadPath,
       nodeIntegration: false,
       contextIsolation: true,
+      webSecurity: true,
     },
   })
 
-  // In dev mode, load Next.js from localhost:3000
-  // In production, still load from localhost:3000 (Next.js must be running)
-  const url = isDev ? 'http://localhost:3000' : 'http://localhost:3000'
+  const url = isDev
+    ? 'http://localhost:3000'
+    : `file://${path.join(__dirname, '../renderer/out/index.html')}`
 
   log.info('Loading URL:', url)
-  log.info('Preload path:', MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY)
 
   mainWindow.loadURL(url)
+
+  if (isDev) {
+    mainWindow.webContents.openDevTools()
+  }
 
   mainWindow.once('ready-to-show', () => {
     mainWindow?.show()

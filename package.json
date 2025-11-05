@@ -1,9 +1,9 @@
 {
-  "name": "workspace-root",
+  "name": "xanax-launcher",
   "version": "1.0.0",
   "private": true,
-  "description": "npm workspace with Next.js and Electron",
-  "main": ".webpack/main",
+  "description": "Media Manager - Electron + Next.js with DaisyUI",
+  "main": "packages/main/dist/index.js",
   "engines": {
     "node": ">=18.0.0"
   },
@@ -11,13 +11,16 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "concurrently \"npm run dev --workspace=packages/renderer\" \"wait-on http://localhost:3000 && npx electron-forge start\"",
-    "dev": "concurrently \"npm run dev --workspace=packages/renderer\" \"wait-on http://localhost:3000 && npx electron-forge start\"",
-    "build": "npm run build --workspace=packages/renderer",
-    "build:main": "npx electron-forge make",
-    "package": "npx electron-forge package",
-    "make": "npx electron-forge make",
-    "publish": "npx electron-forge publish",
+    "dev": "concurrently -n \"NEXT,ELECTRON\" -c \"cyan,green\" \"npm run dev --workspace=packages/renderer\" \"npm run dev:electron\"",
+    "dev:electron": "wait-on http://localhost:3000 && cross-env NODE_ENV=development electron .",
+    "build": "npm run build --workspace=packages/main && npm run build --workspace=packages/renderer",
+    "build:main": "npm run build --workspace=packages/main",
+    "build:renderer": "npm run build --workspace=packages/renderer",
+    "package": "npm run build && electron-builder",
+    "package:win": "npm run build && electron-builder --win",
+    "package:mac": "npm run build && electron-builder --mac",
+    "package:linux": "npm run build && electron-builder --linux",
+    "start": "electron .",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "typecheck": "npm run typecheck --workspaces --if-present",
@@ -26,16 +29,34 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:coverage": "vitest run --coverage"
+  },
+  "build": {
+    "appId": "com.xanaxlauncher.app",
+    "productName": "XanaxLauncher",
+    "directories": {
+      "output": "dist",
+      "buildResources": "packages/main/build"
+    },
+    "files": [
+      "packages/main/dist/**/*",
+      "packages/renderer/out/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": ["nsis"],
+      "icon": "packages/main/build/icon.ico"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "icon": "packages/main/build/icon.icns"
+    },
+    "linux": {
+      "target": ["AppImage"],
+      "icon": "packages/main/build/icon.png"
+    }
   },
   "devDependencies": {
-    "@electron-forge/cli": "^7.10.2",
-    "@electron-forge/maker-squirrel": "^7.10.2",
-    "@electron-forge/maker-zip": "^7.10.2",
-    "@electron-forge/plugin-webpack": "^7.10.2",
-    "@electron-forge/publisher-github": "^7.10.2",
     "@playwright/test": "^1.56.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
@@ -45,19 +66,18 @@
     "@vitest/coverage-v8": "^4.0.7",
     "@vitest/ui": "^4.0.7",
     "concurrently": "^8.2.2",
-    "electron": "^39.0.0",
-    "electron-builder": "^26.0.12",
+    "cross-env": "^7.0.3",
+    "electron": "^28.2.10",
+    "electron-builder": "^24.13.3",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.1.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
     "fake-indexeddb": "^6.2.4",
-    "fork-ts-checker-webpack-plugin": "^9.1.0",
     "happy-dom": "^20.0.10",
     "jsdom": "^27.1.0",
     "msw": "^2.11.6",
     "prettier": "^3.2.5",
-    "ts-loader": "^9.5.4",
     "typescript": "^5.3.3",
     "vitest": "^4.0.7",
     "wait-on": "^7.2.0"
@@ -65,6 +85,6 @@
   "dependencies": {
     "electron-log": "^5.4.3",
     "electron-updater": "^6.6.2",
-    "zod": "^4.1.12"
+    "zod": "^3.22.4"
   }
 }

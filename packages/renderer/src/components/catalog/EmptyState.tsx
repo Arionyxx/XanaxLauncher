@@ -1,57 +1,28 @@
-import { Card, CardBody, Button } from '@nextui-org/react'
-import { useRouter } from 'next/navigation'
+import { FiSettings } from 'react-icons/fi'
 
 interface EmptyStateProps {
-  type: 'no-sources' | 'no-games' | 'no-results'
-  onRefresh?: () => void
+  onAddSource: () => void
 }
 
-export function EmptyState({ type, onRefresh }: EmptyStateProps) {
-  const router = useRouter()
-
-  const content = {
-    'no-sources': {
-      icon: '📚',
-      title: 'No sources configured',
-      message:
-        'Get started by adding game sources in Settings. Sources provide the catalog of games you can browse and download.',
-      action: 'Go to Settings',
-      onAction: () => router.push('/settings'),
-    },
-    'no-games': {
-      icon: '🎮',
-      title: 'No games available',
-      message:
-        'Your sources are configured but haven\'t been synced yet. Sync your sources to see available games.',
-      action: 'Refresh',
-      onAction: onRefresh,
-    },
-    'no-results': {
-      icon: '🔍',
-      title: 'No games found',
-      message:
-        'Try adjusting your search or filter criteria to find what you\'re looking for.',
-      action: 'Clear Filters',
-      onAction: onRefresh,
-    },
-  }
-
-  const { icon, title, message, action, onAction } = content[type]
-
+export function EmptyState({ onAddSource }: EmptyStateProps) {
   return (
     <div className="flex items-center justify-center min-h-[400px]">
-      <Card className="bg-surface0 border-surface1 max-w-md">
-        <CardBody className="p-8 text-center">
-          <div className="text-6xl mb-4">{icon}</div>
-          <h3 className="text-xl font-semibold text-text mb-2">{title}</h3>
-          <p className="text-subtext0 mb-6">{message}</p>
-          {action && onAction && (
-            <Button color="primary" onPress={onAction}>
-              {action}
-            </Button>
-          )}
-        </CardBody>
-      </Card>
+      <div className="card bg-base-200 shadow-xl max-w-md">
+        <div className="card-body items-center text-center">
+          <div className="text-6xl mb-4">📚</div>
+          <h2 className="card-title text-2xl">No sources configured</h2>
+          <p className="text-base-content/70">
+            Get started by adding media sources in Settings. Sources provide the
+            catalog of items you can browse and download.
+          </p>
+          <div className="card-actions justify-center mt-4">
+            <button className="btn btn-primary" onClick={onAddSource}>
+              <FiSettings />
+              Go to Settings
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { Job, JobStatus } from '@/types/provider'
-import { Card, CardBody, Progress, Button, Chip } from '@nextui-org/react'
+import { FiX, FiRefreshCw, FiPlay, FiPause } from 'react-icons/fi'
 
 interface JobCardProps {
   job: Job
@@ -29,22 +29,22 @@ export function JobCard({
     [JobStatus.CANCELLED]: 'Cancelled',
   }
 
-  const statusChipColors = {
-    [JobStatus.QUEUED]: 'default' as const,
-    [JobStatus.RESOLVING]: 'secondary' as const,
-    [JobStatus.DOWNLOADING]: 'primary' as const,
-    [JobStatus.COMPLETED]: 'success' as const,
-    [JobStatus.FAILED]: 'danger' as const,
-    [JobStatus.CANCELLED]: 'default' as const,
+  const statusBadgeClass = {
+    [JobStatus.QUEUED]: 'badge-neutral',
+    [JobStatus.RESOLVING]: 'badge-info',
+    [JobStatus.DOWNLOADING]: 'badge-primary',
+    [JobStatus.COMPLETED]: 'badge-success',
+    [JobStatus.FAILED]: 'badge-error',
+    [JobStatus.CANCELLED]: 'badge-ghost',
   }
 
-  const progressColors = {
-    [JobStatus.QUEUED]: 'default' as const,
-    [JobStatus.RESOLVING]: 'secondary' as const,
-    [JobStatus.DOWNLOADING]: 'primary' as const,
-    [JobStatus.COMPLETED]: 'success' as const,
-    [JobStatus.FAILED]: 'danger' as const,
-    [JobStatus.CANCELLED]: 'default' as const,
+  const progressBarClass = {
+    [JobStatus.QUEUED]: 'progress-neutral',
+    [JobStatus.RESOLVING]: 'progress-info',
+    [JobStatus.DOWNLOADING]: 'progress-primary',
+    [JobStatus.COMPLETED]: 'progress-success',
+    [JobStatus.FAILED]: 'progress-error',
+    [JobStatus.CANCELLED]: 'progress-ghost',
   }
 
   const getJobTitle = () => {
@@ -77,17 +77,6 @@ export function JobCard({
     return total > 0 ? formatSize(total) : null
   }
 
-  const getProviderBadgeColor = () => {
-    const colors: Record<string, 'primary' | 'secondary' | 'warning'> = {
-      torbox: 'primary',
-      'real-debrid': 'secondary',
-      mock: 'warning',
-    }
-    return colors[job.provider.toLowerCase()] || 'default'
-  }
-
-  const canPause = job.status === JobStatus.DOWNLOADING
-  const canResume = false
   const canCancel =
     job.status === JobStatus.QUEUED ||
     job.status === JobStatus.RESOLVING ||
@@ -95,120 +84,88 @@ export function JobCard({
   const canRetry = job.status === JobStatus.FAILED
 
   return (
-    <Card
-      isPressable={!!onClick}
-      onPress={() => onClick?.(job)}
-      className="bg-surface0 border-surface1 hover:border-blue transition-colors"
+    <div
+      className={`card bg-base-200 shadow-lg ${onClick ? 'cursor-pointer hover:shadow-xl transition-shadow' : ''}`}
+      onClick={() => onClick?.(job)}
     >
-      <CardBody className="p-4">
-        <div className="flex flex-col gap-3">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-text truncate">
-                {getJobTitle()}
-              </h3>
-              <div className="flex items-center gap-2 mt-1">
-                <Chip
-                  size="sm"
-                  color={getProviderBadgeColor()}
-                  variant="flat"
-                  className="capitalize"
-                >
-                  {job.provider}
-                </Chip>
-                <Chip
-                  size="sm"
-                  color={statusChipColors[job.status]}
-                  variant="flat"
-                >
-                  {statusLabels[job.status]}
-                </Chip>
+      <div className="card-body">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h3 className="card-title text-base truncate">{getJobTitle()}</h3>
+            <div className="flex flex-wrap gap-2 mt-2">
+              <div className={`badge badge-sm ${statusBadgeClass[job.status]}`}>
+                {statusLabels[job.status]}
               </div>
-            </div>
-
-            <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-              {canPause && onPause && (
-                <Button
-                  isIconOnly
-                  size="sm"
-                  variant="flat"
-                  color="warning"
-                  onPress={() => onPause(job.id)}
-                  aria-label="Pause"
-                >
-                  ⏸
-                </Button>
+              <div className="badge badge-sm badge-outline">
+                {job.provider.toUpperCase()}
+              </div>
+              {getTotalSize() && (
+                <div className="badge badge-sm badge-ghost">{getTotalSize()}</div>
               )}
-              {canResume && onResume && (
-                <Button
-                  isIconOnly
-                  size="sm"
-                  variant="flat"
-                  color="primary"
-                  onPress={() => onResume(job.id)}
-                  aria-label="Resume"
-                >
-                  ▶
-                </Button>
-              )}
-              {canRetry && onRetry && (
-                <Button
-                  isIconOnly
-                  size="sm"
-                  variant="flat"
-                  color="success"
-                  onPress={() => onRetry(job.id)}
-                  aria-label="Retry"
-                >
-                  🔄
-                </Button>
-              )}
-              {canCancel && onCancel && (
-                <Button
-                  isIconOnly
-                  size="sm"
-                  variant="flat"
-                  color="danger"
-                  onPress={() => onCancel(job.id)}
-                  aria-label="Cancel"
-                >
-                  ✕
-                </Button>
+              {job.files.length > 0 && (
+                <div className="badge badge-sm badge-ghost">
+                  {job.files.length} file{job.files.length !== 1 ? 's' : ''}
+                </div>
               )}
             </div>
           </div>
 
-          {job.status !== JobStatus.FAILED &&
-            job.status !== JobStatus.CANCELLED && (
-              <div>
-                <Progress
-                  value={job.progress}
-                  color={progressColors[job.status]}
-                  size="sm"
-                  showValueLabel
-                  className="max-w-full"
-                />
-              </div>
+          <div className="flex gap-2">
+            {canCancel && onCancel && (
+              <button
+                className="btn btn-sm btn-ghost btn-circle"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onCancel(job.id)
+                }}
+                aria-label="Cancel download"
+              >
+                <FiX />
+              </button>
             )}
-
-          <div className="flex items-center justify-between text-sm text-subtext0">
-            <div className="flex items-center gap-4">
-              {job.files.length > 0 && (
-                <span>
-                  {job.files.length} file{job.files.length !== 1 ? 's' : ''}
-                </span>
-              )}
-              {getTotalSize() && <span>{getTotalSize()}</span>}
-            </div>
-
-            {job.status === JobStatus.FAILED && job.metadata.errorMessage && (
-              <span className="text-red text-xs truncate max-w-xs">
-                {job.metadata.errorMessage as string}
-              </span>
+            {canRetry && onRetry && (
+              <button
+                className="btn btn-sm btn-ghost btn-circle"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onRetry(job.id)
+                }}
+                aria-label="Retry download"
+              >
+                <FiRefreshCw />
+              </button>
             )}
           </div>
         </div>
-      </CardBody>
-    </Card>
+
+        {job.status === JobStatus.DOWNLOADING && job.progress !== undefined && (
+          <div className="mt-4">
+            <div className="flex justify-between text-sm text-base-content/70 mb-1">
+              <span>Progress</span>
+              <span>{Math.round(job.progress)}%</span>
+            </div>
+            <progress
+              className={`progress ${progressBarClass[job.status]} w-full`}
+              value={job.progress}
+              max="100"
+            ></progress>
+          </div>
+        )}
+
+        {job.status === JobStatus.FAILED && job.error && (
+          <div className="alert alert-error mt-2">
+            <span className="text-sm">{job.error}</span>
+          </div>
+        )}
+
+        {job.status === JobStatus.COMPLETED && (
+          <div className="mt-2">
+            <div className="text-sm text-success">
+              ✓ Download completed successfully
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
