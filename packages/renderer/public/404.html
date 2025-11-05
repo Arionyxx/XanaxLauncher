@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>404 - Page Not Found | XanaxLauncher</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+          'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+          'Helvetica Neue', sans-serif;
+        background: #1a1b26;
+        color: #cdd6f4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+      .container {
+        text-align: center;
+        padding: 2rem;
+        max-width: 500px;
+      }
+      .emoji {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: #cdd6f4;
+      }
+      p {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+        color: #9399b2;
+      }
+      a {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: #89b4fa;
+        color: #1a1b26;
+        text-decoration: none;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: background 0.2s;
+      }
+      a:hover {
+        background: #a6c6fc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="emoji">🔍</div>
+      <h1>404 - Page Not Found</h1>
+      <p>The page you're looking for doesn't exist.</p>
+      <a href="/">Go back home</a>
+    </div>
+    <script>
+      // Redirect to the app's not-found page if JavaScript is enabled
+      if (window.location.pathname !== '/not-found') {
+        window.location.href = '/not-found';
+      }
+    </script>
+  </body>
+</html>

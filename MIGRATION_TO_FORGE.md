@@ -16,6 +16,7 @@ This document outlines the migration from manual Electron setup with electron-bu
 ### Why We Migrated
 
 **Problems Solved:**
+
 - ✅ Fixed TypeScript workspace resolution issues
 - ✅ Eliminated complex manual script orchestration (concurrently, wait-on)
 - ✅ Simplified build and packaging process
@@ -28,6 +29,7 @@ This document outlines the migration from manual Electron setup with electron-bu
 ### Configuration File: `forge.config.js`
 
 Located at project root, this file configures:
+
 - **packagerConfig**: App metadata, icons, ignore patterns
 - **makers**: Squirrel for Windows, ZIP for cross-platform
 - **publishers**: GitHub releases integration
@@ -51,6 +53,7 @@ webPreferences: {
 ### Webpack Bundling
 
 Both main and preload processes are bundled with Webpack:
+
 - **Loader**: ts-loader with transpileOnly mode
 - **Type Checking**: fork-ts-checker-webpack-plugin runs in parallel
 - **Output**: `.webpack/` directory in development
@@ -59,12 +62,15 @@ Both main and preload processes are bundled with Webpack:
 ## New Commands
 
 ### Development
+
 ```bash
 npm run dev        # or npm start
 ```
+
 Starts Next.js dev server and Electron with Forge
 
 ### Building
+
 ```bash
 npm run build      # Build Next.js renderer
 npm run package    # Package app with Forge
@@ -72,6 +78,7 @@ npm run make       # Create installers
 ```
 
 ### Publishing
+
 ```bash
 npm run publish    # Publish to GitHub releases
 ```
@@ -79,11 +86,13 @@ npm run publish    # Publish to GitHub releases
 ## Output Structure
 
 ### Development
+
 - `.webpack/main/` - Bundled main process
 - `.webpack/renderer/main_window/` - Preload bundle
 - `packages/renderer/.next/` - Next.js build
 
 ### Production
+
 - `out/Media Manager-win32-x64/` - Unpacked application
 - `out/make/squirrel.windows/x64/` - Windows installer
   - `Media-Manager-Setup-1.0.0.exe` - Installer
@@ -133,6 +142,7 @@ None for end users. The application functionality remains identical.
 ### Moved to Root
 
 The following were moved from `packages/main/package.json` to root:
+
 - electron
 - electron-builder (kept for compatibility)
 - electron-log
@@ -144,9 +154,11 @@ The following were moved from `packages/main/package.json` to root:
 ### What to Test
 
 1. **Development Mode**
+
    ```bash
    npm run dev
    ```
+
    - [ ] Electron window opens
    - [ ] Next.js dev server loads
    - [ ] Hot reload works
@@ -154,9 +166,11 @@ The following were moved from `packages/main/package.json` to root:
    - [ ] TypeScript compilation works
 
 2. **Production Build**
+
    ```bash
    npm run make
    ```
+
    - [ ] Build completes without errors
    - [ ] Installer is created
    - [ ] Installer runs
@@ -175,6 +189,7 @@ The following were moved from `packages/main/package.json` to root:
 **Issue**: Webpack fails to compile TypeScript
 
 **Solution**:
+
 - Check `forge.config.js` has correct paths to `tsconfig.json`
 - Ensure `ts-loader` is configured correctly
 - Run `npm run typecheck` to see TypeScript errors directly
@@ -184,6 +199,7 @@ The following were moved from `packages/main/package.json` to root:
 **Issue**: Build fails due to missing icons
 
 **Solution**:
+
 - Create `packages/main/build/icon.ico`
 - Create `packages/main/build/installerHeader.bmp`
 - Or update `forge.config.js` to point to correct icon paths
@@ -193,6 +209,7 @@ The following were moved from `packages/main/package.json` to root:
 **Issue**: Bundle size is too large
 
 **Solution**:
+
 - Check `ignore` patterns in `forge.config.js`
 - Ensure `node_modules` and build artifacts are excluded
 - Use `asar: true` for better compression
@@ -203,6 +220,7 @@ The following were moved from `packages/main/package.json` to root:
 **Issue**: `npm run dev` fails
 
 **Solution**:
+
 - Check if port 3000 is available
 - Ensure Next.js dev server starts first
 - Check `wait-on` is working correctly
@@ -229,6 +247,7 @@ If issues arise, you can rollback to the previous setup:
 ## Support
 
 For issues or questions about this migration:
+
 - Check this document first
 - Review Electron Forge documentation
 - Check GitHub Issues for similar problems

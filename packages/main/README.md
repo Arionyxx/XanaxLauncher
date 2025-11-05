@@ -12,6 +12,7 @@ This package contains the Electron main process code.
 ## Build System
 
 The main process is bundled using **Electron Forge** with the Webpack plugin:
+
 - TypeScript compilation via ts-loader
 - Type checking via fork-ts-checker-webpack-plugin
 - Output to `.webpack/` in development
