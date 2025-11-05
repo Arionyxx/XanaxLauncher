@@ -11,7 +11,6 @@ import { cn } from '@/lib/utils'
 interface JobCardProps {
   job: Job
   onPause?: (jobId: string) => void
-  onResume?: (jobId: string) => void
   onCancel?: (jobId: string) => void
   onRetry?: (jobId: string) => void
   onClick?: (job: Job) => void
@@ -20,7 +19,6 @@ interface JobCardProps {
 export function JobCard({
   job,
   onPause,
-  onResume,
   onCancel,
   onRetry,
   onClick,

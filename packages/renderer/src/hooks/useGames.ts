@@ -4,8 +4,10 @@ import { SourceEntry as DbSourceEntry } from '@/db/schema'
 import { SourceEntry } from '@/types/source'
 
 export interface GameEntry extends SourceEntry {
+  id: string
   sourceId: string
   sourceName: string
+  createdAt: number
 }
 
 export function useGames() {
@@ -29,11 +31,13 @@ export function useGames() {
 
       // Convert database entries to game entries
       const allGames: GameEntry[] = entries.map((entry: DbSourceEntry) => ({
+        id: entry.id,
         title: entry.title,
         links: entry.links,
         meta: entry.meta || {},
         sourceId: entry.sourceId,
         sourceName: sourceMap.get(entry.sourceId) || 'Unknown Source',
+        createdAt: entry.createdAt,
       }))
 
       setGames(allGames)

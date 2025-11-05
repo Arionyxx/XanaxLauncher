@@ -2,17 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Button,
-  Input,
-  Select,
-  SelectItem,
-  Progress,
-  Chip,
-} from '@nextui-org/react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Progress } from '@/components/ui/progress'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { jobOrchestrator } from '@/services/job-orchestrator'
 import { providerRegistry } from '@/services/providers/registry'
 import { MockProvider } from '@/services/providers/mock-provider'
@@ -153,20 +148,20 @@ export default function ProviderTestPage() {
     }
   }
 
-  const getStatusColor = (status: JobStatus) => {
+  const getStatusVariant = (status: JobStatus) => {
     switch (status) {
       case JobStatus.QUEUED:
         return 'default'
       case JobStatus.RESOLVING:
-        return 'primary'
+        return 'default'
       case JobStatus.DOWNLOADING:
         return 'secondary'
       case JobStatus.COMPLETED:
-        return 'success'
+        return 'default'
       case JobStatus.FAILED:
-        return 'danger'
+        return 'destructive'
       case JobStatus.CANCELLED:
-        return 'warning'
+        return 'secondary'
       default:
         return 'default'
     }
@@ -177,125 +172,122 @@ export default function ProviderTestPage() {
   }
 
   return (
-    <div className="min-h-screen bg-base p-8">
+    <div className="min-h-screen bg-background p-8">
       <div className="max-w-6xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-text">
+            <h1 className="text-3xl font-bold text-foreground">
               Provider Framework Test
             </h1>
-            <p className="text-subtext0 mt-1">
+            <p className="text-muted-foreground mt-1">
               Test provider operations and job orchestration
             </p>
           </div>
           <Button
-            color="primary"
-            variant="flat"
-            onPress={() => router.push('/')}
+            variant="default"
+            onClick={() => router.push('/')}
           >
             Back to Home
           </Button>
         </div>
 
         {error && (
-          <Card className="bg-red border-red">
-            <CardBody>
-              <p className="text-crust font-semibold">Error: {error}</p>
-            </CardBody>
+          <Card className="border-destructive/50 bg-destructive/10">
+            <CardContent className="pt-6">
+              <p className="text-destructive font-semibold">Error: {error}</p>
+            </CardContent>
           </Card>
         )}
 
         {connectionStatus && (
-          <Card className="bg-green border-green">
-            <CardBody>
-              <p className="text-crust font-semibold">{connectionStatus}</p>
-            </CardBody>
+          <Card className="border-green-600/50 bg-green-50 dark:bg-green-950/20">
+            <CardContent className="pt-6">
+              <p className="text-green-700 dark:text-green-300 font-semibold">{connectionStatus}</p>
+            </CardContent>
           </Card>
         )}
 
-        <Card className="bg-surface0 border-surface1">
+        <Card>
           <CardHeader>
-            <h2 className="text-xl font-semibold text-text">Create New Job</h2>
+            <CardTitle>Create New Job</CardTitle>
           </CardHeader>
-          <CardBody className="space-y-4">
-            <Select
-              label="Provider"
-              value={selectedProvider}
-              onChange={(e) => setSelectedProvider(e.target.value)}
-              className="max-w-xs"
-            >
-              {providerRegistry.listProviders().map((provider) => (
-                <SelectItem key={provider} value={provider}>
-                  {provider.charAt(0).toUpperCase() + provider.slice(1)}
-                </SelectItem>
-              ))}
-            </Select>
+          <CardContent className="space-y-4">
+            <div className="max-w-xs">
+              <label className="text-sm font-medium mb-2 block">Provider</label>
+              <Select value={selectedProvider} onValueChange={setSelectedProvider}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a provider" />
+                </SelectTrigger>
+                <SelectContent>
+                  {providerRegistry.listProviders().map((provider) => (
+                    <SelectItem key={provider} value={provider}>
+                      {provider.charAt(0).toUpperCase() + provider.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-            <Input
-              label="URL or Magnet Link"
-              placeholder="https://example.com/file.zip or magnet:?xt=..."
-              value={testUrl}
-              onValueChange={setTestUrl}
-              className="max-w-2xl"
-            />
+            <div className="max-w-2xl">
+              <label className="text-sm font-medium mb-2 block">URL or Magnet Link</label>
+              <Input
+                placeholder="https://example.com/file.zip or magnet:?xt=..."
+                value={testUrl}
+                onChange={(e) => setTestUrl(e.target.value)}
+              />
+            </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Button
-                color="primary"
-                onPress={handleStartJob}
-                isLoading={loading}
-                isDisabled={!testUrl}
+                onClick={handleStartJob}
+                disabled={loading || !testUrl}
               >
-                Start Job
+                {loading ? 'Starting...' : 'Start Job'}
               </Button>
               <Button
-                color="secondary"
-                variant="flat"
-                onPress={handleTestConnection}
-                isLoading={loading}
+                variant="outline"
+                onClick={handleTestConnection}
+                disabled={loading}
               >
-                Test Connection
+                {loading ? 'Testing...' : 'Test Connection'}
               </Button>
               <Button
-                color="warning"
-                variant="flat"
-                onPress={handleClearCompleted}
+                variant="outline"
+                onClick={handleClearCompleted}
               >
                 Clear Completed
               </Button>
-              <Button color="default" variant="flat" onPress={loadJobs}>
+              <Button variant="outline" onClick={loadJobs}>
                 Refresh
               </Button>
             </div>
-          </CardBody>
+          </CardContent>
         </Card>
 
-        <Card className="bg-surface0 border-surface1">
+        <Card>
           <CardHeader>
-            <h2 className="text-xl font-semibold text-text">
+            <CardTitle>
               Jobs ({jobs.length})
-            </h2>
+            </CardTitle>
           </CardHeader>
-          <CardBody>
+          <CardContent>
             {jobs.length === 0 ? (
-              <p className="text-subtext0">
+              <p className="text-muted-foreground">
                 No jobs yet. Create a job to get started.
               </p>
             ) : (
               <div className="space-y-4">
                 {jobs.map((job) => (
-                  <Card key={job.id} className="bg-surface1 border-surface2">
-                    <CardBody className="space-y-3">
+                  <Card key={job.id}>
+                    <CardContent className="pt-6 space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <Chip
-                            color={getStatusColor(job.status)}
-                            size="sm"
-                            variant="flat"
+                          <Badge
+                            variant={getStatusVariant(job.status)}
                           >
                             {job.status}
-                          </Chip>
-                          <span className="text-sm font-mono text-subtext0">
+                          </Badge>
+                          <span className="text-sm font-mono text-muted-foreground">
                             {job.id}
                           </span>
                         </div>
@@ -306,17 +298,14 @@ export default function ProviderTestPage() {
                               <>
                                 <Button
                                   size="sm"
-                                  color="primary"
-                                  variant="flat"
-                                  onPress={() => handleSyncJob(job.id)}
+                                  onClick={() => handleSyncJob(job.id)}
                                 >
                                   Sync
                                 </Button>
                                 <Button
                                   size="sm"
-                                  color="danger"
-                                  variant="flat"
-                                  onPress={() => handleCancelJob(job.id)}
+                                  variant="destructive"
+                                  onClick={() => handleCancelJob(job.id)}
                                 >
                                   Cancel
                                 </Button>
@@ -327,70 +316,64 @@ export default function ProviderTestPage() {
 
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span className="text-text">Progress</span>
-                          <span className="text-subtext0">{job.progress}%</span>
+                          <span className="text-foreground">Progress</span>
+                          <span className="text-muted-foreground">{job.progress}%</span>
                         </div>
                         <Progress
                           value={job.progress}
-                          color={
-                            job.status === JobStatus.COMPLETED
-                              ? 'success'
-                              : 'primary'
-                          }
-                          size="sm"
                         />
                       </div>
 
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
-                          <span className="text-subtext0">Provider:</span>
-                          <span className="text-text ml-2">{job.provider}</span>
+                          <span className="text-muted-foreground">Provider:</span>
+                          <span className="text-foreground ml-2">{job.provider}</span>
                         </div>
                         <div>
-                          <span className="text-subtext0">Files:</span>
-                          <span className="text-text ml-2">
+                          <span className="text-muted-foreground">Files:</span>
+                          <span className="text-foreground ml-2">
                             {job.files.length}
                           </span>
                         </div>
                         <div className="col-span-2">
-                          <span className="text-subtext0">URL:</span>
-                          <span className="text-text ml-2 text-xs break-all">
+                          <span className="text-muted-foreground">URL:</span>
+                          <span className="text-foreground ml-2 text-xs break-all">
                             {job.metadata.originalUrl || 'N/A'}
                           </span>
                         </div>
                       </div>
 
                       {job.files.length > 0 && (
-                        <div className="pt-2 border-t border-surface2">
-                          <p className="text-sm text-subtext0 mb-2">Files:</p>
+                        <div className="pt-2 border-t">
+                          <p className="text-sm text-muted-foreground mb-2">Files:</p>
                           <div className="space-y-1">
                             {job.files.slice(0, 3).map((file, idx) => (
                               <div
                                 key={idx}
-                                className="text-xs text-text flex justify-between"
+                                className="text-xs text-foreground flex justify-between"
                               >
                                 <span className="truncate flex-1">
                                   {file.name}
                                 </span>
-                                <span className="text-subtext0 ml-2">
+                                <span className="text-muted-foreground ml-2">
                                   {(file.size / 1024 / 1024).toFixed(2)} MB
                                 </span>
                               </div>
                             ))}
                             {job.files.length > 3 && (
-                              <p className="text-xs text-subtext0">
+                              <p className="text-xs text-muted-foreground">
                                 +{job.files.length - 3} more files
                               </p>
                             )}
                           </div>
                         </div>
                       )}
-                    </CardBody>
+                    </CardContent>
                   </Card>
                 ))}
               </div>
             )}
-          </CardBody>
+          </CardContent>
         </Card>
       </div>
     </div>
