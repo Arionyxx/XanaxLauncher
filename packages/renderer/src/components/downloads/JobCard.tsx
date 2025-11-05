@@ -1,7 +1,7 @@
 'use client'
 
 import { Job, JobStatus } from '@/types/provider'
-import { X, RefreshCw, Play, Pause, Square, CheckCircle, XCircle, Clock, HardDrive, FileText } from 'lucide-react'
+import { X, RefreshCw, Play, Square, CheckCircle, XCircle, Clock, HardDrive, FileText } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -10,7 +10,6 @@ import { cn } from '@/lib/utils'
 
 interface JobCardProps {
   job: Job
-  onPause?: (jobId: string) => void
   onCancel?: (jobId: string) => void
   onRetry?: (jobId: string) => void
   onClick?: (job: Job) => void
@@ -18,7 +17,6 @@ interface JobCardProps {
 
 export function JobCard({
   job,
-  onPause,
   onCancel,
   onRetry,
   onClick,
