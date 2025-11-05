@@ -1,7 +1,7 @@
 'use client'
 
 import { Job, JobStatus } from '@/types/provider'
-import { X, Calendar, Clock, HardDrive, FileText, AlertTriangle } from 'lucide-react'
+import { Calendar, Clock, FileText, AlertTriangle } from 'lucide-react'
 import {
   Sheet,
   SheetContent,
@@ -13,7 +13,6 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ScrollArea } from '@/components/ui/scroll-area'
 

@@ -2,7 +2,7 @@
 
 import { Job, JobStatus } from '@/types/provider'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Download, Play, CheckCircle, XCircle, Package } from 'lucide-react'
+import { Download, CheckCircle, XCircle, Package } from 'lucide-react'
 
 interface StatsHeaderProps {
   jobs: Job[]
