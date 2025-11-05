@@ -17,22 +17,19 @@ import {
   FiLock,
   FiUnlock,
   FiAlertTriangle,
-  FiCheck,
   FiX,
   FiExternalLink
 } from 'react-icons/fi'
 import { useSettings } from '@/hooks/useSettings'
-import { toast } from '@/hooks/use-toast'
+import { toast, useToast } from '@/hooks/use-toast'
 import { useSources } from '@/hooks/useSources'
 import { SourceFormData } from '@/types/source'
 import { Source } from '@/db/schema'
 
 export default function SettingsPage() {
-  const { settings, updateSettings, loading } = useSettings()
+  const { settings, updateSettings, isLoading } = useSettings()
   const { 
     sources, 
-    loading: sourcesLoading, 
-    addSource, 
     updateSource, 
     removeSource, 
     syncSource, 
@@ -67,7 +64,7 @@ export default function SettingsPage() {
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <AppLayout>
         <div className="flex items-center justify-center h-full">
@@ -200,14 +197,13 @@ export default function SettingsPage() {
                           updateSettings({
                             general: {
                               ...settings.general,
-                              language: e.target.value,
+                              language: e.target.value as 'en' | 'es',
                             },
                           })
                         }
                       >
                         <option value="en">English</option>
                         <option value="es">Español</option>
-                        <option value="fr">Français</option>
                       </select>
                     </div>
                   </div>
@@ -258,12 +254,12 @@ export default function SettingsPage() {
                         <input
                           type="checkbox"
                           className="toggle toggle-primary"
-                          checked={settings.behavior.autoStart}
+                          checked={settings.behavior.autoStartEnabled}
                           onChange={(e) =>
                             updateSettings({
                               behavior: {
                                 ...settings.behavior,
-                                autoStart: e.target.checked,
+                                autoStartEnabled: e.target.checked,
                               },
                             })
                           }
@@ -598,12 +594,12 @@ export default function SettingsPage() {
                         <input
                           type="checkbox"
                           className="toggle toggle-primary"
-                          checked={settings.privacy?.enableTelemetry || false}
+                          checked={settings.privacy?.telemetryEnabled || false}
                           onChange={(e) =>
                             updateSettings({
                               privacy: {
                                 ...settings.privacy,
-                                enableTelemetry: e.target.checked,
+                                telemetryEnabled: e.target.checked,
                               },
                             })
                           }

@@ -57,7 +57,9 @@ const manifestCandidates = [
   'game.json',
 ]
 
-const executableExtensionsByPlatform: Record<NodeJS.Platform, string[]> = {
+const executableExtensionsByPlatform: Partial<
+  Record<NodeJS.Platform, string[]>
+> = {
   win32: ['.exe', '.bat', '.cmd'],
   darwin: ['.app'],
   linux: ['', '.sh', '.run', '.AppImage'],
@@ -66,6 +68,9 @@ const executableExtensionsByPlatform: Record<NodeJS.Platform, string[]> = {
   openbsd: ['', '.sh'],
   android: ['', '.sh'],
   sunos: ['', '.sh'],
+  haiku: ['', '.sh'],
+  cygwin: ['.exe', '.bat', '.cmd', ''],
+  netbsd: ['', '.sh'],
 }
 
 function hashPath(value: string): string {
