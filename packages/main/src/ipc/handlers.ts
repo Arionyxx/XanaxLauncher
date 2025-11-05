@@ -99,13 +99,23 @@ function getDefaultScanDirectories(): string[] {
       if (localAppData) {
         defaults.add(path.join(localAppData, 'XanaxLauncher', 'Games'))
       }
-      defaults.add(path.join(home, 'AppData', 'Local', 'XanaxLauncher', 'Games'))
+      defaults.add(
+        path.join(home, 'AppData', 'Local', 'XanaxLauncher', 'Games')
+      )
       break
     }
     case 'darwin': {
       defaults.add('/Applications')
       defaults.add(path.join(home, 'Applications'))
-      defaults.add(path.join(home, 'Library', 'Application Support', 'XanaxLauncher', 'Games'))
+      defaults.add(
+        path.join(
+          home,
+          'Library',
+          'Application Support',
+          'XanaxLauncher',
+          'Games'
+        )
+      )
       break
     }
     default: {
@@ -134,7 +144,11 @@ async function getDirectorySize(dir: string): Promise<number> {
   try {
     dirents = await fs.readdir(dir, { withFileTypes: true })
   } catch (error) {
-    log.warn('[Library] Unable to read directory during size calculation:', dir, error)
+    log.warn(
+      '[Library] Unable to read directory during size calculation:',
+      dir,
+      error
+    )
     return 0
   }
 
@@ -153,14 +167,20 @@ async function getDirectorySize(dir: string): Promise<number> {
         total += stat.size
       }
     } catch (error) {
-      log.warn('[Library] Failed to stat path during size calculation:', fullPath, error)
+      log.warn(
+        '[Library] Failed to stat path during size calculation:',
+        fullPath,
+        error
+      )
     }
   }
 
   return total
 }
 
-async function readManifest(basePath: string): Promise<Record<string, unknown> | null> {
+async function readManifest(
+  basePath: string
+): Promise<Record<string, unknown> | null> {
   for (const filename of manifestCandidates) {
     const manifestPath = path.join(basePath, filename)
     try {
@@ -178,7 +198,10 @@ async function readManifest(basePath: string): Promise<Record<string, unknown> |
   return null
 }
 
-async function findExecutableCandidate(basePath: string, depth = 0): Promise<string | null> {
+async function findExecutableCandidate(
+  basePath: string,
+  depth = 0
+): Promise<string | null> {
   if (depth > 3) {
     return null
   }
@@ -187,7 +210,11 @@ async function findExecutableCandidate(basePath: string, depth = 0): Promise<str
   try {
     dirents = await fs.readdir(basePath, { withFileTypes: true })
   } catch (error) {
-    log.debug('[Library] Unable to inspect directory for executables:', basePath, error)
+    log.debug(
+      '[Library] Unable to inspect directory for executables:',
+      basePath,
+      error
+    )
     return null
   }
 
@@ -198,7 +225,11 @@ async function findExecutableCandidate(basePath: string, depth = 0): Promise<str
 
     const fullPath = path.join(basePath, dirent.name)
 
-    if (process.platform === 'darwin' && dirent.isDirectory() && dirent.name.endsWith('.app')) {
+    if (
+      process.platform === 'darwin' &&
+      dirent.isDirectory() &&
+      dirent.name.endsWith('.app')
+    ) {
       return fullPath
     }
 
@@ -231,7 +262,10 @@ async function findExecutableCandidate(basePath: string, depth = 0): Promise<str
       continue
     }
 
-    const nested = await findExecutableCandidate(path.join(basePath, dirent.name), depth + 1)
+    const nested = await findExecutableCandidate(
+      path.join(basePath, dirent.name),
+      depth + 1
+    )
     if (nested) {
       return nested
     }
@@ -246,7 +280,8 @@ async function resolveExecutable(
 ): Promise<string | null> {
   const candidates: string[] = []
 
-  const directExecutable = manifest?.executable ?? manifest?.executablePath ?? manifest?.launch
+  const directExecutable =
+    manifest?.executable ?? manifest?.executablePath ?? manifest?.launch
   if (typeof directExecutable === 'string') {
     candidates.push(directExecutable)
   }
@@ -265,7 +300,10 @@ async function resolveExecutable(
       ? candidate
       : path.join(basePath, candidate)
     const stat = await safeStat(normalized)
-    if (stat && (stat.isFile() || (process.platform === 'darwin' && stat.isDirectory()))) {
+    if (
+      stat &&
+      (stat.isFile() || (process.platform === 'darwin' && stat.isDirectory()))
+    ) {
       return normalized
     }
   }
@@ -273,14 +311,17 @@ async function resolveExecutable(
   return await findExecutableCandidate(basePath)
 }
 
-async function inspectGameDirectory(dir: string): Promise<LibraryScanEntry | null> {
+async function inspectGameDirectory(
+  dir: string
+): Promise<LibraryScanEntry | null> {
   const stats = await safeStat(dir)
   if (!stats || !stats.isDirectory()) {
     return null
   }
 
   const manifest = await readManifest(dir)
-  const rawTitle = typeof manifest?.title === 'string' ? manifest.title : undefined
+  const rawTitle =
+    typeof manifest?.title === 'string' ? manifest.title : undefined
   const title = rawTitle?.trim().length ? rawTitle.trim() : path.basename(dir)
 
   const installDateValue = manifest?.installDate
@@ -512,7 +553,9 @@ export async function handleUpdateInstall(): Promise<UpdateInstallResponse> {
   }
 }
 
-export async function handleLibraryScan(data: unknown): Promise<LibraryScanResponse> {
+export async function handleLibraryScan(
+  data: unknown
+): Promise<LibraryScanResponse> {
   const start = Date.now()
   const validated = libraryScanRequestSchema.parse(data ?? {})
 
@@ -590,7 +633,10 @@ export async function handleLibraryLaunch(
       throw new Error('Launch executable could not be accessed')
     }
 
-    if (process.platform === 'darwin' && validated.executablePath.endsWith('.app')) {
+    if (
+      process.platform === 'darwin' &&
+      validated.executablePath.endsWith('.app')
+    ) {
       const child = spawn('open', [validated.executablePath], {
         detached: true,
         stdio: 'ignore',
@@ -609,7 +655,11 @@ export async function handleLibraryLaunch(
 
     return libraryLaunchResponseSchema.parse({ success: true })
   } catch (error) {
-    log.error('[Library] Failed to launch game:', validated.executablePath, error)
+    log.error(
+      '[Library] Failed to launch game:',
+      validated.executablePath,
+      error
+    )
     return libraryLaunchResponseSchema.parse({
       success: false,
       message: (error as Error).message ?? 'Unable to launch the selected game',

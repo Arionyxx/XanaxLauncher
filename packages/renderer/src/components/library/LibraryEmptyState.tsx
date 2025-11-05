@@ -28,8 +28,8 @@ export function LibraryEmptyState({ onScan }: LibraryEmptyStateProps) {
               Your library is waiting to be discovered
             </h2>
             <p className="text-sm text-text-subtle">
-              Scan your favourite install locations and XanaxLauncher will build a
-              beautiful library of everything it finds.
+              Scan your favourite install locations and XanaxLauncher will build
+              a beautiful library of everything it finds.
             </p>
           </div>
 

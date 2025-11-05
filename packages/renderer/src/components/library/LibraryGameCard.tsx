@@ -93,9 +93,7 @@ export function LibraryGameCard({
                 <h3 className="text-lg font-semibold text-foreground">
                   {entry.title}
                 </h3>
-                <p className="text-xs text-text-subtle">
-                  {entry.installPath}
-                </p>
+                <p className="text-xs text-text-subtle">{entry.installPath}</p>
               </div>
 
               <div className="flex flex-wrap items-center gap-3 text-xs text-text-muted">
@@ -105,7 +103,12 @@ export function LibraryGameCard({
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-surface-1/50 px-3 py-1">
                   <CalendarDays className="h-3 w-3" />
-                  Installed {formatDateTime(entry.installDate, { month: 'short', day: 'numeric', year: 'numeric' })}
+                  Installed{' '}
+                  {formatDateTime(entry.installDate, {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-surface-1/50 px-3 py-1">
                   <Clock3 className="h-3 w-3" />
@@ -146,7 +149,10 @@ export function LibraryGameCard({
               {formatBytes(entry.size)}
             </Badge>
             {entry.lastPlayed && (
-              <Badge variant="secondary" className="bg-catppuccin-mauve/30 text-secondary-foreground">
+              <Badge
+                variant="secondary"
+                className="bg-catppuccin-mauve/30 text-secondary-foreground"
+              >
                 Played {formatRelativeTime(entry.lastPlayed)}
               </Badge>
             )}
@@ -154,8 +160,17 @@ export function LibraryGameCard({
         </div>
 
         <CardHeader className="p-5 pb-3">
-          <h3 className="text-xl font-semibold text-foreground">{entry.title}</h3>
-          <p className="text-xs text-text-subtle">Installed {formatDateTime(entry.installDate, { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+          <h3 className="text-xl font-semibold text-foreground">
+            {entry.title}
+          </h3>
+          <p className="text-xs text-text-subtle">
+            Installed{' '}
+            {formatDateTime(entry.installDate, {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric',
+            })}
+          </p>
         </CardHeader>
 
         <CardContent className="flex flex-col gap-3 p-5 pt-0">

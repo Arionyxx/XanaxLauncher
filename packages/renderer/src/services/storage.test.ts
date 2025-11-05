@@ -73,7 +73,7 @@ describe('Storage Service', () => {
         name: 'Test Source',
         url: 'https://example.com/feed.json',
         autoSync: false,
-        errorMessage: null,
+        errorMessage: undefined,
       })
 
       expect(id).toMatch(/^source_/)
@@ -89,13 +89,13 @@ describe('Storage Service', () => {
         name: 'Source 1',
         url: 'https://example.com/feed1.json',
         autoSync: false,
-        errorMessage: null,
+        errorMessage: undefined,
       })
       await addSource({
         name: 'Source 2',
         url: 'https://example.com/feed2.json',
         autoSync: true,
-        errorMessage: null,
+        errorMessage: undefined,
       })
 
       const sources = await getSources()
@@ -107,7 +107,7 @@ describe('Storage Service', () => {
         name: 'Test Source',
         url: 'https://example.com/feed.json',
         autoSync: false,
-        errorMessage: null,
+        errorMessage: undefined,
       })
 
       await updateSource(id, {
@@ -126,7 +126,7 @@ describe('Storage Service', () => {
         name: 'Test Source',
         url: 'https://example.com/feed.json',
         autoSync: false,
-        errorMessage: null,
+        errorMessage: undefined,
       })
 
       await removeSource(id)

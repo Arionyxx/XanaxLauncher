@@ -17,7 +17,6 @@ test.describe('Settings Persistence', () => {
       await languageSelect.selectOption('en')
 
       await closeElectronApp(app)
-
       ;({ app, page } = await launchElectronApp())
 
       await page.waitForLoadState('domcontentloaded')

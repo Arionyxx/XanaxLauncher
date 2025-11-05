@@ -12,7 +12,12 @@ interface GameCardProps {
   viewMode: 'grid' | 'list'
 }
 
-export function GameCard({ game, onClick, onDownload, viewMode }: GameCardProps) {
+export function GameCard({
+  game,
+  onClick,
+  onDownload,
+  viewMode,
+}: GameCardProps) {
   const coverImage = game.meta?.coverImage as string | undefined
   const size = game.meta?.size as string | undefined
   const platform = game.meta?.platform as string | undefined
@@ -24,7 +29,7 @@ export function GameCard({ game, onClick, onDownload, viewMode }: GameCardProps)
         transition={{ duration: 0.2, ease: 'easeOut' }}
         className="w-full"
       >
-        <Card 
+        <Card
           className="cursor-pointer hover:shadow-md hover:shadow-primary/10 transition-all duration-200 group"
           onClick={onClick}
         >
@@ -76,7 +81,7 @@ export function GameCard({ game, onClick, onDownload, viewMode }: GameCardProps)
                       )}
                     </div>
                   </div>
-                  
+
                   <Button
                     size="sm"
                     onClick={(e) => {
@@ -103,7 +108,7 @@ export function GameCard({ game, onClick, onDownload, viewMode }: GameCardProps)
       transition={{ duration: 0.2, ease: 'easeOut' }}
       className="h-full"
     >
-      <Card 
+      <Card
         className="overflow-hidden cursor-pointer hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 h-full group"
         onClick={onClick}
       >
@@ -121,11 +126,14 @@ export function GameCard({ game, onClick, onDownload, viewMode }: GameCardProps)
               <Monitor className="w-16 h-16 text-muted-foreground/50" />
             </div>
           )}
-          
+
           {/* Overlay with source badge */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="absolute top-2 right-2">
-            <Badge variant="secondary" className="bg-black/50 text-white border-0">
+            <Badge
+              variant="secondary"
+              className="bg-black/50 text-white border-0"
+            >
               {game.sourceName}
             </Badge>
           </div>

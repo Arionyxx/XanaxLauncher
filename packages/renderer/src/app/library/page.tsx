@@ -2,7 +2,13 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Search, SlidersHorizontal, LayoutGrid, Rows2, Loader2 } from 'lucide-react'
+import {
+  Search,
+  SlidersHorizontal,
+  LayoutGrid,
+  Rows2,
+  Loader2,
+} from 'lucide-react'
 import { AppLayout } from '@/components/AppLayout'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -52,13 +58,10 @@ export default function LibraryPage() {
   const [sortBy, setSortBy] = useState<SortValue>('title')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [scanState, setScanState] = useState<ScanState>('idle')
-  const [scanDetails, setScanDetails] = useState<
-    | {
-        found: number
-        scannedPaths: string[]
-      }
-    | null
-  >(null)
+  const [scanDetails, setScanDetails] = useState<{
+    found: number
+    scannedPaths: string[]
+  } | null>(null)
 
   const filteredEntries = useMemo(() => {
     const term = searchTerm.trim().toLowerCase()
@@ -113,7 +116,9 @@ export default function LibraryPage() {
         variant: 'destructive',
         title: 'Scan failed',
         description:
-          error instanceof Error ? error.message : 'Unable to complete game scan.',
+          error instanceof Error
+            ? error.message
+            : 'Unable to complete game scan.',
       })
     }
   }, [refresh, settings?.general, toast])
@@ -132,7 +137,8 @@ export default function LibraryPage() {
         toast({
           variant: 'destructive',
           title: 'Launch failed',
-          description: error instanceof Error ? error.message : 'Could not launch game.',
+          description:
+            error instanceof Error ? error.message : 'Could not launch game.',
         })
       }
     },
@@ -148,7 +154,10 @@ export default function LibraryPage() {
         toast({
           variant: 'destructive',
           title: 'Unable to open folder',
-          description: error instanceof Error ? error.message : 'Please open the folder manually.',
+          description:
+            error instanceof Error
+              ? error.message
+              : 'Please open the folder manually.',
         })
       }
     },
@@ -192,8 +201,9 @@ export default function LibraryPage() {
               Installed Games
             </h1>
             <p className="max-w-2xl text-sm text-text-subtle">
-              Beautifully organised access to every game on your machine. Scan for
-              installs, launch instantly, and keep your collection perfectly in sync.
+              Beautifully organised access to every game on your machine. Scan
+              for installs, launch instantly, and keep your collection perfectly
+              in sync.
             </p>
           </div>
 
@@ -241,7 +251,10 @@ export default function LibraryPage() {
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
-                <Select value={sortBy} onValueChange={(value: SortValue) => setSortBy(value)}>
+                <Select
+                  value={sortBy}
+                  onValueChange={(value: SortValue) => setSortBy(value)}
+                >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
@@ -259,7 +272,11 @@ export default function LibraryPage() {
                     variant={viewMode === 'grid' ? 'default' : 'ghost'}
                     size="icon"
                     onClick={() => setViewMode('grid')}
-                    className={viewMode === 'grid' ? 'shadow-glow-sm' : 'text-text-subtle'}
+                    className={
+                      viewMode === 'grid'
+                        ? 'shadow-glow-sm'
+                        : 'text-text-subtle'
+                    }
                   >
                     <LayoutGrid className="h-4 w-4" />
                     <span className="sr-only">Grid view</span>
@@ -268,7 +285,11 @@ export default function LibraryPage() {
                     variant={viewMode === 'list' ? 'default' : 'ghost'}
                     size="icon"
                     onClick={() => setViewMode('list')}
-                    className={viewMode === 'list' ? 'shadow-glow-sm' : 'text-text-subtle'}
+                    className={
+                      viewMode === 'list'
+                        ? 'shadow-glow-sm'
+                        : 'text-text-subtle'
+                    }
                   >
                     <Rows2 className="h-4 w-4" />
                     <span className="sr-only">List view</span>
@@ -279,15 +300,18 @@ export default function LibraryPage() {
 
             {scanState === 'success' && scanDetails && (
               <div className="rounded-2xl border border-white/10 bg-surface-0/60 p-4 text-xs text-text-subtle">
-                <strong className="text-foreground">Scan complete:</strong> Found {scanDetails.found}{' '}
-                game{scanDetails.found === 1 ? '' : 's'} in{' '}
-                {scanDetails.scannedPaths.length} location{scanDetails.scannedPaths.length === 1 ? '' : 's'}.
+                <strong className="text-foreground">Scan complete:</strong>{' '}
+                Found {scanDetails.found} game
+                {scanDetails.found === 1 ? '' : 's'} in{' '}
+                {scanDetails.scannedPaths.length} location
+                {scanDetails.scannedPaths.length === 1 ? '' : 's'}.
               </div>
             )}
 
             {scanState === 'error' && (
               <div className="rounded-2xl border border-catppuccin-red/40 bg-catppuccin-red/10 p-4 text-xs text-catppuccin-red">
-                Scan encountered issues. Please verify your directories and try again.
+                Scan encountered issues. Please verify your directories and try
+                again.
               </div>
             )}
           </CardContent>
@@ -296,7 +320,10 @@ export default function LibraryPage() {
         {isLoading ? (
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 6 }).map((_, index) => (
-              <Skeleton key={index} className="h-64 rounded-3xl border border-white/10 bg-surface-0/40" />
+              <Skeleton
+                key={index}
+                className="h-64 rounded-3xl border border-white/10 bg-surface-0/40"
+              />
             ))}
           </div>
         ) : filteredEntries.length === 0 ? (

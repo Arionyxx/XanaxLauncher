@@ -84,7 +84,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
         icon: <Settings className="h-4 w-4" />,
         label: 'Settings',
       },
-      { href: '/help', icon: <HelpCircle className="h-4 w-4" />, label: 'Help' },
+      {
+        href: '/help',
+        icon: <HelpCircle className="h-4 w-4" />,
+        label: 'Help',
+      },
     ],
     []
   )
@@ -178,7 +182,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
             <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-surface-0/60 px-4 py-2 shadow-glow-sm backdrop-blur-xl">
               <Sparkles className="h-4 w-4 text-catppuccin-blue" />
-              <span className="text-sm font-medium text-foreground">XanaxLauncher</span>
+              <span className="text-sm font-medium text-foreground">
+                XanaxLauncher
+              </span>
             </div>
           </div>
 

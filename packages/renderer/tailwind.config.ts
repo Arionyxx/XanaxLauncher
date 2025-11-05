@@ -1,6 +1,6 @@
 import type { Config } from 'tailwindcss'
 
-const { flavors } = require('@catppuccin/palette')
+import { flavors } from '@catppuccin/palette'
 
 type CatppuccinColor = {
   hsl: {
@@ -95,7 +95,8 @@ const config: Config = {
       },
       boxShadow: {
         glow: '0 0 0 1px hsl(var(--ring) / 0.35), 0 25px 65px -35px hsl(var(--ring) / 0.6)',
-        'glow-sm': '0 0 0 1px hsl(var(--ring) / 0.3), 0 10px 30px -20px hsl(var(--ring) / 0.45)',
+        'glow-sm':
+          '0 0 0 1px hsl(var(--ring) / 0.3), 0 10px 30px -20px hsl(var(--ring) / 0.45)',
         'inner-glow': 'inset 0 1px 0 0 hsl(var(--foreground) / 0.1)',
       },
       backgroundImage: {

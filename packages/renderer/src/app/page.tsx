@@ -3,7 +3,15 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Search, RefreshCw, Filter, Grid, List, Package, Settings } from 'lucide-react'
+import {
+  Search,
+  RefreshCw,
+  Filter,
+  Grid,
+  List,
+  Package,
+  Settings,
+} from 'lucide-react'
 import { AppLayout } from '@/components/AppLayout'
 import { useGames, GameEntry } from '@/hooks/useGames'
 import { GameCard } from '@/components/catalog/GameCard'
@@ -14,8 +22,20 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { db } from '@/db/db'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
@@ -106,7 +126,9 @@ export default function Home() {
                 <Package className="w-6 h-6 text-muted-foreground" />
               </div>
               <CardTitle>Loading Catalog</CardTitle>
-              <CardDescription>Setting up your media library...</CardDescription>
+              <CardDescription>
+                Setting up your media library...
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -132,7 +154,9 @@ export default function Home() {
         >
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <h1 className="text-4xl font-bold tracking-tight">Media Catalog</h1>
+              <h1 className="text-4xl font-bold tracking-tight">
+                Media Catalog
+              </h1>
               <p className="text-muted-foreground">
                 Browse and download your favorite media
               </p>
@@ -141,9 +165,15 @@ export default function Home() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                onClick={() =>
+                  setViewMode(viewMode === 'grid' ? 'list' : 'grid')
+                }
               >
-                {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid className="w-4 h-4" />}
+                {viewMode === 'grid' ? (
+                  <List className="w-4 h-4" />
+                ) : (
+                  <Grid className="w-4 h-4" />
+                )}
               </Button>
               <Button
                 variant="outline"
@@ -151,7 +181,9 @@ export default function Home() {
                 onClick={refresh}
                 disabled={loading}
               >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`}
+                />
               </Button>
               <Button
                 variant="outline"
@@ -191,7 +223,10 @@ export default function Home() {
                       />
                     </div>
 
-                    <Select value={selectedSource} onValueChange={setSelectedSource}>
+                    <Select
+                      value={selectedSource}
+                      onValueChange={setSelectedSource}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select source" />
                       </SelectTrigger>
@@ -314,7 +349,9 @@ export default function Home() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                            onClick={() =>
+                              setCurrentPage((p) => Math.max(1, p - 1))
+                            }
                             disabled={currentPage === 1}
                           >
                             Previous
@@ -327,7 +364,9 @@ export default function Home() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                            onClick={() =>
+                              setCurrentPage((p) => Math.min(totalPages, p + 1))
+                            }
                             disabled={currentPage === totalPages}
                           >
                             Next

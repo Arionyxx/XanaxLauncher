@@ -270,7 +270,9 @@ export function IntegrationsPanel() {
                       onClick={handleTorboxTest}
                       disabled={!torboxToken.trim() || isTesting}
                     >
-                      {isTesting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {isTesting && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
                       Test Connection
                     </Button>
                     <Button
@@ -345,7 +347,9 @@ export function IntegrationsPanel() {
                       onClick={handleRealDebridTest}
                       disabled={!realDebridToken.trim() || isTesting}
                     >
-                      {isTesting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {isTesting && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
                       Test Connection
                     </Button>
                     <Button

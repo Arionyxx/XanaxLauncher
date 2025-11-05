@@ -42,53 +42,59 @@ const mockUser = {
 }
 
 export const realDebridHandlers = [
-  http.post(`${REALDEBRID_BASE_URL}/torrents/addMagnet`, async ({ request }) => {
-    const authHeader = request.headers.get('Authorization')
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return HttpResponse.json(
-        { error: 'Unauthorized', error_code: 401 },
-        { status: 401 }
-      )
+  http.post(
+    `${REALDEBRID_BASE_URL}/torrents/addMagnet`,
+    async ({ request }) => {
+      const authHeader = request.headers.get('Authorization')
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          { error: 'Unauthorized', error_code: 401 },
+          { status: 401 }
+        )
+      }
+
+      const formData = await request.formData()
+      const magnet = formData.get('magnet')
+      if (!magnet) {
+        return HttpResponse.json(
+          { error: 'Missing magnet parameter', error_code: 400 },
+          { status: 400 }
+        )
+      }
+
+      return HttpResponse.json({
+        id: mockTorrent.id,
+        uri: `https://api.real-debrid.com/rest/1.0/torrents/info/${mockTorrent.id}`,
+      })
     }
+  ),
 
-    const formData = await request.formData()
-    const magnet = formData.get('magnet')
-    if (!magnet) {
-      return HttpResponse.json(
-        { error: 'Missing magnet parameter', error_code: 400 },
-        { status: 400 }
-      )
+  http.get(
+    `${REALDEBRID_BASE_URL}/torrents/info/:id`,
+    ({ request, params }) => {
+      const authHeader = request.headers.get('Authorization')
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          { error: 'Unauthorized', error_code: 401 },
+          { status: 401 }
+        )
+      }
+
+      const { id } = params
+      if (id !== mockTorrent.id) {
+        return HttpResponse.json(
+          { error: 'Torrent not found', error_code: 404 },
+          { status: 404 }
+        )
+      }
+
+      return HttpResponse.json(mockTorrent)
     }
-
-    return HttpResponse.json({
-      id: mockTorrent.id,
-      uri: `https://api.real-debrid.com/rest/1.0/torrents/info/${mockTorrent.id}`,
-    })
-  }),
-
-  http.get(`${REALDEBRID_BASE_URL}/torrents/info/:id`, ({ request, params }) => {
-    const authHeader = request.headers.get('Authorization')
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return HttpResponse.json(
-        { error: 'Unauthorized', error_code: 401 },
-        { status: 401 }
-      )
-    }
-
-    const { id } = params
-    if (id !== mockTorrent.id) {
-      return HttpResponse.json(
-        { error: 'Torrent not found', error_code: 404 },
-        { status: 404 }
-      )
-    }
-
-    return HttpResponse.json(mockTorrent)
-  }),
+  ),
 
   http.post(
     `${REALDEBRID_BASE_URL}/torrents/selectFiles/:id`,
-    async ({ request, params }) => {
+    async ({ request }) => {
       const authHeader = request.headers.get('Authorization')
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return HttpResponse.json(

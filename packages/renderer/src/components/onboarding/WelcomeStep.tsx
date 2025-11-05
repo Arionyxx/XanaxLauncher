@@ -34,7 +34,7 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
         </h1>
         <p className="text-xl text-subtext0 max-w-2xl">
           Your all-in-one solution for managing and downloading media content.
-          Let's get you set up in just a few steps.
+          Let&apos;s get you set up in just a few steps.
         </p>
       </motion.div>
 
@@ -48,7 +48,9 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
           <p className="text-text">✨ Browse and search your media catalog</p>
         </div>
         <div className="bg-surface0 rounded-lg p-4 text-left">
-          <p className="text-text">⚡ Fast downloads with provider integration</p>
+          <p className="text-text">
+            ⚡ Fast downloads with provider integration
+          </p>
         </div>
         <div className="bg-surface0 rounded-lg p-4 text-left">
           <p className="text-text">🎨 Beautiful Catppuccin themed interface</p>

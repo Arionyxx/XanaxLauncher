@@ -46,9 +46,10 @@ class JobOrchestrator {
       response = await provider.startJob(payload)
     } catch (error) {
       // If job creation fails, create a failed job with error information
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error occurred'
       const jobId = `failed_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
-      
+
       const failedJob: Job = {
         id: jobId,
         provider: providerName,
@@ -298,7 +299,7 @@ class JobOrchestrator {
     }
 
     const provider = providerRegistry.getProvider(job.provider)
-    
+
     try {
       const statusResponse = await provider.getStatus(jobId)
 
@@ -310,15 +311,16 @@ class JobOrchestrator {
       })
     } catch (error) {
       // Mark job as failed and store error information
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-      
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error occurred'
+
       await this.updateJobStatus(jobId, {
         status: JobStatus.FAILED,
         metadata: {
           errorMessage,
         },
       })
-      
+
       // Re-throw the error so callers can handle it if needed
       throw error
     }

@@ -146,7 +146,9 @@ export async function clearDownloadHistory(): Promise<void> {
 }
 
 // Source Entries functions
-export async function getSourceEntries(sourceId?: string): Promise<SourceEntry[]> {
+export async function getSourceEntries(
+  sourceId?: string
+): Promise<SourceEntry[]> {
   try {
     let query = db.sourceEntries.toCollection()
     if (sourceId) {
@@ -160,7 +162,9 @@ export async function getSourceEntries(sourceId?: string): Promise<SourceEntry[]
   }
 }
 
-export async function getSourceEntry(id: string): Promise<SourceEntry | undefined> {
+export async function getSourceEntry(
+  id: string
+): Promise<SourceEntry | undefined> {
   try {
     const entry = await db.sourceEntries.get(id)
     return entry
@@ -172,11 +176,15 @@ export async function getSourceEntry(id: string): Promise<SourceEntry | undefine
 
 export async function syncSourceEntries(
   sourceId: string,
-  entries: Array<{ title: string; links: string[]; meta?: Record<string, unknown> }>
+  entries: Array<{
+    title: string
+    links: string[]
+    meta?: Record<string, unknown>
+  }>
 ): Promise<void> {
   try {
     const now = Date.now()
-    
+
     // Create entry objects with IDs
     const entryObjects = entries.map((entry, index) => ({
       id: `${sourceId}_entry_${index}_${Date.now()}`,
@@ -190,20 +198,27 @@ export async function syncSourceEntries(
 
     // Remove existing entries for this source
     await db.sourceEntries.where('sourceId').equals(sourceId).delete()
-    
+
     // Add new entries
     if (entryObjects.length > 0) {
       await db.sourceEntries.bulkAdd(entryObjects)
     }
-    
-    console.log(`[Storage] Synced ${entryObjects.length} entries for source "${sourceId}"`)
+
+    console.log(
+      `[Storage] Synced ${entryObjects.length} entries for source "${sourceId}"`
+    )
   } catch (error) {
-    console.error(`[Storage] Error syncing source entries for "${sourceId}":`, error)
+    console.error(
+      `[Storage] Error syncing source entries for "${sourceId}":`,
+      error
+    )
     throw error
   }
 }
 
-export async function searchSourceEntries(query: string): Promise<SourceEntry[]> {
+export async function searchSourceEntries(
+  query: string
+): Promise<SourceEntry[]> {
   try {
     const entries = await db.sourceEntries
       .where('title')

@@ -130,7 +130,10 @@ export function GeneralPanel({ settings, onUpdate }: GeneralPanelProps) {
                   />
                 )}
               />
-              <Button onClick={handleSelectDownloadDirectory} className="shrink-0">
+              <Button
+                onClick={handleSelectDownloadDirectory}
+                className="shrink-0"
+              >
                 Browse
               </Button>
             </div>

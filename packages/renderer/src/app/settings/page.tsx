@@ -164,8 +164,10 @@ const PROVIDER_METADATA: Record<ProviderKey, ProviderMetadata> = {
 const SOURCE_STATUS_STYLES: Record<Source['status'], string> = {
   never_synced:
     'border-border/70 bg-surface-0/80 text-text-muted shadow-inner-glow',
-  syncing: 'border-catppuccin-yellow/50 bg-catppuccin-yellow/10 text-catppuccin-yellow',
-  synced: 'border-catppuccin-green/45 bg-catppuccin-green/15 text-catppuccin-green',
+  syncing:
+    'border-catppuccin-yellow/50 bg-catppuccin-yellow/10 text-catppuccin-yellow',
+  synced:
+    'border-catppuccin-green/45 bg-catppuccin-green/15 text-catppuccin-green',
   error: 'border-catppuccin-red/50 bg-catppuccin-red/15 text-catppuccin-red',
 }
 
@@ -227,7 +229,9 @@ export default function SettingsPage() {
   const [showRealDebridToken, setShowRealDebridToken] = useState(false)
   const [savingTorbox, setSavingTorbox] = useState(false)
   const [savingRealDebrid, setSavingRealDebrid] = useState(false)
-  const [testingProvider, setTestingProvider] = useState<ProviderKey | null>(null)
+  const [testingProvider, setTestingProvider] = useState<ProviderKey | null>(
+    null
+  )
 
   const [selectingDownload, setSelectingDownload] = useState(false)
   const [selectingTemp, setSelectingTemp] = useState(false)
@@ -238,16 +242,22 @@ export default function SettingsPage() {
   const [bandwidthSaving, setBandwidthSaving] = useState(false)
 
   const [isSourceDialogOpen, setIsSourceDialogOpen] = useState(false)
-  const [sourceDialogMode, setSourceDialogMode] = useState<'create' | 'edit'>('create')
+  const [sourceDialogMode, setSourceDialogMode] = useState<'create' | 'edit'>(
+    'create'
+  )
   const [sourceInDialog, setSourceInDialog] = useState<Source | null>(null)
   const [sourceDialogSubmitting, setSourceDialogSubmitting] = useState(false)
 
   const [syncingSourceId, setSyncingSourceId] = useState<string | null>(null)
-  const [autoSyncUpdatingId, setAutoSyncUpdatingId] = useState<string | null>(null)
+  const [autoSyncUpdatingId, setAutoSyncUpdatingId] = useState<string | null>(
+    null
+  )
   const [syncingAll, setSyncingAll] = useState(false)
   const [importingSources, setImportingSources] = useState(false)
 
-  const [confirmAction, setConfirmAction] = useState<ConfirmActionState | null>(null)
+  const [confirmAction, setConfirmAction] = useState<ConfirmActionState | null>(
+    null
+  )
   const [confirmLoading, setConfirmLoading] = useState(false)
 
   const [checkingUpdates, setCheckingUpdates] = useState(false)
@@ -303,13 +313,15 @@ export default function SettingsPage() {
 
   const handleSelectFolder = useCallback(
     async (kind: 'download' | 'temp') => {
-      const setLoading = kind === 'download' ? setSelectingDownload : setSelectingTemp
+      const setLoading =
+        kind === 'download' ? setSelectingDownload : setSelectingTemp
       setLoading(true)
       try {
         if (!window?.api?.selectFolder) {
           toast({
             title: 'Desktop integration unavailable',
-            description: 'Folder selection is only available inside the desktop app.',
+            description:
+              'Folder selection is only available inside the desktop app.',
             variant: 'destructive',
           })
           return
@@ -350,7 +362,9 @@ export default function SettingsPage() {
     value: boolean
   ) => {
     try {
-      await updateBehaviorSettings({ [key]: value } as Partial<Settings['behavior']>)
+      await updateBehaviorSettings({ [key]: value } as Partial<
+        Settings['behavior']
+      >)
       toast({
         title: value ? 'Preference enabled' : 'Preference disabled',
         description:
@@ -367,7 +381,9 @@ export default function SettingsPage() {
       toast({
         title: 'Unable to update behavior preference',
         description:
-          error instanceof Error ? error.message : 'Please try again in a moment.',
+          error instanceof Error
+            ? error.message
+            : 'Please try again in a moment.',
         variant: 'destructive',
       })
     }
@@ -404,7 +420,9 @@ export default function SettingsPage() {
       toast({
         title: 'Unable to update bandwidth limit',
         description:
-          error instanceof Error ? error.message : 'Try again in a few moments.',
+          error instanceof Error
+            ? error.message
+            : 'Try again in a few moments.',
         variant: 'destructive',
       })
     } finally {
@@ -412,7 +430,9 @@ export default function SettingsPage() {
     }
   }
 
-  const handleBandwidthUnitChange = async (value: Settings['behavior']['bandwidthUnit']) => {
+  const handleBandwidthUnitChange = async (
+    value: Settings['behavior']['bandwidthUnit']
+  ) => {
     if (value === settings.behavior.bandwidthUnit) return
     try {
       await updateBehaviorSettings({ bandwidthUnit: value })
@@ -434,7 +454,8 @@ export default function SettingsPage() {
 
   const handleSaveProvider = async (provider: ProviderKey) => {
     const token = provider === 'torbox' ? torboxToken : realDebridToken
-    const setSaving = provider === 'torbox' ? setSavingTorbox : setSavingRealDebrid
+    const setSaving =
+      provider === 'torbox' ? setSavingTorbox : setSavingRealDebrid
 
     try {
       setSaving(true)
@@ -453,7 +474,9 @@ export default function SettingsPage() {
       toast({
         title: `Unable to save ${PROVIDER_METADATA[provider].name}`,
         description:
-          error instanceof Error ? error.message : 'Please verify your token and try again.',
+          error instanceof Error
+            ? error.message
+            : 'Please verify your token and try again.',
         variant: 'destructive',
       })
     } finally {
@@ -465,7 +488,8 @@ export default function SettingsPage() {
     if (!window?.api?.providerTestConnection) {
       toast({
         title: 'Desktop integration unavailable',
-        description: 'Testing connections is only available inside the desktop app.',
+        description:
+          'Testing connections is only available inside the desktop app.',
         variant: 'destructive',
       })
       return
@@ -482,7 +506,9 @@ export default function SettingsPage() {
       } else {
         toast({
           title: `${PROVIDER_METADATA[provider].name} test failed`,
-          description: response.message || 'Unable to verify credentials with the provider.',
+          description:
+            response.message ||
+            'Unable to verify credentials with the provider.',
           variant: 'destructive',
         })
       }
@@ -491,7 +517,9 @@ export default function SettingsPage() {
       toast({
         title: `Unable to reach ${PROVIDER_METADATA[provider].name}`,
         description:
-          error instanceof Error ? error.message : 'Check your internet connection and try again.',
+          error instanceof Error
+            ? error.message
+            : 'Check your internet connection and try again.',
         variant: 'destructive',
       })
     } finally {
@@ -539,7 +567,9 @@ export default function SettingsPage() {
       toast({
         title: 'Unable to save source',
         description:
-          error instanceof Error ? error.message : 'Double-check the URL and try again.',
+          error instanceof Error
+            ? error.message
+            : 'Double-check the URL and try again.',
         variant: 'destructive',
       })
     } finally {
@@ -560,7 +590,9 @@ export default function SettingsPage() {
       toast({
         title: 'Unable to sync source',
         description:
-          error instanceof Error ? error.message : 'Please review the source URL and try again.',
+          error instanceof Error
+            ? error.message
+            : 'Please review the source URL and try again.',
         variant: 'destructive',
       })
     } finally {
@@ -581,7 +613,9 @@ export default function SettingsPage() {
       toast({
         title: 'Unable to update auto-sync',
         description:
-          error instanceof Error ? error.message : 'Try again in a few seconds.',
+          error instanceof Error
+            ? error.message
+            : 'Try again in a few seconds.',
         variant: 'destructive',
       })
     } finally {
@@ -602,7 +636,9 @@ export default function SettingsPage() {
       toast({
         title: 'Unable to sync all sources',
         description:
-          error instanceof Error ? error.message : 'Review individual sources for troubleshooting details.',
+          error instanceof Error
+            ? error.message
+            : 'Review individual sources for troubleshooting details.',
         variant: 'destructive',
       })
     } finally {
@@ -636,7 +672,9 @@ export default function SettingsPage() {
         toast({
           title: 'Import failed',
           description:
-            error instanceof Error ? error.message : 'Ensure the file is a valid sources export.',
+            error instanceof Error
+              ? error.message
+              : 'Ensure the file is a valid sources export.',
           variant: 'destructive',
         })
       } finally {
@@ -669,7 +707,9 @@ export default function SettingsPage() {
       toast({
         title: 'Export failed',
         description:
-          error instanceof Error ? error.message : 'Unable to create sources export right now.',
+          error instanceof Error
+            ? error.message
+            : 'Unable to create sources export right now.',
         variant: 'destructive',
       })
     }
@@ -703,14 +743,16 @@ export default function SettingsPage() {
           await refreshSources()
           toast({
             title: 'Source cache cleared',
-            description: 'All cached entries were removed. Sources will resync on demand.',
+            description:
+              'All cached entries were removed. Sources will resync on demand.',
           })
           break
         case 'clear-download-history':
           await clearDownloadHistory()
           toast({
             title: 'Download history cleared',
-            description: 'All stored download jobs were removed from the database.',
+            description:
+              'All stored download jobs were removed from the database.',
           })
           break
       }
@@ -719,7 +761,8 @@ export default function SettingsPage() {
       console.error('[Settings] Confirm action failed', error)
       toast({
         title: 'Unable to complete action',
-        description: error instanceof Error ? error.message : 'Please try again shortly.',
+        description:
+          error instanceof Error ? error.message : 'Please try again shortly.',
         variant: 'destructive',
       })
     } finally {
@@ -731,7 +774,8 @@ export default function SettingsPage() {
     if (!window?.api?.updates?.check) {
       toast({
         title: 'Desktop integration unavailable',
-        description: 'Update checks are only available inside the packaged desktop app.',
+        description:
+          'Update checks are only available inside the packaged desktop app.',
         variant: 'destructive',
       })
       return
@@ -757,11 +801,15 @@ export default function SettingsPage() {
       }
     } catch (error) {
       console.error('[Settings] Update check failed', error)
-      setUpdateStatus('Unable to contact the update server. Please try again later.')
+      setUpdateStatus(
+        'Unable to contact the update server. Please try again later.'
+      )
       toast({
         title: 'Update check failed',
         description:
-          error instanceof Error ? error.message : 'Check your connection and try again.',
+          error instanceof Error
+            ? error.message
+            : 'Check your connection and try again.',
         variant: 'destructive',
       })
     } finally {
@@ -802,8 +850,9 @@ export default function SettingsPage() {
                 Settings &amp; Preferences
               </h1>
               <p className="max-w-2xl text-sm text-text-subtle md:text-base">
-                Tailor every part of XanaxLauncher—from storage locations and provider integrations
-                to privacy controls and maintenance utilities.
+                Tailor every part of XanaxLauncher—from storage locations and
+                provider integrations to privacy controls and maintenance
+                utilities.
               </p>
             </div>
             <Badge className="bg-catppuccin-blue/15 text-catppuccin-blue">
@@ -854,14 +903,22 @@ export default function SettingsPage() {
                           <section.icon className="h-4 w-4" />
                         </span>
                         <span className="flex flex-col">
-                          <span className="text-sm font-semibold">{section.label}</span>
-                          <span className="text-xs text-text-muted">{section.description}</span>
+                          <span className="text-sm font-semibold">
+                            {section.label}
+                          </span>
+                          <span className="text-xs text-text-muted">
+                            {section.description}
+                          </span>
                         </span>
                         {activeSection === section.id && (
                           <motion.span
                             layoutId="settings-nav-active"
                             className="absolute inset-0 -z-10 rounded-2xl border border-catppuccin-blue/35 bg-catppuccin-blue/10"
-                            transition={{ type: 'spring', bounce: 0.28, duration: 0.48 }}
+                            transition={{
+                              type: 'spring',
+                              bounce: 0.28,
+                              duration: 0.48,
+                            }}
                           />
                         )}
                       </button>
@@ -895,7 +952,9 @@ export default function SettingsPage() {
                           Storage Locations
                         </h3>
                         <p className="text-sm text-text-subtle">
-                          Choose where downloads and temporary files should live. These folders will be used for scans and library organization.
+                          Choose where downloads and temporary files should
+                          live. These folders will be used for scans and library
+                          organization.
                         </p>
                       </div>
                       <div className="space-y-4">
@@ -974,14 +1033,17 @@ export default function SettingsPage() {
                         <CardHeader className="gap-1">
                           <CardTitle className="text-lg">Language</CardTitle>
                           <CardDescription>
-                            Instantly switch the interface language across the entire app.
+                            Instantly switch the interface language across the
+                            entire app.
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                           <Select
                             value={settings.general.language}
                             onValueChange={(value) => {
-                              void updateGeneralSettings({ language: value as Language })
+                              void updateGeneralSettings({
+                                language: value as Language,
+                              })
                                 .then(() =>
                                   toast({
                                     title: 'Language updated',
@@ -989,7 +1051,10 @@ export default function SettingsPage() {
                                   })
                                 )
                                 .catch((error) => {
-                                  console.error('[Settings] Language update failed', error)
+                                  console.error(
+                                    '[Settings] Language update failed',
+                                    error
+                                  )
                                   toast({
                                     title: 'Unable to switch language',
                                     description:
@@ -1017,9 +1082,12 @@ export default function SettingsPage() {
 
                       <Card className="shadow-none">
                         <CardHeader className="gap-1">
-                          <CardTitle className="text-lg">Startup &amp; behavior</CardTitle>
+                          <CardTitle className="text-lg">
+                            Startup &amp; behavior
+                          </CardTitle>
                           <CardDescription>
-                            Fine-tune how XanaxLauncher behaves when it starts and closes.
+                            Fine-tune how XanaxLauncher behaves when it starts
+                            and closes.
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -1029,7 +1097,8 @@ export default function SettingsPage() {
                                 Launch at system startup
                               </p>
                               <p className="text-xs text-text-subtle">
-                                Automatically open XanaxLauncher when your computer boots.
+                                Automatically open XanaxLauncher when your
+                                computer boots.
                               </p>
                             </div>
                             <Switch
@@ -1045,7 +1114,8 @@ export default function SettingsPage() {
                                 Minimize to tray on close
                               </p>
                               <p className="text-xs text-text-subtle">
-                                Keep downloads running silently in the background when you close the window.
+                                Keep downloads running silently in the
+                                background when you close the window.
                               </p>
                             </div>
                             <Switch
@@ -1061,16 +1131,21 @@ export default function SettingsPage() {
 
                     <Card className="shadow-none">
                       <CardHeader className="gap-1">
-                        <CardTitle className="text-lg">Bandwidth management</CardTitle>
+                        <CardTitle className="text-lg">
+                          Bandwidth management
+                        </CardTitle>
                         <CardDescription>
-                          Limit download speeds to preserve bandwidth for the rest of your system.
+                          Limit download speeds to preserve bandwidth for the
+                          rest of your system.
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                           <Input
                             value={bandwidthValue}
-                            onChange={(event) => setBandwidthValue(event.target.value)}
+                            onChange={(event) =>
+                              setBandwidthValue(event.target.value)
+                            }
                             onBlur={handleBandwidthPersist}
                             placeholder="Unlimited"
                             inputMode="decimal"
@@ -1080,7 +1155,9 @@ export default function SettingsPage() {
                           <Select
                             value={bandwidthUnitValue}
                             onValueChange={(value) =>
-                              handleBandwidthUnitChange(value as Settings['behavior']['bandwidthUnit'])
+                              handleBandwidthUnitChange(
+                                value as Settings['behavior']['bandwidthUnit']
+                              )
                             }
                           >
                             <SelectTrigger className="h-11 w-full sm:w-[160px]">
@@ -1108,144 +1185,169 @@ export default function SettingsPage() {
 
                 {activeSection === 'integrations' && (
                   <div className="grid gap-6 xl:grid-cols-2">
-                    {(['torbox', 'realdebrid'] as ProviderKey[]).map((provider) => {
-                      const metadata = PROVIDER_METADATA[provider]
-                      const token = provider === 'torbox' ? torboxToken : realDebridToken
-                      const saving = provider === 'torbox' ? savingTorbox : savingRealDebrid
-                      const configured = token.trim().length > 0
+                    {(['torbox', 'realdebrid'] as ProviderKey[]).map(
+                      (provider) => {
+                        const metadata = PROVIDER_METADATA[provider]
+                        const token =
+                          provider === 'torbox' ? torboxToken : realDebridToken
+                        const saving =
+                          provider === 'torbox'
+                            ? savingTorbox
+                            : savingRealDebrid
+                        const configured = token.trim().length > 0
 
-                      return (
-                        <Card key={provider} className="shadow-none">
-                          <CardHeader className="gap-2">
-                            <div className="flex items-center justify-between gap-3">
-                              <div>
-                                <CardTitle className="text-xl">
-                                  <span className={cn('font-semibold', metadata.accentClass)}>
-                                    {metadata.name}
-                                  </span>
-                                </CardTitle>
-                                <CardDescription>{metadata.description}</CardDescription>
+                        return (
+                          <Card key={provider} className="shadow-none">
+                            <CardHeader className="gap-2">
+                              <div className="flex items-center justify-between gap-3">
+                                <div>
+                                  <CardTitle className="text-xl">
+                                    <span
+                                      className={cn(
+                                        'font-semibold',
+                                        metadata.accentClass
+                                      )}
+                                    >
+                                      {metadata.name}
+                                    </span>
+                                  </CardTitle>
+                                  <CardDescription>
+                                    {metadata.description}
+                                  </CardDescription>
+                                </div>
+                                <Badge
+                                  className={cn(
+                                    'border border-transparent px-3 py-1 text-xs',
+                                    configured
+                                      ? 'bg-catppuccin-green/15 text-catppuccin-green'
+                                      : 'bg-surface-0/70 text-text-muted'
+                                  )}
+                                >
+                                  {configured ? 'Configured' : 'Not connected'}
+                                </Badge>
                               </div>
-                              <Badge
-                                className={cn(
-                                  'border border-transparent px-3 py-1 text-xs',
-                                  configured
-                                    ? 'bg-catppuccin-green/15 text-catppuccin-green'
-                                    : 'bg-surface-0/70 text-text-muted'
-                                )}
-                              >
-                                {configured ? 'Configured' : 'Not connected'}
-                              </Badge>
-                            </div>
-                          </CardHeader>
-                          <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                              <Label htmlFor={`${provider}-token`} className="text-xs uppercase tracking-[0.3em] text-text-muted">
-                                API token
-                              </Label>
-                              <div className="flex flex-col gap-3">
-                                <div className="flex items-center gap-2">
-                                  <Input
-                                    id={`${provider}-token`}
-                                    type={
-                                      provider === 'torbox'
-                                        ? showTorboxToken
-                                          ? 'text'
-                                          : 'password'
-                                        : showRealDebridToken
-                                        ? 'text'
-                                        : 'password'
-                                    }
-                                    value={token}
-                                    onChange={(event) =>
-                                      provider === 'torbox'
-                                        ? setTorboxToken(event.target.value)
-                                        : setRealDebridToken(event.target.value)
-                                    }
-                                    placeholder="Paste your token"
-                                    autoComplete="off"
-                                  />
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() =>
-                                      provider === 'torbox'
-                                        ? setShowTorboxToken((prev) => !prev)
-                                        : setShowRealDebridToken((prev) => !prev)
-                                    }
-                                  >
-                                    {provider === 'torbox' ? (
-                                      showTorboxToken ? (
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                              <div className="space-y-2">
+                                <Label
+                                  htmlFor={`${provider}-token`}
+                                  className="text-xs uppercase tracking-[0.3em] text-text-muted"
+                                >
+                                  API token
+                                </Label>
+                                <div className="flex flex-col gap-3">
+                                  <div className="flex items-center gap-2">
+                                    <Input
+                                      id={`${provider}-token`}
+                                      type={
+                                        provider === 'torbox'
+                                          ? showTorboxToken
+                                            ? 'text'
+                                            : 'password'
+                                          : showRealDebridToken
+                                            ? 'text'
+                                            : 'password'
+                                      }
+                                      value={token}
+                                      onChange={(event) =>
+                                        provider === 'torbox'
+                                          ? setTorboxToken(event.target.value)
+                                          : setRealDebridToken(
+                                              event.target.value
+                                            )
+                                      }
+                                      placeholder="Paste your token"
+                                      autoComplete="off"
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() =>
+                                        provider === 'torbox'
+                                          ? setShowTorboxToken((prev) => !prev)
+                                          : setShowRealDebridToken(
+                                              (prev) => !prev
+                                            )
+                                      }
+                                    >
+                                      {provider === 'torbox' ? (
+                                        showTorboxToken ? (
+                                          <EyeOff className="h-4 w-4" />
+                                        ) : (
+                                          <Eye className="h-4 w-4" />
+                                        )
+                                      ) : showRealDebridToken ? (
                                         <EyeOff className="h-4 w-4" />
                                       ) : (
                                         <Eye className="h-4 w-4" />
-                                      )
-                                    ) : showRealDebridToken ? (
-                                      <EyeOff className="h-4 w-4" />
-                                    ) : (
-                                      <Eye className="h-4 w-4" />
-                                    )}
-                                    <span className="sr-only">
-                                      {provider === 'torbox'
-                                        ? showTorboxToken
-                                          ? 'Hide token'
-                                          : 'Show token'
-                                        : showRealDebridToken
-                                        ? 'Hide token'
-                                        : 'Show token'}
-                                    </span>
-                                  </Button>
+                                      )}
+                                      <span className="sr-only">
+                                        {provider === 'torbox'
+                                          ? showTorboxToken
+                                            ? 'Hide token'
+                                            : 'Show token'
+                                          : showRealDebridToken
+                                            ? 'Hide token'
+                                            : 'Show token'}
+                                      </span>
+                                    </Button>
+                                  </div>
+                                  <p className="text-xs text-text-muted">
+                                    {metadata.name} tokens are stored locally
+                                    and never leave your device.
+                                  </p>
                                 </div>
-                                <p className="text-xs text-text-muted">
-                                  {metadata.name} tokens are stored locally and never leave your device.
-                                </p>
                               </div>
-                            </div>
-                          </CardContent>
-                          <CardFooter className="flex flex-wrap gap-3">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={() => handleTestProvider(provider)}
-                              disabled={testingProvider === provider || saving}
-                            >
-                              {testingProvider === provider ? (
-                                <>
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                  Testing…
-                                </>
-                              ) : (
-                                'Test connection'
-                              )}
-                            </Button>
-                            <Button
-                              type="button"
-                              onClick={() => handleSaveProvider(provider)}
-                              disabled={saving}
-                            >
-                              {saving ? (
-                                <>
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                  Saving…
-                                </>
-                              ) : (
-                                'Save credentials'
-                              )}
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              className="ml-auto"
-                              onClick={() => window.open(metadata.docUrl, '_blank')}
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                              Learn more
-                            </Button>
-                          </CardFooter>
-                        </Card>
-                      )
-                    })}
+                            </CardContent>
+                            <CardFooter className="flex flex-wrap gap-3">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => handleTestProvider(provider)}
+                                disabled={
+                                  testingProvider === provider || saving
+                                }
+                              >
+                                {testingProvider === provider ? (
+                                  <>
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    Testing…
+                                  </>
+                                ) : (
+                                  'Test connection'
+                                )}
+                              </Button>
+                              <Button
+                                type="button"
+                                onClick={() => handleSaveProvider(provider)}
+                                disabled={saving}
+                              >
+                                {saving ? (
+                                  <>
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    Saving…
+                                  </>
+                                ) : (
+                                  'Save credentials'
+                                )}
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                className="ml-auto"
+                                onClick={() =>
+                                  window.open(metadata.docUrl, '_blank')
+                                }
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                                Learn more
+                              </Button>
+                            </CardFooter>
+                          </Card>
+                        )
+                      }
+                    )}
                   </div>
                 )}
 
@@ -1257,7 +1359,8 @@ export default function SettingsPage() {
                           Media sources overview
                         </h3>
                         <p className="text-sm text-text-subtle">
-                          Organize the JSON feeds XanaxLauncher ingests. Sources sync in the background and keep your catalog fresh.
+                          Organize the JSON feeds XanaxLauncher ingests. Sources
+                          sync in the background and keep your catalog fresh.
                         </p>
                       </div>
                       <div className="flex flex-wrap gap-2">
@@ -1316,7 +1419,9 @@ export default function SettingsPage() {
                     <div className="flex items-start gap-3 rounded-3xl border border-catppuccin-yellow/30 bg-catppuccin-yellow/10 p-5 text-sm text-catppuccin-yellow">
                       <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0" />
                       <p>
-                        Only ingest sources you trust. You are responsible for ensuring you have the legal right to download content provided by a feed.
+                        Only ingest sources you trust. You are responsible for
+                        ensuring you have the legal right to download content
+                        provided by a feed.
                       </p>
                     </div>
 
@@ -1329,12 +1434,18 @@ export default function SettingsPage() {
                         <CardContent className="space-y-4 py-14">
                           <Database className="mx-auto h-12 w-12 text-text-muted" />
                           <div className="space-y-2">
-                            <h4 className="text-lg font-semibold">No sources yet</h4>
+                            <h4 className="text-lg font-semibold">
+                              No sources yet
+                            </h4>
                             <p className="text-sm text-text-subtle">
-                              Add your favourite community feeds to populate the library. Try FitGirl to get started quickly.
+                              Add your favourite community feeds to populate the
+                              library. Try FitGirl to get started quickly.
                             </p>
                           </div>
-                          <Button type="button" onClick={openCreateSourceDialog}>
+                          <Button
+                            type="button"
+                            onClick={openCreateSourceDialog}
+                          >
                             <FilePlus2 className="h-4 w-4" />
                             Add your first source
                           </Button>
@@ -1354,32 +1465,47 @@ export default function SettingsPage() {
                                     {source.url}
                                   </p>
                                 </div>
-                                <Badge className={SOURCE_STATUS_STYLES[source.status]}>
+                                <Badge
+                                  className={
+                                    SOURCE_STATUS_STYLES[source.status]
+                                  }
+                                >
                                   {SOURCE_STATUS_LABELS[source.status]}
                                 </Badge>
                               </div>
                               <div className="flex flex-wrap items-center gap-4 text-xs text-text-muted">
                                 <span>
                                   Entries:{' '}
-                                  <span className="text-foreground">{source.entryCount}</span>
+                                  <span className="text-foreground">
+                                    {source.entryCount}
+                                  </span>
                                 </span>
                                 <span>
                                   Last sync:{' '}
                                   <span className="text-foreground">
-                                    {source.lastSyncAt ? new Date(source.lastSyncAt).toLocaleString() : 'Never'}
+                                    {source.lastSyncAt
+                                      ? new Date(
+                                          source.lastSyncAt
+                                        ).toLocaleString()
+                                      : 'Never'}
                                   </span>
                                 </span>
                               </div>
                               <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/5 bg-surface-0/60 p-3 text-xs">
                                 <div>
-                                  <p className="font-medium text-foreground">Auto-sync</p>
+                                  <p className="font-medium text-foreground">
+                                    Auto-sync
+                                  </p>
                                   <p className="text-text-subtle">
-                                    Automatically refresh this source every few hours.
+                                    Automatically refresh this source every few
+                                    hours.
                                   </p>
                                 </div>
                                 <Switch
                                   checked={source.autoSync}
-                                  onCheckedChange={(value) => handleAutoSyncToggle(source, value)}
+                                  onCheckedChange={(value) =>
+                                    handleAutoSyncToggle(source, value)
+                                  }
                                   disabled={autoSyncUpdatingId === source.id}
                                 />
                               </div>
@@ -1420,7 +1546,10 @@ export default function SettingsPage() {
                                 type="button"
                                 variant="destructive"
                                 onClick={() =>
-                                  setConfirmAction({ type: 'delete-source', source })
+                                  setConfirmAction({
+                                    type: 'delete-source',
+                                    source,
+                                  })
                                 }
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -1437,24 +1566,29 @@ export default function SettingsPage() {
                 {activeSection === 'privacy' && (
                   <div className="space-y-6">
                     <p className="text-sm text-text-subtle">
-                      XanaxLauncher keeps all of your personal data on-device. Choose whether to share anonymous diagnostics to help us improve stability and performance.
+                      XanaxLauncher keeps all of your personal data on-device.
+                      Choose whether to share anonymous diagnostics to help us
+                      improve stability and performance.
                     </p>
                     <div className="space-y-4">
                       {[
                         {
                           key: 'telemetryEnabled' as const,
                           title: 'Product telemetry',
-                          description: 'Send anonymous events that help us understand how features are used.',
+                          description:
+                            'Send anonymous events that help us understand how features are used.',
                         },
                         {
                           key: 'crashReportsEnabled' as const,
                           title: 'Crash reports',
-                          description: 'Share stack traces when the app misbehaves so we can fix issues faster.',
+                          description:
+                            'Share stack traces when the app misbehaves so we can fix issues faster.',
                         },
                         {
                           key: 'usageStatsEnabled' as const,
                           title: 'Usage statistics',
-                          description: 'Contribute aggregated stats about download success and provider health.',
+                          description:
+                            'Contribute aggregated stats about download success and provider health.',
                         },
                       ].map((item) => (
                         <Card key={item.key} className="shadow-none">
@@ -1463,19 +1597,28 @@ export default function SettingsPage() {
                               <h4 className="text-base font-semibold text-foreground">
                                 {item.title}
                               </h4>
-                              <p className="text-sm text-text-subtle">{item.description}</p>
+                              <p className="text-sm text-text-subtle">
+                                {item.description}
+                              </p>
                             </div>
                             <Switch
                               checked={settings.privacy[item.key]}
                               onCheckedChange={async (value) => {
                                 try {
-                                  await updatePrivacySettings({ [item.key]: value })
+                                  await updatePrivacySettings({
+                                    [item.key]: value,
+                                  })
                                   toast({
-                                    title: value ? 'Preference enabled' : 'Preference disabled',
+                                    title: value
+                                      ? 'Preference enabled'
+                                      : 'Preference disabled',
                                     description: `${item.title} ${value ? 'enabled' : 'disabled'}.`,
                                   })
                                 } catch (error) {
-                                  console.error('[Settings] Privacy update failed', error)
+                                  console.error(
+                                    '[Settings] Privacy update failed',
+                                    error
+                                  )
                                   toast({
                                     title: 'Unable to update preference',
                                     description:
@@ -1497,7 +1640,8 @@ export default function SettingsPage() {
                 {activeSection === 'advanced' && (
                   <div className="space-y-6">
                     <p className="text-sm text-text-subtle">
-                      Flush caches, reset preferences, or dig into diagnostics. These tools stay out of the way until you need them.
+                      Flush caches, reset preferences, or dig into diagnostics.
+                      These tools stay out of the way until you need them.
                     </p>
                     <div className="grid gap-4 xl:grid-cols-2">
                       <Card className="shadow-none">
@@ -1511,14 +1655,20 @@ export default function SettingsPage() {
                           <Button
                             type="button"
                             variant="outline"
-                            onClick={() => setConfirmAction({ type: 'clear-source-cache' })}
+                            onClick={() =>
+                              setConfirmAction({ type: 'clear-source-cache' })
+                            }
                           >
                             Clear source cache
                           </Button>
                           <Button
                             type="button"
                             variant="outline"
-                            onClick={() => setConfirmAction({ type: 'clear-download-history' })}
+                            onClick={() =>
+                              setConfirmAction({
+                                type: 'clear-download-history',
+                              })
+                            }
                           >
                             Clear download history
                           </Button>
@@ -1551,12 +1701,16 @@ export default function SettingsPage() {
                           <Button
                             type="button"
                             variant="destructive"
-                            onClick={() => setConfirmAction({ type: 'reset-settings' })}
+                            onClick={() =>
+                              setConfirmAction({ type: 'reset-settings' })
+                            }
                           >
                             Reset settings to defaults
                           </Button>
                           {updateStatus && (
-                            <p className="text-xs text-text-subtle">{updateStatus}</p>
+                            <p className="text-xs text-text-subtle">
+                              {updateStatus}
+                            </p>
                           )}
                         </CardContent>
                       </Card>
@@ -1570,31 +1724,42 @@ export default function SettingsPage() {
                       <CardHeader className="gap-2">
                         <CardTitle className="text-xl">XanaxLauncher</CardTitle>
                         <CardDescription>
-                          Crafted for collectors who care about polish. Built with Electron, Next.js, and Catppuccin aesthetics.
+                          Crafted for collectors who care about polish. Built
+                          with Electron, Next.js, and Catppuccin aesthetics.
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="grid gap-2 text-sm text-text-subtle sm:grid-cols-2">
                           <div>
-                            <span className="font-medium text-foreground">App version:</span>{' '}
+                            <span className="font-medium text-foreground">
+                              App version:
+                            </span>{' '}
                             {versionInfo?.version ?? '—'}
                           </div>
                           <div>
-                            <span className="font-medium text-foreground">Electron:</span>{' '}
+                            <span className="font-medium text-foreground">
+                              Electron:
+                            </span>{' '}
                             {versionInfo?.electron ?? '—'}
                           </div>
                           <div>
-                            <span className="font-medium text-foreground">Chromium:</span>{' '}
+                            <span className="font-medium text-foreground">
+                              Chromium:
+                            </span>{' '}
                             {versionInfo?.chrome ?? '—'}
                           </div>
                           <div>
-                            <span className="font-medium text-foreground">Node.js:</span>{' '}
+                            <span className="font-medium text-foreground">
+                              Node.js:
+                            </span>{' '}
                             {versionInfo?.node ?? '—'}
                           </div>
                         </div>
                         <div className="rounded-2xl border border-white/10 bg-surface-0/60 p-4 text-sm text-text-subtle">
                           <p>
-                            XanaxLauncher was designed by fans of the Catppuccin community. Icons provided by Lucide, animations by Framer Motion, and styling courtesy of Tailwind CSS.
+                            XanaxLauncher was designed by fans of the Catppuccin
+                            community. Icons provided by Lucide, animations by
+                            Framer Motion, and styling courtesy of Tailwind CSS.
                           </p>
                         </div>
                       </CardContent>
@@ -1602,7 +1767,9 @@ export default function SettingsPage() {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={() => window.open('https://github.com/', '_blank')}
+                          onClick={() =>
+                            window.open('https://github.com/', '_blank')
+                          }
                         >
                           <ExternalLink className="h-4 w-4" />
                           Project repository
@@ -1610,7 +1777,9 @@ export default function SettingsPage() {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={() => window.open('https://catppuccin.com/', '_blank')}
+                          onClick={() =>
+                            window.open('https://catppuccin.com/', '_blank')
+                          }
                         >
                           <ExternalLink className="h-4 w-4" />
                           Catppuccin palette
@@ -1620,7 +1789,9 @@ export default function SettingsPage() {
                     <div className="flex items-center gap-3 rounded-3xl border border-catppuccin-blue/40 bg-catppuccin-blue/10 p-4 text-sm text-catppuccin-blue">
                       <CheckCircle2 className="h-5 w-5" />
                       <span>
-                        Thank you for trusting XanaxLauncher. We’re working on new integrations, smarter recommendations, and more automation—stay tuned!
+                        Thank you for trusting XanaxLauncher. We’re working on
+                        new integrations, smarter recommendations, and more
+                        automation—stay tuned!
                       </span>
                     </div>
                   </div>
@@ -1756,7 +1927,10 @@ function SourceEditorDialog({
   })
 
   return (
-    <Dialog open={open} onOpenChange={(value) => (!value && !submitting ? onClose() : null)}>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => (!value && !submitting ? onClose() : null)}
+    >
       <DialogContent className="max-w-lg border border-white/10 bg-surface-0/95 shadow-glow backdrop-blur-2xl">
         <DialogHeader className="space-y-2">
           <DialogTitle className="text-xl font-semibold text-foreground">
@@ -1776,7 +1950,9 @@ function SourceEditorDialog({
               {...register('name')}
             />
             {errors.name && (
-              <p className="text-xs text-catppuccin-red">{errors.name.message}</p>
+              <p className="text-xs text-catppuccin-red">
+                {errors.name.message}
+              </p>
             )}
           </div>
           <div className="space-y-2">
@@ -1788,7 +1964,9 @@ function SourceEditorDialog({
               {...register('url')}
             />
             {errors.url && (
-              <p className="text-xs text-catppuccin-red">{errors.url.message}</p>
+              <p className="text-xs text-catppuccin-red">
+                {errors.url.message}
+              </p>
             )}
           </div>
           <div className="flex items-start justify-between gap-4 rounded-2xl border border-white/10 bg-surface-0/60 p-4">
@@ -1813,7 +1991,12 @@ function SourceEditorDialog({
             />
           </div>
           <DialogFooter className="gap-3">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={submitting}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onClose}
+              disabled={submitting}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={submitting}>
@@ -1822,8 +2005,10 @@ function SourceEditorDialog({
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Saving…
                 </>
+              ) : mode === 'create' ? (
+                'Add source'
               ) : (
-                mode === 'create' ? 'Add source' : 'Save changes'
+                'Save changes'
               )}
             </Button>
           </DialogFooter>
@@ -1855,7 +2040,10 @@ function ConfirmDialog({
   onConfirm,
 }: ConfirmDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={(value) => (!value && !loading ? onCancel() : null)}>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => (!value && !loading ? onCancel() : null)}
+    >
       <DialogContent className="max-w-md border border-white/10 bg-surface-0/95 shadow-glow backdrop-blur-2xl">
         <DialogHeader className="space-y-2">
           <DialogTitle className="text-xl font-semibold text-foreground">
@@ -1866,7 +2054,12 @@ function ConfirmDialog({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-3">
-          <Button type="button" variant="ghost" onClick={onCancel} disabled={loading}>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onCancel}
+            disabled={loading}
+          >
             Cancel
           </Button>
           <Button
