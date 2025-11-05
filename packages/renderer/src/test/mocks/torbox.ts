@@ -42,33 +42,39 @@ const mockUser = {
 }
 
 export const torboxHandlers = [
-  http.post(`${TORBOX_BASE_URL}/torrents/createtorrent`, async ({ request }) => {
-    const authHeader = request.headers.get('Authorization')
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return HttpResponse.json(
-        { success: false, detail: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+  http.post(
+    `${TORBOX_BASE_URL}/torrents/createtorrent`,
+    async ({ request }) => {
+      const authHeader = request.headers.get('Authorization')
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          { success: false, detail: 'Unauthorized' },
+          { status: 401 }
+        )
+      }
 
-    const body = await request.json()
-    if (!body || (typeof body === 'object' && !('magnet' in body || 'url' in body))) {
-      return HttpResponse.json(
-        { success: false, detail: 'Missing magnet or url' },
-        { status: 400 }
-      )
-    }
+      const body = await request.json()
+      if (
+        !body ||
+        (typeof body === 'object' && !('magnet' in body || 'url' in body))
+      ) {
+        return HttpResponse.json(
+          { success: false, detail: 'Missing magnet or url' },
+          { status: 400 }
+        )
+      }
 
-    return HttpResponse.json({
-      success: true,
-      detail: 'Torrent created successfully',
-      data: {
-        torrent_id: mockTorrent.id,
-        name: mockTorrent.name,
-        hash: mockTorrent.hash,
-      },
-    })
-  }),
+      return HttpResponse.json({
+        success: true,
+        detail: 'Torrent created successfully',
+        data: {
+          torrent_id: mockTorrent.id,
+          name: mockTorrent.name,
+          hash: mockTorrent.hash,
+        },
+      })
+    }
+  ),
 
   http.get(`${TORBOX_BASE_URL}/torrents/mylist`, ({ request }) => {
     const authHeader = request.headers.get('Authorization')
@@ -86,20 +92,23 @@ export const torboxHandlers = [
     })
   }),
 
-  http.post(`${TORBOX_BASE_URL}/torrents/controltorrent`, async ({ request }) => {
-    const authHeader = request.headers.get('Authorization')
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return HttpResponse.json(
-        { success: false, detail: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+  http.post(
+    `${TORBOX_BASE_URL}/torrents/controltorrent`,
+    async ({ request }) => {
+      const authHeader = request.headers.get('Authorization')
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return HttpResponse.json(
+          { success: false, detail: 'Unauthorized' },
+          { status: 401 }
+        )
+      }
 
-    return HttpResponse.json({
-      success: true,
-      detail: 'Operation successful',
-    })
-  }),
+      return HttpResponse.json({
+        success: true,
+        detail: 'Operation successful',
+      })
+    }
+  ),
 
   http.get(`${TORBOX_BASE_URL}/torrents/requestdl`, ({ request }) => {
     const authHeader = request.headers.get('Authorization')

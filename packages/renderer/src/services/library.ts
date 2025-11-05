@@ -45,11 +45,15 @@ function ensureLibraryApi(): LibraryApi {
   return window.api.library as LibraryApi
 }
 
-export async function scanLibrary(paths?: string[]): Promise<LibraryScanResponse> {
+export async function scanLibrary(
+  paths?: string[]
+): Promise<LibraryScanResponse> {
   const api = ensureLibraryApi()
   const uniquePaths = Array.from(new Set(paths?.filter(Boolean) ?? []))
 
-  const response = await api.scan({ paths: uniquePaths.length ? uniquePaths : undefined })
+  const response = await api.scan({
+    paths: uniquePaths.length ? uniquePaths : undefined,
+  })
   const entries = response.entries ?? []
 
   await syncLibraryEntries(
@@ -65,7 +69,9 @@ export async function scanLibrary(paths?: string[]): Promise<LibraryScanResponse
   return response
 }
 
-export async function launchGameFromLibrary(entry: LibraryEntry): Promise<void> {
+export async function launchGameFromLibrary(
+  entry: LibraryEntry
+): Promise<void> {
   if (!entry.executablePath) {
     throw new Error('No launch executable has been detected for this game yet')
   }

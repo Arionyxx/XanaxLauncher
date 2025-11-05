@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test'
+import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
   testDir: './e2e',
@@ -6,9 +6,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: process.env.CI
-    ? [['html'], ['github']]
-    : [['html'], ['list']],
+  reporter: process.env.CI ? [['html'], ['github']] : [['html'], ['list']],
   use: {
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',

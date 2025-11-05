@@ -189,7 +189,8 @@ export function BehaviorPanel({ settings, onUpdate }: BehaviorPanelProps) {
             )}
             {watch('bandwidthLimit') > 0 && (
               <p className="text-xs text-muted-foreground mt-1">
-                Current limit: {watch('bandwidthLimit')} {watch('bandwidthUnit')}
+                Current limit: {watch('bandwidthLimit')}{' '}
+                {watch('bandwidthUnit')}
               </p>
             )}
           </div>

@@ -96,9 +96,9 @@ const api = {
   },
 
   library: {
-    scan: async (
-      request?: { paths?: string[] }
-    ): Promise<LibraryScanResponse> => {
+    scan: async (request?: {
+      paths?: string[]
+    }): Promise<LibraryScanResponse> => {
       return await ipcRenderer.invoke(IPC_CHANNELS.LIBRARY_SCAN, request ?? {})
     },
 

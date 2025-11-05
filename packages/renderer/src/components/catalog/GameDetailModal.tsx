@@ -13,8 +13,20 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -52,18 +64,18 @@ export function GameDetailModal({
   const handleDownload = async () => {
     if (!game || !selectedProvider) {
       toast({
-        title: "Provider Required",
-        description: "Please select a download provider",
-        variant: "destructive",
+        title: 'Provider Required',
+        description: 'Please select a download provider',
+        variant: 'destructive',
       })
       return
     }
 
     if (selectedLinks.size === 0) {
       toast({
-        title: "Selection Required",
-        description: "Please select at least one link to download",
-        variant: "destructive",
+        title: 'Selection Required',
+        description: 'Please select at least one link to download',
+        variant: 'destructive',
       })
       return
     }
@@ -84,7 +96,7 @@ export function GameDetailModal({
       }
 
       toast({
-        title: "Download Started",
+        title: 'Download Started',
         description: `Started downloading ${selectedLinks.size} link(s) for ${game.title}`,
       })
 
@@ -93,9 +105,10 @@ export function GameDetailModal({
     } catch (error) {
       console.error('[GameDetailModal] Download error:', error)
       toast({
-        title: "Download Failed",
-        description: error instanceof Error ? error.message : 'Failed to start download',
-        variant: "destructive",
+        title: 'Download Failed',
+        description:
+          error instanceof Error ? error.message : 'Failed to start download',
+        variant: 'destructive',
       })
     } finally {
       setIsDownloading(false)
@@ -192,7 +205,10 @@ export function GameDetailModal({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Select value={selectedProvider} onValueChange={setSelectedProvider}>
+                <Select
+                  value={selectedProvider}
+                  onValueChange={setSelectedProvider}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Choose a download provider" />
                   </SelectTrigger>
@@ -248,7 +264,9 @@ export function GameDetailModal({
                         </label>
                       </div>
                       <Badge
-                        variant={link.startsWith('magnet:') ? 'default' : 'secondary'}
+                        variant={
+                          link.startsWith('magnet:') ? 'default' : 'secondary'
+                        }
                       >
                         {link.startsWith('magnet:') ? (
                           <>

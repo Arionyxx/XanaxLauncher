@@ -4,7 +4,13 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -183,10 +189,7 @@ export default function ProviderTestPage() {
               Test provider operations and job orchestration
             </p>
           </div>
-          <Button
-            variant="default"
-            onClick={() => router.push('/')}
-          >
+          <Button variant="default" onClick={() => router.push('/')}>
             Back to Home
           </Button>
         </div>
@@ -202,7 +205,9 @@ export default function ProviderTestPage() {
         {connectionStatus && (
           <Card className="border-green-600/50 bg-green-50 dark:bg-green-950/20">
             <CardContent className="pt-6">
-              <p className="text-green-700 dark:text-green-300 font-semibold">{connectionStatus}</p>
+              <p className="text-green-700 dark:text-green-300 font-semibold">
+                {connectionStatus}
+              </p>
             </CardContent>
           </Card>
         )}
@@ -214,7 +219,10 @@ export default function ProviderTestPage() {
           <CardContent className="space-y-4">
             <div className="max-w-xs">
               <label className="text-sm font-medium mb-2 block">Provider</label>
-              <Select value={selectedProvider} onValueChange={setSelectedProvider}>
+              <Select
+                value={selectedProvider}
+                onValueChange={setSelectedProvider}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a provider" />
                 </SelectTrigger>
@@ -229,7 +237,9 @@ export default function ProviderTestPage() {
             </div>
 
             <div className="max-w-2xl">
-              <label className="text-sm font-medium mb-2 block">URL or Magnet Link</label>
+              <label className="text-sm font-medium mb-2 block">
+                URL or Magnet Link
+              </label>
               <Input
                 placeholder="https://example.com/file.zip or magnet:?xt=..."
                 value={testUrl}
@@ -238,10 +248,7 @@ export default function ProviderTestPage() {
             </div>
 
             <div className="flex gap-2 flex-wrap">
-              <Button
-                onClick={handleStartJob}
-                disabled={loading || !testUrl}
-              >
+              <Button onClick={handleStartJob} disabled={loading || !testUrl}>
                 {loading ? 'Starting...' : 'Start Job'}
               </Button>
               <Button
@@ -251,10 +258,7 @@ export default function ProviderTestPage() {
               >
                 {loading ? 'Testing...' : 'Test Connection'}
               </Button>
-              <Button
-                variant="outline"
-                onClick={handleClearCompleted}
-              >
+              <Button variant="outline" onClick={handleClearCompleted}>
                 Clear Completed
               </Button>
               <Button variant="outline" onClick={loadJobs}>
@@ -266,9 +270,7 @@ export default function ProviderTestPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>
-              Jobs ({jobs.length})
-            </CardTitle>
+            <CardTitle>Jobs ({jobs.length})</CardTitle>
           </CardHeader>
           <CardContent>
             {jobs.length === 0 ? (
@@ -282,9 +284,7 @@ export default function ProviderTestPage() {
                     <CardContent className="pt-6 space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <Badge
-                            variant={getStatusVariant(job.status)}
-                          >
+                          <Badge variant={getStatusVariant(job.status)}>
                             {job.status}
                           </Badge>
                           <span className="text-sm font-mono text-muted-foreground">
@@ -317,17 +317,21 @@ export default function ProviderTestPage() {
                       <div>
                         <div className="flex justify-between text-sm mb-1">
                           <span className="text-foreground">Progress</span>
-                          <span className="text-muted-foreground">{job.progress}%</span>
+                          <span className="text-muted-foreground">
+                            {job.progress}%
+                          </span>
                         </div>
-                        <Progress
-                          value={job.progress}
-                        />
+                        <Progress value={job.progress} />
                       </div>
 
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
-                          <span className="text-muted-foreground">Provider:</span>
-                          <span className="text-foreground ml-2">{job.provider}</span>
+                          <span className="text-muted-foreground">
+                            Provider:
+                          </span>
+                          <span className="text-foreground ml-2">
+                            {job.provider}
+                          </span>
                         </div>
                         <div>
                           <span className="text-muted-foreground">Files:</span>
@@ -345,7 +349,9 @@ export default function ProviderTestPage() {
 
                       {job.files.length > 0 && (
                         <div className="pt-2 border-t">
-                          <p className="text-sm text-muted-foreground mb-2">Files:</p>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            Files:
+                          </p>
                           <div className="space-y-1">
                             {job.files.slice(0, 3).map((file, idx) => (
                               <div

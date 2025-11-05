@@ -78,7 +78,9 @@ export function FoldersStep({
       className="flex flex-col space-y-6 max-w-2xl mx-auto"
     >
       <div className="text-center space-y-2">
-        <h2 className="text-3xl font-bold text-foreground">Choose Your Folders</h2>
+        <h2 className="text-3xl font-bold text-foreground">
+          Choose Your Folders
+        </h2>
         <p className="text-muted-foreground">
           Select where you want to store downloads and temporary files
         </p>
@@ -146,9 +148,7 @@ export function FoldersStep({
           <Button variant="ghost" onClick={handleSkip}>
             Skip (Use Defaults)
           </Button>
-          <Button onClick={handleContinue}>
-            Continue
-          </Button>
+          <Button onClick={handleContinue}>Continue</Button>
         </div>
       </div>
     </motion.div>

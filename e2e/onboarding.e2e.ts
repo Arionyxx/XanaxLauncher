@@ -19,9 +19,7 @@ test.describe('Onboarding Flow', () => {
       await expect(page.getByText(/provider/i)).toBeVisible()
       await page.getByRole('button', { name: /next|continue|skip/i }).click()
 
-      await expect(
-        page.getByText(/complete|finish|done/i)
-      ).toBeVisible()
+      await expect(page.getByText(/complete|finish|done/i)).toBeVisible()
 
       await page.getByRole('button', { name: /finish|get started/i }).click()
 

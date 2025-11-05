@@ -1,5 +1,10 @@
 import { Source } from '@/db/schema'
-import { getSource, updateSource, getSources, syncSourceEntries } from '@/services/storage'
+import {
+  getSource,
+  updateSource,
+  getSources,
+  syncSourceEntries,
+} from '@/services/storage'
 import { sourceDataSchema, SourceData } from '@/types/source'
 
 export interface SyncProgress {

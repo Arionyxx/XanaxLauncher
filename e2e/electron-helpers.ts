@@ -20,6 +20,8 @@ export async function launchElectronApp(): Promise<{
   return { app, page }
 }
 
-export async function closeElectronApp(app: ElectronApplication): Promise<void> {
+export async function closeElectronApp(
+  app: ElectronApplication
+): Promise<void> {
   await app.close()
 }

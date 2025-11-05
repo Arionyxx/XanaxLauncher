@@ -188,7 +188,7 @@ export function ProvidersStep({
 
         <div className="bg-blue/20 border border-blue/50 rounded-lg p-3">
           <p className="text-sm text-blue">
-            💡 You'll need an active subscription with these services. Visit
+            💡 You&apos;ll need an active subscription with these services. Visit
             their websites to sign up and get your API tokens.
           </p>
         </div>

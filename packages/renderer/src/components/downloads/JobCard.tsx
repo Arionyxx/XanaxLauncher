@@ -1,7 +1,17 @@
 'use client'
 
 import { Job, JobStatus } from '@/types/provider'
-import { X, RefreshCw, Play, Square, CheckCircle, XCircle, Clock, HardDrive, FileText } from 'lucide-react'
+import {
+  X,
+  RefreshCw,
+  Play,
+  Square,
+  CheckCircle,
+  XCircle,
+  Clock,
+  HardDrive,
+  FileText,
+} from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -15,12 +25,7 @@ interface JobCardProps {
   onClick?: (job: Job) => void
 }
 
-export function JobCard({
-  job,
-  onCancel,
-  onRetry,
-  onClick,
-}: JobCardProps) {
+export function JobCard({ job, onCancel, onRetry, onClick }: JobCardProps) {
   const statusLabels = {
     [JobStatus.QUEUED]: 'Queued',
     [JobStatus.RESOLVING]: 'Resolving',
@@ -85,10 +90,10 @@ export function JobCard({
   const canRetry = job.status === JobStatus.FAILED
 
   return (
-    <Card 
+    <Card
       className={cn(
-        "transition-all duration-200 hover:shadow-md hover:shadow-primary/10",
-        onClick && "cursor-pointer"
+        'transition-all duration-200 hover:shadow-md hover:shadow-primary/10',
+        onClick && 'cursor-pointer'
       )}
       onClick={() => onClick?.(job)}
     >
@@ -97,8 +102,8 @@ export function JobCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-start gap-3">
               <div className="mt-1">
-                <Badge 
-                  variant={statusBadgeVariant[job.status]} 
+                <Badge
+                  variant={statusBadgeVariant[job.status]}
                   className="flex items-center gap-1"
                 >
                   {statusIcon[job.status]}
@@ -166,10 +171,7 @@ export function JobCard({
               <span>Progress</span>
               <span className="font-medium">{Math.round(job.progress)}%</span>
             </div>
-            <Progress 
-              value={job.progress} 
-              className="h-2"
-            />
+            <Progress value={job.progress} className="h-2" />
           </div>
         )}
 
@@ -177,7 +179,9 @@ export function JobCard({
           <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
             <div className="flex items-start gap-2">
               <XCircle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
-              <p className="text-sm text-destructive">{job.metadata.errorMessage}</p>
+              <p className="text-sm text-destructive">
+                {job.metadata.errorMessage}
+              </p>
             </div>
           </div>
         )}
@@ -186,7 +190,9 @@ export function JobCard({
           <div className="mt-4 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
             <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
               <CheckCircle className="w-4 h-4" />
-              <span className="text-sm font-medium">Download completed successfully</span>
+              <span className="text-sm font-medium">
+                Download completed successfully
+              </span>
             </div>
           </div>
         )}

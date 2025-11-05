@@ -27,7 +27,7 @@ export function useGames() {
       ])
 
       // Create a map of source ID to source name for quick lookup
-      const sourceMap = new Map(sources.map(s => [s.id, s.name]))
+      const sourceMap = new Map(sources.map((s) => [s.id, s.name]))
 
       // Convert database entries to game entries
       const allGames: GameEntry[] = entries.map((entry: DbSourceEntry) => ({

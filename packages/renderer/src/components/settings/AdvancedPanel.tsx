@@ -151,7 +151,7 @@ export function AdvancedPanel() {
 
           <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-3">
             <p className="text-sm text-yellow-600">
-              ⚠️ After resetting, you'll need to reload the app or navigate away
+              ⚠️ After resetting, you&apos;ll need to reload the app or navigate away
               and back to see the onboarding wizard.
             </p>
           </div>
@@ -180,4 +180,3 @@ export function AdvancedPanel() {
     </div>
   )
 }
-

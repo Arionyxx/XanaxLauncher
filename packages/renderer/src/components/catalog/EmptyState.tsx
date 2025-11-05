@@ -1,5 +1,11 @@
 import { Settings, Library, Plus } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
 interface EmptyStateProps {
@@ -15,23 +21,22 @@ export function EmptyState({ onAddSource }: EmptyStateProps) {
             <Library className="w-12 h-12 text-muted-foreground" />
           </div>
           <div className="space-y-2">
-            <CardTitle className="text-2xl font-bold">No sources configured</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+              No sources configured
+            </CardTitle>
             <CardDescription className="text-base leading-relaxed">
-              Get started by adding media sources in Settings. Sources provide a catalog of items you can browse and download.
+              Get started by adding media sources in Settings. Sources provide a
+              catalog of items you can browse and download.
             </CardDescription>
           </div>
         </CardHeader>
-        
+
         <CardContent className="text-center">
-          <Button 
-            size="lg" 
-            onClick={onAddSource}
-            className="w-full sm:w-auto"
-          >
+          <Button size="lg" onClick={onAddSource} className="w-full sm:w-auto">
             <Settings className="w-4 h-4 mr-2" />
             Go to Settings
           </Button>
-          
+
           <div className="mt-6 grid grid-cols-3 gap-4 text-center">
             <div className="space-y-2">
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto">

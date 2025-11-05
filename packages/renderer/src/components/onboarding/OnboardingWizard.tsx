@@ -5,9 +5,21 @@ import { useRouter } from 'next/navigation'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useToast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { Rocket, Settings, Sparkles, ArrowRight, SkipForward } from 'lucide-react'
+import {
+  Rocket,
+  Settings,
+  Sparkles,
+  ArrowRight,
+  SkipForward,
+} from 'lucide-react'
 
 export function OnboardingWizard() {
   const router = useRouter()
@@ -18,19 +30,22 @@ export function OnboardingWizard() {
   const steps = [
     {
       title: 'Welcome to XanaxLauncher',
-      description: 'A modern media management application built with Electron and Next.js. Experience the beautiful new interface with powerful features.',
+      description:
+        'A modern media management application built with Electron and Next.js. Experience the beautiful new interface with powerful features.',
       icon: Rocket,
       color: 'text-blue-500',
     },
     {
       title: 'Getting Started',
-      description: 'Configure your settings, add media sources, and start downloading your favorite content with ease.',
+      description:
+        'Configure your settings, add media sources, and start downloading your favorite content with ease.',
       icon: Settings,
       color: 'text-green-500',
     },
     {
       title: 'Ready to Go!',
-      description: 'You\'re all set! Explore your new media manager with a stunning dark interface and smooth animations.',
+      description:
+        "You&apos;re all set! Explore your new media manager with a stunning dark interface and smooth animations.",
       icon: Sparkles,
       color: 'text-purple-500',
     },
@@ -45,8 +60,8 @@ export function OnboardingWizard() {
     } else {
       completeOnboarding()
       toast({
-        title: "Welcome to XanaxLauncher! 🎉",
-        description: "Your media manager is ready to use.",
+        title: 'Welcome to XanaxLauncher! 🎉',
+        description: 'Your media manager is ready to use.',
       })
       // Navigate to home page after completion
       setTimeout(() => {
@@ -58,8 +73,8 @@ export function OnboardingWizard() {
   const handleSkip = () => {
     completeOnboarding()
     toast({
-      title: "Onboarding skipped",
-      description: "You can always access settings later.",
+      title: 'Onboarding skipped',
+      description: 'You can always access settings later.',
     })
     // Navigate to home page after skipping
     setTimeout(() => {
@@ -73,7 +88,9 @@ export function OnboardingWizard() {
         {/* Progress Indicator */}
         <div className="space-y-2">
           <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Step {step + 1} of {steps.length}</span>
+            <span>
+              Step {step + 1} of {steps.length}
+            </span>
             <span>{Math.round(progress)}%</span>
           </div>
           <Progress value={progress} className="h-2" />
@@ -83,7 +100,9 @@ export function OnboardingWizard() {
         <Card className="border-0 shadow-2xl bg-card/50 backdrop-blur-sm">
           <CardHeader className="text-center space-y-6 pb-8">
             <div className="mx-auto">
-              <div className={`w-24 h-24 rounded-2xl bg-muted flex items-center justify-center ${currentStep.color}`}>
+              <div
+                className={`w-24 h-24 rounded-2xl bg-muted flex items-center justify-center ${currentStep.color}`}
+              >
                 <currentStep.icon className="w-12 h-12" />
               </div>
             </div>
@@ -94,7 +113,7 @@ export function OnboardingWizard() {
               {currentStep.description}
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="space-y-6">
             {/* Step Indicators */}
             <div className="flex justify-center gap-2">
@@ -102,10 +121,10 @@ export function OnboardingWizard() {
                 <div
                   key={index}
                   className={`h-2 rounded-full transition-all duration-300 ${
-                    index === step 
-                      ? 'w-8 bg-primary' 
-                      : index < step 
-                        ? 'w-2 bg-primary/50' 
+                    index === step
+                      ? 'w-8 bg-primary'
+                      : index < step
+                        ? 'w-2 bg-primary/50'
                         : 'w-2 bg-muted'
                   }`}
                 />
@@ -114,18 +133,11 @@ export function OnboardingWizard() {
 
             {/* Action Buttons */}
             <div className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={handleSkip}
-                className="flex-1"
-              >
+              <Button variant="outline" onClick={handleSkip} className="flex-1">
                 <SkipForward className="w-4 h-4 mr-2" />
                 Skip
               </Button>
-              <Button
-                onClick={handleNext}
-                className="flex-1"
-              >
+              <Button onClick={handleNext} className="flex-1">
                 {step < steps.length - 1 ? (
                   <>
                     Next

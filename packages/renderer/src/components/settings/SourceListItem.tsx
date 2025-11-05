@@ -83,7 +83,9 @@ export function SourceListItem({
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <h4 className="text-base font-semibold truncate">{source.name}</h4>
+              <h4 className="text-base font-semibold truncate">
+                {source.name}
+              </h4>
               <Badge variant={getStatusVariant(source.status)}>
                 {getStatusLabel(source.status)}
               </Badge>

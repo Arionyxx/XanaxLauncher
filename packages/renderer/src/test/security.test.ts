@@ -193,7 +193,8 @@ describe('Security Regression Tests', () => {
     })
 
     it('should sanitize error messages before displaying', () => {
-      const rawError = 'Database error: Connection failed with password "secret123"'
+      const rawError =
+        'Database error: Connection failed with password "secret123"'
       const sanitizedError = rawError.replace(
         /password\s*["'][^"']*["']/gi,
         'password [REDACTED]'

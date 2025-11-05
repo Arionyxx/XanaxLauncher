@@ -100,9 +100,7 @@ export function SourcesStep({
                   onChange={(e) => handleUrlChange(e.target.value)}
                   className={error ? 'border-destructive' : ''}
                 />
-                {error && (
-                  <p className="text-sm text-destructive">{error}</p>
-                )}
+                {error && <p className="text-sm text-destructive">{error}</p>}
               </div>
 
               <div className="bg-destructive/20 border border-destructive/50 rounded-lg p-3">

@@ -86,7 +86,10 @@ export function JobDetailDrawer({
                 <CardTitle className="text-sm font-medium">Status</CardTitle>
               </CardHeader>
               <CardContent>
-                <Badge variant={statusBadgeVariant[job.status]} className="text-sm">
+                <Badge
+                  variant={statusBadgeVariant[job.status]}
+                  className="text-sm"
+                >
                   {statusLabels[job.status]}
                 </Badge>
               </CardContent>
@@ -98,7 +101,9 @@ export function JobDetailDrawer({
                 <CardTitle className="text-sm font-medium">Provider</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="font-mono text-sm">{job.provider.toUpperCase()}</p>
+                <p className="font-mono text-sm">
+                  {job.provider.toUpperCase()}
+                </p>
               </CardContent>
             </Card>
 
@@ -106,13 +111,17 @@ export function JobDetailDrawer({
             {job.progress !== undefined && (
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium">Progress</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    Progress
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <Progress value={job.progress} className="h-2" />
                   <div className="flex justify-between text-sm text-muted-foreground">
                     <span>Downloaded</span>
-                    <span className="font-medium">{Math.round(job.progress)}%</span>
+                    <span className="font-medium">
+                      {Math.round(job.progress)}%
+                    </span>
                   </div>
                 </CardContent>
               </Card>

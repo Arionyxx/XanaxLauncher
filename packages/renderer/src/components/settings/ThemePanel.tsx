@@ -114,7 +114,9 @@ export function ThemePanel({ settings, onUpdate }: ThemePanelProps) {
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold">{flavorLabels[flavor]}</span>
+                    <span className="font-semibold">
+                      {flavorLabels[flavor]}
+                    </span>
                     {isSelected && (
                       <span className="text-primary text-sm">✓ Active</span>
                     )}

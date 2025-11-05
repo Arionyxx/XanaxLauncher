@@ -11,8 +11,20 @@ import { StatsHeader } from '@/components/downloads/StatsHeader'
 import { AppLayout } from '@/components/AppLayout'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 
 type FilterType = 'all' | 'active' | 'completed' | 'failed'
@@ -158,7 +170,9 @@ export default function DownloadsPage() {
                 <Download className="w-6 h-6 text-muted-foreground" />
               </div>
               <CardTitle>Loading Downloads</CardTitle>
-              <CardDescription>Fetching your download history...</CardDescription>
+              <CardDescription>
+                Fetching your download history...
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -195,7 +209,9 @@ export default function DownloadsPage() {
               onClick={loadJobs}
               disabled={isLoading}
             >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`}
+              />
               Refresh
             </Button>
           </div>
@@ -232,7 +248,10 @@ export default function DownloadsPage() {
                   />
                 </div>
 
-                <Select value={filter} onValueChange={(value) => setFilter(value as FilterType)}>
+                <Select
+                  value={filter}
+                  onValueChange={(value) => setFilter(value as FilterType)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Filter by status" />
                   </SelectTrigger>
@@ -244,7 +263,10 @@ export default function DownloadsPage() {
                   </SelectContent>
                 </Select>
 
-                <Select value={sort} onValueChange={(value) => setSort(value as SortType)}>
+                <Select
+                  value={sort}
+                  onValueChange={(value) => setSort(value as SortType)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
@@ -311,7 +333,7 @@ export default function DownloadsPage() {
                       Clear Filters
                     </Button>
                   ) : (
-                    <Button onClick={() => window.location.href = '/'}>
+                    <Button onClick={() => (window.location.href = '/')}>
                       Browse Catalog
                     </Button>
                   )}
