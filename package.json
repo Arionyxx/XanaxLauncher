@@ -40,26 +40,25 @@
     },
     "files": [
       "packages/main/dist/**/*",
+      "!packages/main/dist/**/*.map",
       "packages/renderer/out/**/*",
+      "!packages/renderer/out/**/*.map",
       "package.json"
     ],
     "win": {
       "target": [
         "nsis"
-      ],
-      "icon": "packages/main/build/icon.ico"
+      ]
     },
     "mac": {
       "target": [
         "dmg"
-      ],
-      "icon": "packages/main/build/icon.icns"
+      ]
     },
     "linux": {
       "target": [
         "AppImage"
-      ],
-      "icon": "packages/main/build/icon.png"
+      ]
     }
   },
   "devDependencies": {
