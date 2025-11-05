@@ -5,8 +5,8 @@
   "description": "Electron main process",
   "main": "dist/index.js",
   "scripts": {
-    "typecheck": "pnpm exec tsc --noEmit",
-    "build": "pnpm exec tsc",
+    "typecheck": "npx tsc --noEmit",
+    "build": "npx tsc",
     "package": "electron-builder --config electron-builder.yml"
   },
   "devDependencies": {

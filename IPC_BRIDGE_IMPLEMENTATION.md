@@ -79,7 +79,7 @@ The Settings section demonstrates all IPC functionality:
 
 ## Testing the Implementation
 
-1. Start the application: `pnpm dev`
+1. Start the application: `npm run dev`
 2. Navigate to the Settings section
 3. Click each button to test:
    - "Select Folder" - Opens native folder picker

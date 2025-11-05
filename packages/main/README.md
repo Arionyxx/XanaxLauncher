@@ -10,9 +10,9 @@ This package contains the Electron main process code.
 
 ## Development
 
-The main process is automatically compiled and started when you run `pnpm dev` from the root.
+The main process is automatically compiled and started when you run `npm run dev` from the root.
 
 ## Scripts
 
-- `pnpm typecheck` - Type check the TypeScript code
-- `pnpm build` - Compile TypeScript to JavaScript (output to `dist/`)
+- `npm run typecheck` - Type check the TypeScript code
+- `npm run build` - Compile TypeScript to JavaScript (output to `dist/`)

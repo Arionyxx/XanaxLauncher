@@ -35,39 +35,39 @@ This project uses a comprehensive testing suite with:
 
 ```bash
 # Run all unit tests once
-pnpm test
+npm test
 
 # Run tests in watch mode (useful during development)
-pnpm test:watch
+npm run test:watch
 
 # Run tests with UI (visual test runner)
-pnpm test:ui
+npm run test:ui
 
 # Run tests with coverage report
-pnpm test:coverage
+npm run test:coverage
 ```
 
 ### E2E Tests
 
 ```bash
 # Run E2E tests (headless)
-pnpm test:e2e
+npm run test:e2e
 
 # Run E2E tests with UI (interactive mode)
-pnpm test:e2e:ui
+npm run test:e2e:ui
 ```
 
 ### Running Specific Tests
 
 ```bash
 # Run a specific test file
-pnpm vitest packages/renderer/src/services/providers/utils/rate-limiter.test.ts
+npx vitest packages/renderer/src/services/providers/utils/rate-limiter.test.ts
 
 # Run tests matching a pattern
-pnpm vitest --grep "RateLimiter"
+npx vitest --grep "RateLimiter"
 
 # Run tests in a specific directory
-pnpm vitest packages/renderer/src/services
+npx vitest packages/renderer/src/services
 ```
 
 ## Test Structure
@@ -234,7 +234,7 @@ The following are excluded from coverage:
 
 ### Viewing Coverage
 
-After running `pnpm test:coverage`, open the HTML report:
+After running `npm run test:coverage`, open the HTML report:
 
 ```bash
 open coverage/index.html
@@ -316,7 +316,7 @@ If E2E tests are flaky:
 
 If coverage isn't being generated:
 
-1. Check that you're using `pnpm test:coverage`
+1. Check that you're using `npm run test:coverage`
 2. Verify `vitest.config.ts` has coverage configuration
 3. Check for syntax errors in source files
 4. Ensure coverage provider is installed (`@vitest/coverage-v8`)
@@ -333,7 +333,7 @@ The test suite includes security regression tests:
 Run security tests specifically:
 
 ```bash
-pnpm vitest --grep "security"
+npx vitest --grep "security"
 ```
 
 ## Additional Resources

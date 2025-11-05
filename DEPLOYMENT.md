@@ -18,7 +18,7 @@ This guide covers the complete deployment process for Media Manager, including b
 ### Required Tools
 
 - **Node.js**: v18.0.0 or higher
-- **pnpm**: v8.0.0 or higher
+- **npm**: v9.0.0 or higher
 - **Git**: For version control and tagging
 
 ### Environment Variables
@@ -50,7 +50,7 @@ For production releases, you should code sign your Windows installer:
 ### 1. Install Dependencies
 
 ```bash
-pnpm install
+npm install
 ```
 
 ### 2. Run Tests
@@ -59,26 +59,26 @@ Before building, ensure all tests pass:
 
 ```bash
 # Unit and integration tests
-pnpm test
+npm test
 
 # End-to-end tests
-pnpm test:e2e
+npm run test:e2e
 
 # Type checking
-pnpm typecheck
+npm run typecheck
 
 # Linting
-pnpm lint
+npm run lint
 ```
 
 ### 3. Build for Production
 
 ```bash
 # Build Next.js renderer
-pnpm build
+npm run build
 
 # Build Electron main process
-pnpm build:main
+npm run build:main
 ```
 
 This creates:
@@ -90,7 +90,7 @@ This creates:
 ### Build Windows Installer
 
 ```bash
-pnpm package
+npm run package
 ```
 
 This command:
@@ -186,7 +186,7 @@ Users can check for updates via Settings > Advanced > Check for Updates
 
 4. **Build Signed Installer**
    ```bash
-   pnpm package
+   npm run package
    ```
 
 ### Verification
@@ -200,9 +200,9 @@ signtool verify /pa /v "dist/Media Manager-1.0.0-x64.exe"
 
 ### Pre-Release Checklist
 
-- [ ] All tests passing (`pnpm test`, `pnpm test:e2e`)
-- [ ] No TypeScript errors (`pnpm typecheck`)
-- [ ] No linting errors (`pnpm lint`)
+- [ ] All tests passing (`npm test`, `npm run test:e2e`)
+- [ ] No TypeScript errors (`npm run typecheck`)
+- [ ] No linting errors (`npm run lint`)
 - [ ] CHANGELOG.md updated with release notes
 - [ ] Version bumped in all `package.json` files
 - [ ] Smoke testing completed
@@ -241,7 +241,7 @@ git commit -m "chore: bump version to 1.1.0"
 
 2. **Build Installer**
    ```bash
-   pnpm package
+   npm run package
    ```
 
 3. **Generate Checksums**
@@ -320,16 +320,16 @@ All user data (settings, sources, jobs) is preserved in:
 
 ### Build Fails
 
-**Issue**: `pnpm build` fails with errors
+**Issue**: `npm run build` fails with errors
 
 **Solution**:
 1. Clear caches: `rm -rf node_modules .next packages/*/dist`
-2. Reinstall: `pnpm install`
-3. Rebuild: `pnpm build`
+2. Reinstall: `npm install`
+3. Rebuild: `npm run build`
 
 ### Packaging Fails
 
-**Issue**: `pnpm package` fails
+**Issue**: `npm run package` fails
 
 **Solution**:
 - Check `packages/main/build/` directory has icon files
