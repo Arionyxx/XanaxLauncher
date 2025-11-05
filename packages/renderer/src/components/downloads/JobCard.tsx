@@ -1,7 +1,12 @@
 'use client'
 
 import { Job, JobStatus } from '@/types/provider'
-import { FiX, FiRefreshCw, FiPlay, FiPause } from 'react-icons/fi'
+import { X, RefreshCw, Play, Pause, Square, CheckCircle, XCircle, Clock, HardDrive, FileText } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
+import { cn } from '@/lib/utils'
 
 interface JobCardProps {
   job: Job
@@ -29,22 +34,22 @@ export function JobCard({
     [JobStatus.CANCELLED]: 'Cancelled',
   }
 
-  const statusBadgeClass = {
-    [JobStatus.QUEUED]: 'badge-neutral',
-    [JobStatus.RESOLVING]: 'badge-info',
-    [JobStatus.DOWNLOADING]: 'badge-primary',
-    [JobStatus.COMPLETED]: 'badge-success',
-    [JobStatus.FAILED]: 'badge-error',
-    [JobStatus.CANCELLED]: 'badge-ghost',
+  const statusBadgeVariant = {
+    [JobStatus.QUEUED]: 'secondary' as const,
+    [JobStatus.RESOLVING]: 'default' as const,
+    [JobStatus.DOWNLOADING]: 'default' as const,
+    [JobStatus.COMPLETED]: 'default' as const,
+    [JobStatus.FAILED]: 'destructive' as const,
+    [JobStatus.CANCELLED]: 'outline' as const,
   }
 
-  const progressBarClass = {
-    [JobStatus.QUEUED]: 'progress-neutral',
-    [JobStatus.RESOLVING]: 'progress-info',
-    [JobStatus.DOWNLOADING]: 'progress-primary',
-    [JobStatus.COMPLETED]: 'progress-success',
-    [JobStatus.FAILED]: 'progress-error',
-    [JobStatus.CANCELLED]: 'progress-ghost',
+  const statusIcon = {
+    [JobStatus.QUEUED]: <Clock className="w-3 h-3" />,
+    [JobStatus.RESOLVING]: <RefreshCw className="w-3 h-3 animate-spin" />,
+    [JobStatus.DOWNLOADING]: <Play className="w-3 h-3" />,
+    [JobStatus.COMPLETED]: <CheckCircle className="w-3 h-3" />,
+    [JobStatus.FAILED]: <XCircle className="w-3 h-3" />,
+    [JobStatus.CANCELLED]: <Square className="w-3 h-3" />,
   }
 
   const getJobTitle = () => {
@@ -84,88 +89,112 @@ export function JobCard({
   const canRetry = job.status === JobStatus.FAILED
 
   return (
-    <div
-      className={`card bg-base-200 shadow-lg ${onClick ? 'cursor-pointer hover:shadow-xl transition-shadow' : ''}`}
+    <Card 
+      className={cn(
+        "transition-all duration-200 hover:shadow-md hover:shadow-primary/10",
+        onClick && "cursor-pointer"
+      )}
       onClick={() => onClick?.(job)}
     >
-      <div className="card-body">
+      <CardContent className="p-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h3 className="card-title text-base truncate">{getJobTitle()}</h3>
-            <div className="flex flex-wrap gap-2 mt-2">
-              <div className={`badge badge-sm ${statusBadgeClass[job.status]}`}>
-                {statusLabels[job.status]}
+            <div className="flex items-start gap-3">
+              <div className="mt-1">
+                <Badge 
+                  variant={statusBadgeVariant[job.status]} 
+                  className="flex items-center gap-1"
+                >
+                  {statusIcon[job.status]}
+                  {statusLabels[job.status]}
+                </Badge>
               </div>
-              <div className="badge badge-sm badge-outline">
-                {job.provider.toUpperCase()}
-              </div>
-              {getTotalSize() && (
-                <div className="badge badge-sm badge-ghost">{getTotalSize()}</div>
-              )}
-              {job.files.length > 0 && (
-                <div className="badge badge-sm badge-ghost">
-                  {job.files.length} file{job.files.length !== 1 ? 's' : ''}
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-lg truncate group-hover:text-primary transition-colors">
+                  {getJobTitle()}
+                </h3>
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  <Badge variant="outline" className="text-xs">
+                    {job.provider.toUpperCase()}
+                  </Badge>
+                  {getTotalSize() && (
+                    <Badge variant="outline" className="text-xs">
+                      <HardDrive className="w-3 h-3 mr-1" />
+                      {getTotalSize()}
+                    </Badge>
+                  )}
+                  {job.files.length > 0 && (
+                    <Badge variant="outline" className="text-xs">
+                      <FileText className="w-3 h-3 mr-1" />
+                      {job.files.length} file{job.files.length !== 1 ? 's' : ''}
+                    </Badge>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
 
           <div className="flex gap-2">
             {canCancel && onCancel && (
-              <button
-                className="btn btn-sm btn-ghost btn-circle"
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={(e) => {
                   e.stopPropagation()
                   onCancel(job.id)
                 }}
                 aria-label="Cancel download"
               >
-                <FiX />
-              </button>
+                <X className="w-4 h-4" />
+              </Button>
             )}
             {canRetry && onRetry && (
-              <button
-                className="btn btn-sm btn-ghost btn-circle"
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={(e) => {
                   e.stopPropagation()
                   onRetry(job.id)
                 }}
                 aria-label="Retry download"
               >
-                <FiRefreshCw />
-              </button>
+                <RefreshCw className="w-4 h-4" />
+              </Button>
             )}
           </div>
         </div>
 
         {job.status === JobStatus.DOWNLOADING && job.progress !== undefined && (
-          <div className="mt-4">
-            <div className="flex justify-between text-sm text-base-content/70 mb-1">
+          <div className="mt-4 space-y-2">
+            <div className="flex justify-between text-sm text-muted-foreground">
               <span>Progress</span>
-              <span>{Math.round(job.progress)}%</span>
+              <span className="font-medium">{Math.round(job.progress)}%</span>
             </div>
-            <progress
-              className={`progress ${progressBarClass[job.status]} w-full`}
-              value={job.progress}
-              max="100"
-            ></progress>
+            <Progress 
+              value={job.progress} 
+              className="h-2"
+            />
           </div>
         )}
 
         {job.status === JobStatus.FAILED && job.error && (
-          <div className="alert alert-error mt-2">
-            <span className="text-sm">{job.error}</span>
+          <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+            <div className="flex items-start gap-2">
+              <XCircle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-destructive">{job.error}</p>
+            </div>
           </div>
         )}
 
         {job.status === JobStatus.COMPLETED && (
-          <div className="mt-2">
-            <div className="text-sm text-success">
-              ✓ Download completed successfully
+          <div className="mt-4 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+            <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
+              <CheckCircle className="w-4 h-4" />
+              <span className="text-sm font-medium">Download completed successfully</span>
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

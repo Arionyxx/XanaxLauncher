@@ -1,13 +1,21 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { FiRefreshCw, FiFilter, FiTrash2 } from 'react-icons/fi'
+import { motion } from 'framer-motion'
+import { RefreshCw, Filter, Trash2, Download, Search, CheckCircle, XCircle, Clock, Play, Pause, Square } from 'lucide-react'
 import { Job, JobStatus } from '@/types/provider'
 import { jobOrchestrator } from '@/services/job-orchestrator'
 import { JobCard } from '@/components/downloads/JobCard'
 import { JobDetailDrawer } from '@/components/downloads/JobDetailDrawer'
 import { StatsHeader } from '@/components/downloads/StatsHeader'
 import { AppLayout } from '@/components/AppLayout'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Separator } from '@/components/ui/separator'
 
 type FilterType = 'all' | 'active' | 'completed' | 'failed'
 type SortType = 'newest' | 'oldest' | 'progress' | 'provider'
@@ -147,7 +155,22 @@ export default function DownloadsPage() {
     return (
       <AppLayout>
         <div className="flex items-center justify-center h-full">
-          <span className="loading loading-spinner loading-lg text-primary"></span>
+          <Card className="w-full max-w-md">
+            <CardHeader className="text-center">
+              <div className="mx-auto w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
+                <Download className="w-6 h-6 text-muted-foreground" />
+              </div>
+              <CardTitle>Loading Downloads</CardTitle>
+              <CardDescription>Fetching your download history...</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <Skeleton className="h-2 w-full" />
+                <Skeleton className="h-2 w-3/4" />
+                <Skeleton className="h-2 w-1/2" />
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </AppLayout>
     )
@@ -155,103 +178,165 @@ export default function DownloadsPage() {
 
   return (
     <AppLayout>
-      <div className="container mx-auto p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold">Downloads</h1>
-            <p className="text-base-content/70 mt-1">
-              Manage your active and completed downloads
-            </p>
-          </div>
-          <button
-            onClick={loadJobs}
-            className="btn btn-circle btn-ghost"
-            aria-label="Refresh downloads"
-          >
-            <FiRefreshCw size={20} />
-          </button>
-        </div>
-
-        <StatsHeader jobs={jobs} />
-
-        <div className="card bg-base-200 shadow-lg">
-          <div className="card-body">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <input
-                type="text"
-                placeholder="Search downloads..."
-                className="input input-bordered w-full"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-
-              <select
-                className="select select-bordered w-full"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value as FilterType)}
-              >
-                <option value="all">All Downloads</option>
-                <option value="active">Active</option>
-                <option value="completed">Completed</option>
-                <option value="failed">Failed</option>
-              </select>
-
-              <select
-                className="select select-bordered w-full"
-                value={sort}
-                onChange={(e) => setSort(e.target.value as SortType)}
-              >
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="progress">By Progress</option>
-                <option value="provider">By Provider</option>
-              </select>
-            </div>
-
-            <div className="flex items-center justify-between mt-4">
-              <span className="text-sm text-base-content/70">
-                Showing {filteredJobs.length} of {jobs.length} downloads
-              </span>
-              {jobs.some((j) => j.status === JobStatus.COMPLETED) && (
-                <button
-                  className="btn btn-sm btn-ghost"
-                  onClick={handleClearCompleted}
-                >
-                  <FiTrash2 />
-                  Clear Completed
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {filteredJobs.length === 0 ? (
-          <div className="card bg-base-200 shadow-xl">
-            <div className="card-body items-center text-center py-12">
-              <div className="text-6xl mb-4">📥</div>
-              <h2 className="card-title text-2xl">No downloads yet</h2>
-              <p className="text-base-content/70">
-                {searchQuery || filter !== 'all'
-                  ? 'No downloads match your search or filter.'
-                  : 'Start downloading media from the catalog!'}
+      <div className="space-y-6">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h1 className="text-4xl font-bold tracking-tight">Downloads</h1>
+              <p className="text-muted-foreground">
+                Manage your active and completed downloads
               </p>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={loadJobs}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {filteredJobs.map((job) => (
-              <JobCard
-                key={job.id}
-                job={job}
-                onClick={() => {
-                  setSelectedJob(job)
-                  setIsDetailOpen(true)
-                }}
-                onCancel={handleCancel}
-              />
-            ))}
-          </div>
-        )}
+        </motion.div>
+
+        {/* Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <StatsHeader jobs={jobs} />
+        </motion.div>
+
+        {/* Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Search & Filter</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input
+                    placeholder="Search downloads..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+
+                <Select value={filter} onValueChange={setFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter by status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Downloads</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="failed">Failed</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={sort} onValueChange={setSort}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                    <SelectItem value="progress">By Progress</SelectItem>
+                    <SelectItem value="provider">By Provider</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center justify-between mt-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Download className="w-4 h-4" />
+                  <span>
+                    Showing {filteredJobs.length} of {jobs.length} downloads
+                  </span>
+                </div>
+                {jobs.some((j) => j.status === JobStatus.COMPLETED) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearCompleted}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Clear Completed
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Downloads List */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+        >
+          {filteredJobs.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6">
+                <div className="text-center space-y-4">
+                  <div className="w-20 h-20 bg-muted rounded-2xl flex items-center justify-center mx-auto">
+                    <Download className="w-10 h-10 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium">No downloads found</h3>
+                    <p className="text-muted-foreground">
+                      {searchQuery || filter !== 'all'
+                        ? 'No downloads match your search or filter.'
+                        : 'Start downloading media from the catalog!'}
+                    </p>
+                  </div>
+                  {searchQuery || filter !== 'all' ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSearchQuery('')
+                        setFilter('all')
+                      }}
+                    >
+                      Clear Filters
+                    </Button>
+                  ) : (
+                    <Button onClick={() => window.location.href = '/'}>
+                      Browse Catalog
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {filteredJobs.map((job) => (
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  onClick={() => {
+                    setSelectedJob(job)
+                    setIsDetailOpen(true)
+                  }}
+                  onCancel={handleCancel}
+                />
+              ))}
+            </div>
+          )}
+        </motion.div>
 
         {selectedJob && (
           <JobDetailDrawer

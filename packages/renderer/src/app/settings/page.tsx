@@ -4,10 +4,11 @@ import { useState } from 'react'
 import { AppLayout } from '@/components/AppLayout'
 import { FiFolder, FiGlobe, FiShield, FiZap, FiDatabase } from 'react-icons/fi'
 import { useSettings } from '@/hooks/useSettings'
-import { toast } from 'sonner'
+import { useToast } from '@/hooks/use-toast'
 
 export default function SettingsPage() {
   const { settings, updateSettings, loading } = useSettings()
+  const { toast } = useToast()
   const [activeTab, setActiveTab] = useState('general')
 
   const handleSelectFolder = async (type: 'download' | 'temp') => {
@@ -21,7 +22,10 @@ export default function SettingsPage() {
               result.path,
           },
         })
-        toast.success(`${type === 'download' ? 'Download' : 'Temp'} directory updated`)
+        toast({
+          title: "Directory Updated",
+          description: `${type === 'download' ? 'Download' : 'Temp'} directory updated`,
+        })
       }
     }
   }

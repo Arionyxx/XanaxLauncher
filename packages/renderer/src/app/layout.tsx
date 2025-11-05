@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'XanaxLauncher - Media Manager',
-  description: 'A modern media management application with DaisyUI',
+  description: 'A modern media management application with shadcn/ui',
 }
 
 export default function RootLayout({
@@ -16,8 +16,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" data-theme="business">
-      <body className={inter.className}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className + " dark"}>
         <Providers>{children}</Providers>
       </body>
     </html>
