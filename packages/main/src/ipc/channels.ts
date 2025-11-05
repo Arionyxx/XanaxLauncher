@@ -11,6 +11,9 @@ export const IPC_CHANNELS = {
   LOGS_GET_PATH: 'logs:getPath',
   UPDATE_CHECK: 'update:check',
   UPDATE_INSTALL: 'update:install',
+  LIBRARY_SCAN: 'library:scan',
+  LIBRARY_LAUNCH: 'library:launch',
+  LIBRARY_OPEN_FOLDER: 'library:openFolder',
 } as const
 
 export type IpcChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS]

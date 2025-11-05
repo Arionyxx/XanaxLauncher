@@ -43,11 +43,26 @@ export interface OnboardingState {
   updatedAt: number
 }
 
+export interface LibraryEntry {
+  id: string
+  title: string
+  installPath: string
+  installDate: number
+  size: number
+  coverUrl?: string | null
+  lastPlayed?: number | null
+  executablePath?: string | null
+  metadata?: Record<string, unknown> | null
+  createdAt: number
+  updatedAt: number
+}
+
 export class MediaManagerDatabase extends Dexie {
   settings!: Table<Setting, string>
   sources!: Table<Source, string>
   jobs!: Table<Job, string>
   onboarding!: Table<OnboardingState, string>
+  library!: Table<LibraryEntry, string>
 
   constructor() {
     super('MediaManagerDB')
@@ -63,6 +78,14 @@ export class MediaManagerDatabase extends Dexie {
       sources: 'id, name, status, lastSyncAt',
       jobs: 'id, provider, status, createdAt, updatedAt',
       onboarding: 'key, updatedAt',
+    })
+
+    this.version(3).stores({
+      settings: 'key, updatedAt',
+      sources: 'id, name, status, lastSyncAt',
+      jobs: 'id, provider, status, createdAt, updatedAt',
+      onboarding: 'key, updatedAt',
+      library: 'id, title, installDate, lastPlayed',
     })
   }
 }

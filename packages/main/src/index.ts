@@ -16,6 +16,9 @@ import {
   handleLogsOpenFolder,
   handleUpdateCheck,
   handleUpdateInstall,
+  handleLibraryScan,
+  handleLibraryLaunch,
+  handleLibraryOpenFolder,
 } from './ipc/handlers'
 
 let mainWindow: BrowserWindow | null = null
@@ -144,6 +147,33 @@ function registerIpcHandlers() {
       return await handleUpdateInstall()
     } catch (error) {
       log.error('Error in update:install handler:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(IPC_CHANNELS.LIBRARY_SCAN, async (_event, data) => {
+    try {
+      return await handleLibraryScan(data)
+    } catch (error) {
+      log.error('Error in library:scan handler:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(IPC_CHANNELS.LIBRARY_LAUNCH, async (_event, data) => {
+    try {
+      return await handleLibraryLaunch(data)
+    } catch (error) {
+      log.error('Error in library:launch handler:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(IPC_CHANNELS.LIBRARY_OPEN_FOLDER, async (_event, data) => {
+    try {
+      return await handleLibraryOpenFolder(data)
+    } catch (error) {
+      log.error('Error in library:openFolder handler:', error)
       throw error
     }
   })
