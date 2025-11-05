@@ -103,6 +103,49 @@ export const updateInstallResponseSchema = z.object({
   success: z.boolean(),
 })
 
+export const libraryScanRequestSchema = z.object({
+  paths: z.array(z.string().min(1)).optional(),
+})
+
+export const libraryScanEntrySchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  installPath: z.string(),
+  installDate: z.number(),
+  size: z.number(),
+  coverUrl: z.string().url().nullable().optional(),
+  lastPlayed: z.number().nullable().optional(),
+  executablePath: z.string().nullable().optional(),
+  metadata: z.record(z.string(), z.unknown()).nullable().optional(),
+})
+
+export const libraryScanResponseSchema = z.object({
+  entries: z.array(libraryScanEntrySchema),
+  scannedPaths: z.array(z.string()),
+  errors: z.array(z.string()).optional(),
+  duration: z.number(),
+  found: z.number(),
+})
+
+export const libraryLaunchRequestSchema = z.object({
+  id: z.string().min(1),
+  executablePath: z.string().min(1),
+  cwd: z.string().optional(),
+})
+
+export const libraryLaunchResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string().optional(),
+})
+
+export const libraryOpenFolderRequestSchema = z.object({
+  path: z.string().min(1),
+})
+
+export const libraryOpenFolderResponseSchema = z.object({
+  success: z.boolean(),
+})
+
 export type DialogSelectFolderResponse = z.infer<
   typeof dialogSelectFolderResponseSchema
 >
@@ -141,3 +184,14 @@ export type LogsOpenFolderResponse = z.infer<
 >
 export type UpdateCheckResponse = z.infer<typeof updateCheckResponseSchema>
 export type UpdateInstallResponse = z.infer<typeof updateInstallResponseSchema>
+export type LibraryScanEntry = z.infer<typeof libraryScanEntrySchema>
+export type LibraryScanRequest = z.infer<typeof libraryScanRequestSchema>
+export type LibraryScanResponse = z.infer<typeof libraryScanResponseSchema>
+export type LibraryLaunchRequest = z.infer<typeof libraryLaunchRequestSchema>
+export type LibraryLaunchResponse = z.infer<typeof libraryLaunchResponseSchema>
+export type LibraryOpenFolderRequest = z.infer<
+  typeof libraryOpenFolderRequestSchema
+>
+export type LibraryOpenFolderResponse = z.infer<
+  typeof libraryOpenFolderResponseSchema
+>

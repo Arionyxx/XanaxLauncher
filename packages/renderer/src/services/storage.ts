@@ -1,5 +1,7 @@
 import { db } from '@/db/db'
-import { Setting, Source, Job } from '@/db/schema'
+import { Setting, Source, Job, LibraryEntry } from '@/db/schema'
+
+type LibraryEntryUpsert = Omit<LibraryEntry, 'createdAt' | 'updatedAt'>
 
 export async function getSetting(key: string): Promise<Setting | undefined> {
   try {
@@ -202,6 +204,92 @@ export async function getJobsByProvider(provider: string): Promise<Job[]> {
       `[Storage] Error getting jobs with provider "${provider}":`,
       error
     )
+    throw error
+  }
+}
+
+export async function getLibraryEntries(): Promise<LibraryEntry[]> {
+  try {
+    const entries = await db.library.orderBy('title').toArray()
+    return entries
+  } catch (error) {
+    console.error('[Storage] Error getting library entries:', error)
+    throw error
+  }
+}
+
+export async function getLibraryEntry(
+  id: string
+): Promise<LibraryEntry | undefined> {
+  try {
+    return await db.library.get(id)
+  } catch (error) {
+    console.error(`[Storage] Error getting library entry "${id}":`, error)
+    throw error
+  }
+}
+
+export async function syncLibraryEntries(
+  entries: LibraryEntryUpsert[]
+): Promise<void> {
+  try {
+    const ids = entries.map((entry) => entry.id)
+    const existing = await db.library.bulkGet(ids)
+    const now = Date.now()
+
+    const upserts = entries.map((entry, index) => {
+      const current = existing[index]
+      const merged = {
+        ...current,
+        ...entry,
+      }
+
+      return {
+        ...merged,
+        coverUrl: entry.coverUrl ?? current?.coverUrl ?? null,
+        executablePath: entry.executablePath ?? current?.executablePath ?? null,
+        lastPlayed: entry.lastPlayed ?? current?.lastPlayed ?? null,
+        metadata: entry.metadata ?? current?.metadata ?? null,
+        createdAt: current?.createdAt ?? now,
+        updatedAt: now,
+      }
+    })
+
+    if (upserts.length) {
+      await db.library.bulkPut(upserts)
+      if (ids.length) {
+        await db.library.where('id').noneOf(ids).delete()
+      }
+    } else {
+      await db.library.clear()
+    }
+  } catch (error) {
+    console.error('[Storage] Error syncing library entries:', error)
+    throw error
+  }
+}
+
+export async function updateLibraryEntry(
+  id: string,
+  updates: Partial<Omit<LibraryEntry, 'id' | 'createdAt'>>
+): Promise<void> {
+  try {
+    const payload = {
+      ...updates,
+      updatedAt: Date.now(),
+    }
+    await db.library.update(id, payload)
+  } catch (error) {
+    console.error(`[Storage] Error updating library entry "${id}":`, error)
+    throw error
+  }
+}
+
+export async function removeLibraryEntry(id: string): Promise<void> {
+  try {
+    await db.library.delete(id)
+  } catch (error) {
+    console.error(`[Storage] Error removing library entry "${id}":`, error)
     throw error
   }
 }

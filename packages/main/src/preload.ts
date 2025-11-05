@@ -19,6 +19,11 @@ import {
   LogsOpenFolderResponse,
   UpdateCheckResponse,
   UpdateInstallResponse,
+  LibraryScanResponse,
+  LibraryLaunchRequest,
+  LibraryLaunchResponse,
+  LibraryOpenFolderRequest,
+  LibraryOpenFolderResponse,
 } from './ipc/schemas'
 
 const api = {
@@ -87,6 +92,26 @@ const api = {
 
     install: async (): Promise<UpdateInstallResponse> => {
       return await ipcRenderer.invoke(IPC_CHANNELS.UPDATE_INSTALL)
+    },
+  },
+
+  library: {
+    scan: async (
+      request?: { paths?: string[] }
+    ): Promise<LibraryScanResponse> => {
+      return await ipcRenderer.invoke(IPC_CHANNELS.LIBRARY_SCAN, request ?? {})
+    },
+
+    launch: async (
+      request: LibraryLaunchRequest
+    ): Promise<LibraryLaunchResponse> => {
+      return await ipcRenderer.invoke(IPC_CHANNELS.LIBRARY_LAUNCH, request)
+    },
+
+    openFolder: async (
+      request: LibraryOpenFolderRequest
+    ): Promise<LibraryOpenFolderResponse> => {
+      return await ipcRenderer.invoke(IPC_CHANNELS.LIBRARY_OPEN_FOLDER, request)
     },
   },
 }

@@ -29,6 +29,8 @@ export async function clearAllData(): Promise<void> {
     await db.settings.clear()
     await db.sources.clear()
     await db.jobs.clear()
+    await db.onboarding.clear()
+    await db.library.clear()
     console.log('[IndexedDB] All data cleared successfully')
   } catch (error) {
     console.error('[IndexedDB] Error clearing data:', error)

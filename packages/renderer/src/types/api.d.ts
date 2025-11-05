@@ -90,6 +90,45 @@ export interface UpdateInstallResponse {
   success: boolean
 }
 
+export interface LibraryScanEntry {
+  id: string
+  title: string
+  installPath: string
+  installDate: number
+  size: number
+  coverUrl?: string | null
+  lastPlayed?: number | null
+  executablePath?: string | null
+  metadata?: Record<string, unknown> | null
+}
+
+export interface LibraryScanResponse {
+  entries: LibraryScanEntry[]
+  scannedPaths: string[]
+  errors?: string[]
+  duration: number
+  found: number
+}
+
+export interface LibraryLaunchRequest {
+  id: string
+  executablePath: string
+  cwd?: string
+}
+
+export interface LibraryLaunchResponse {
+  success: boolean
+  message?: string
+}
+
+export interface LibraryOpenFolderRequest {
+  path: string
+}
+
+export interface LibraryOpenFolderResponse {
+  success: boolean
+}
+
 export interface ElectronAPI {
   selectFolder: () => Promise<DialogSelectFolderResponse>
   getSettings: (key: string) => Promise<SettingsGetResponse>
@@ -114,6 +153,13 @@ export interface ElectronAPI {
   updates: {
     check: () => Promise<UpdateCheckResponse>
     install: () => Promise<UpdateInstallResponse>
+  }
+  library: {
+    scan: (request?: { paths?: string[] }) => Promise<LibraryScanResponse>
+    launch: (request: LibraryLaunchRequest) => Promise<LibraryLaunchResponse>
+    openFolder: (
+      request: LibraryOpenFolderRequest
+    ) => Promise<LibraryOpenFolderResponse>
   }
 }
 
