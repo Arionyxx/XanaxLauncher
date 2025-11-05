@@ -77,46 +77,56 @@ npm run lint
 # Build Next.js renderer
 npm run build
 
-# Build Electron main process
-npm run build:main
+# Package with Electron Forge
+npm run package
+
+# Create installers
+npm run make
 ```
 
 This creates:
 - `packages/renderer/.next/` - Next.js production build
-- `packages/main/dist/` - Compiled Electron main process
+- `.webpack/` - Webpack-bundled main and preload scripts
+- `out/` - Packaged application and installers
 
 ## Packaging
 
 ### Build Windows Installer
 
 ```bash
+# Package the app
 npm run package
+
+# Create installers
+npm run make
 ```
 
 This command:
-1. Builds the renderer (Next.js)
-2. Builds the main process (Electron)
-3. Packages with electron-builder
-4. Creates NSIS installer in `dist/` directory
+1. Builds the renderer (Next.js) if needed
+2. Bundles main process and preload with Webpack
+3. Packages with Electron Forge
+4. Creates Windows Squirrel installer
 
 ### Output Files
 
-After packaging, you'll find in the `dist/` directory:
+After packaging, you'll find in the `out/` directory:
 
-- `Media Manager-1.0.0-x64.exe` - Windows installer
-- `latest.yml` - Auto-update metadata file
-- `builder-debug.yml` - Build configuration (debug info)
+- `out/make/squirrel.windows/x64/` - Windows Squirrel installer
+  - `Media-Manager-Setup-1.0.0.exe` - Windows installer
+  - `RELEASES` - Update metadata file
+  - `.nupkg` files - Update packages
+- `out/Media Manager-win32-x64/` - Unpacked application
 
 ### Installer Features
 
-The NSIS installer includes:
+The Squirrel.Windows installer includes:
 
 - ✅ Desktop shortcut creation
 - ✅ Start Menu entry
 - ✅ Add/Remove Programs entry
-- ✅ Custom install location (user choice)
-- ✅ Uninstaller
-- ✅ Auto-update support
+- ✅ Automatic installation (one-click)
+- ✅ Background updates
+- ✅ Delta updates (smaller downloads)
 
 ### Installer Size
 
@@ -128,14 +138,22 @@ Current typical size: ~150MB (includes Electron, Chromium, Node.js)
 
 ### Configuration
 
-Auto-updates are configured in `packages/main/electron-builder.yml`:
+Auto-updates are configured in `forge.config.js`:
 
-```yaml
-publish:
-  provider: github
-  owner: ${env.GITHUB_REPOSITORY_OWNER}
-  repo: ${env.GITHUB_REPOSITORY_NAME}
-  releaseType: release
+```javascript
+publishers: [
+  {
+    name: '@electron-forge/publisher-github',
+    config: {
+      repository: {
+        owner: process.env.GITHUB_REPOSITORY_OWNER || '',
+        name: process.env.GITHUB_REPOSITORY_NAME || '',
+      },
+      prerelease: false,
+      draft: true,
+    },
+  },
+]
 ```
 
 ### How It Works
@@ -169,14 +187,10 @@ Users can check for updates via Settings > Advanced > Check for Updates
    - Purchase from CA (DigiCert, Sectigo, etc.)
    - Or use self-signed for testing (not recommended for production)
 
-2. **Configure electron-builder**
+2. **Configure Electron Forge**
 
-   Already configured in `electron-builder.yml`:
-   ```yaml
-   win:
-     certificateFile: ${env.CSC_LINK}
-     certificatePassword: ${env.CSC_KEY_PASSWORD}
-   ```
+   Code signing is configured via environment variables.
+   Forge will use electron-builder's signing configuration internally.
 
 3. **Set Environment Variables**
    ```bash
@@ -186,7 +200,7 @@ Users can check for updates via Settings > Advanced > Check for Updates
 
 4. **Build Signed Installer**
    ```bash
-   npm run package
+   npm run make
    ```
 
 ### Verification
@@ -241,13 +255,13 @@ git commit -m "chore: bump version to 1.1.0"
 
 2. **Build Installer**
    ```bash
-   npm run package
+   npm run make
    ```
 
 3. **Generate Checksums**
    ```bash
-   cd dist
-   sha256sum "Media Manager-1.1.0-x64.exe" > checksums.txt
+   cd out/make/squirrel.windows/x64
+   sha256sum "Media-Manager-Setup-1.1.0.exe" > checksums.txt
    ```
 
 4. **Create GitHub Release**
@@ -256,8 +270,9 @@ git commit -m "chore: bump version to 1.1.0"
    - Title: `Media Manager v1.1.0`
    - Description: Copy from CHANGELOG.md
    - Attach files:
-     - `Media Manager-1.1.0-x64.exe`
-     - `latest.yml`
+     - `Media-Manager-Setup-1.1.0.exe`
+     - `RELEASES` file
+     - `.nupkg` files
      - `checksums.txt`
    - Publish release
 
@@ -329,22 +344,25 @@ All user data (settings, sources, jobs) is preserved in:
 
 ### Packaging Fails
 
-**Issue**: `npm run package` fails
+**Issue**: `npm run package` or `npm run make` fails
 
 **Solution**:
 - Check `packages/main/build/` directory has icon files
-- Verify `electron-builder.yml` syntax
-- Check electron-builder logs in terminal
+- Verify `forge.config.js` syntax
+- Check Electron Forge logs in terminal
+- Try clearing `.webpack/` and `out/` directories
+- Ensure TypeScript compiles without errors
 
 ### Auto-Update Not Working
 
 **Issue**: App doesn't detect updates
 
 **Solution**:
-1. Verify `latest.yml` is uploaded to GitHub Release
+1. Verify `RELEASES` file and `.nupkg` files are uploaded to GitHub Release
 2. Check `GITHUB_REPOSITORY_OWNER` and `GITHUB_REPOSITORY_NAME` env vars
 3. Ensure release is marked as "Latest" on GitHub
 4. Check electron-updater logs (Settings > Advanced > Open Logs)
+5. Verify Squirrel update metadata is present
 
 ### Code Signing Errors
 
@@ -362,9 +380,10 @@ All user data (settings, sources, jobs) is preserved in:
 
 **Solution**:
 - Check for unnecessary dependencies
-- Review `extraResources` in `electron-builder.yml`
-- Ensure `node_modules` isn't included in files
-- Use `asar: true` for better compression
+- Review `ignore` patterns in `forge.config.js`
+- Ensure `node_modules` and build artifacts aren't included
+- Verify `asar: true` is set in packagerConfig
+- Check Webpack bundle sizes in `.webpack/` directory
 
 ## Smoke Test Checklist
 
@@ -408,7 +427,9 @@ If telemetry is enabled, crash reports are sent to:
 
 ## Additional Resources
 
-- [Electron Builder Docs](https://www.electron.build/)
+- [Electron Forge Docs](https://www.electronforge.io/)
+- [Electron Forge Webpack Plugin](https://www.electronforge.io/config/plugins/webpack)
+- [Electron Forge Makers](https://www.electronforge.io/config/makers)
 - [electron-updater Docs](https://www.electron.build/auto-update)
 - [Semantic Versioning](https://semver.org/)
 - [Keep a Changelog](https://keepachangelog.com/)

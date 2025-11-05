@@ -20,45 +20,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run linting
-        run: pnpm lint
+        run: npm run lint
 
       - name: Run type checking
-        run: pnpm typecheck
+        run: npm run typecheck
 
       - name: Run unit tests
-        run: pnpm test
+        run: npm test
 
-      - name: Build application
-        run: pnpm build
+      - name: Build Next.js application
+        run: npm run build
 
-      - name: Build main process
-        run: pnpm build:main
-
-      - name: Package application
-        run: pnpm --filter main package
+      - name: Create installers with Electron Forge
+        run: npm run make
         env:
           GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
           GITHUB_REPOSITORY_NAME: ${{ github.event.repository.name }}
@@ -74,7 +54,7 @@ jobs:
       - name: Generate checksums
         shell: bash
         run: |
-          cd dist
+          cd out/make/squirrel.windows/x64
           sha256sum *.exe > checksums.txt
           echo "Checksums:"
           cat checksums.txt
@@ -112,9 +92,10 @@ jobs:
           draft: false
           prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
           files: |
-            dist/*.exe
-            dist/latest.yml
-            dist/checksums.txt
+            out/make/squirrel.windows/x64/*.exe
+            out/make/squirrel.windows/x64/*.nupkg
+            out/make/squirrel.windows/x64/RELEASES
+            out/make/squirrel.windows/x64/checksums.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -123,7 +104,8 @@ jobs:
         with:
           name: windows-installer
           path: |
-            dist/*.exe
-            dist/latest.yml
-            dist/checksums.txt
+            out/make/squirrel.windows/x64/*.exe
+            out/make/squirrel.windows/x64/*.nupkg
+            out/make/squirrel.windows/x64/RELEASES
+            out/make/squirrel.windows/x64/checksums.txt
           retention-days: 30

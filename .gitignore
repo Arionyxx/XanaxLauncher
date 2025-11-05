@@ -54,6 +54,10 @@ dist/
 *.snap
 release/
 
+# Electron Forge
+.webpack/
+out/
+
 # Code signing certificates (NEVER commit these)
 *.pfx
 *.p12
