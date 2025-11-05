@@ -1,15 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Button,
-  Chip,
-  Input,
-  Spinner,
-} from '@nextui-org/react'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Loader2 } from 'lucide-react'
 import { useSettings } from '@/hooks/useSettings'
 import { TorBoxProvider } from '@/services/providers/torbox'
 import { RealDebridProvider } from '@/services/providers/realdebrid'
@@ -33,18 +30,18 @@ export function IntegrationsPanel() {
     useState<IntegrationStatus>('not_configured')
   const [realDebridMessage, setRealDebridMessage] = useState<string>('')
 
-  const getStatusColor = (
+  const getStatusVariant = (
     status: IntegrationStatus
-  ): 'default' | 'success' | 'danger' | 'warning' => {
+  ): 'default' | 'secondary' | 'destructive' | 'outline' => {
     switch (status) {
       case 'configured':
-        return 'success'
-      case 'error':
-        return 'danger'
-      case 'testing':
-        return 'warning'
-      default:
         return 'default'
+      case 'error':
+        return 'destructive'
+      case 'testing':
+        return 'secondary'
+      default:
+        return 'outline'
     }
   }
 
@@ -213,61 +210,53 @@ export function IntegrationsPanel() {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-surface0 border-surface1">
+      <Card>
         <CardHeader>
           <div>
-            <h3 className="text-lg font-semibold text-text">
-              Service Integrations
-            </h3>
-            <p className="text-sm text-subtext0 mt-1">
+            <h3 className="text-lg font-semibold">Service Integrations</h3>
+            <p className="text-sm text-muted-foreground mt-1">
               Connect external services to enhance your media management
             </p>
           </div>
         </CardHeader>
-        <CardBody className="space-y-4">
-          <Card className="bg-surface1 border-surface2" shadow="none">
-            <CardBody>
+        <CardContent className="space-y-4">
+          <Card className="bg-muted/50">
+            <CardContent className="pt-6">
               <div className="flex items-start gap-4">
                 <div className="text-4xl">📦</div>
                 <div className="flex-1 space-y-4">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <h4 className="text-base font-semibold text-text">
-                        TorBox
-                      </h4>
-                      <Chip
-                        size="sm"
-                        color={getStatusColor(torboxStatus)}
-                        variant="flat"
-                      >
+                      <h4 className="text-base font-semibold">TorBox</h4>
+                      <Badge variant={getStatusVariant(torboxStatus)}>
                         {getStatusLabel(torboxStatus)}
-                      </Chip>
+                      </Badge>
                     </div>
-                    <p className="text-sm text-subtext0 mb-3">
+                    <p className="text-sm text-muted-foreground mb-3">
                       Premium torrent and usenet cloud service
                     </p>
                   </div>
 
-                  <Input
-                    label="API Token"
-                    placeholder="Enter your TorBox API token"
-                    value={torboxToken}
-                    onValueChange={setTorboxToken}
-                    type="password"
-                    size="sm"
-                    classNames={{
-                      input: 'font-mono text-xs',
-                    }}
-                  />
+                  <div className="space-y-2">
+                    <Label htmlFor="torbox-token">API Token</Label>
+                    <Input
+                      id="torbox-token"
+                      placeholder="Enter your TorBox API token"
+                      value={torboxToken}
+                      onChange={(e) => setTorboxToken(e.target.value)}
+                      type="password"
+                      className="font-mono text-xs"
+                    />
+                  </div>
 
                   {torboxMessage && (
                     <p
                       className={`text-sm ${
                         torboxStatus === 'configured'
-                          ? 'text-green'
+                          ? 'text-green-600'
                           : torboxStatus === 'error'
-                            ? 'text-red'
-                            : 'text-subtext0'
+                            ? 'text-destructive'
+                            : 'text-muted-foreground'
                       }`}
                     >
                       {torboxMessage}
@@ -277,81 +266,72 @@ export function IntegrationsPanel() {
                   <div className="flex gap-2">
                     <Button
                       size="sm"
-                      color="primary"
-                      variant="flat"
-                      onPress={handleTorboxTest}
-                      isDisabled={!torboxToken.trim() || isTesting}
-                      startContent={isTesting ? <Spinner size="sm" /> : null}
+                      variant="secondary"
+                      onClick={handleTorboxTest}
+                      disabled={!torboxToken.trim() || isTesting}
                     >
+                      {isTesting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       Test Connection
                     </Button>
                     <Button
                       size="sm"
-                      color="secondary"
-                      variant="flat"
-                      onPress={handleTorboxSave}
-                      isDisabled={!torboxToken.trim() || isTesting}
+                      variant="outline"
+                      onClick={handleTorboxSave}
+                      disabled={!torboxToken.trim() || isTesting}
                     >
                       Save Token
                     </Button>
                     <Button
                       size="sm"
-                      color="danger"
-                      variant="flat"
-                      onPress={handleTorboxClear}
-                      isDisabled={!torboxToken.trim() || isTesting}
+                      variant="destructive"
+                      onClick={handleTorboxClear}
+                      disabled={!torboxToken.trim() || isTesting}
                     >
                       Clear
                     </Button>
                   </div>
                 </div>
               </div>
-            </CardBody>
+            </CardContent>
           </Card>
 
-          <Card className="bg-surface1 border-surface2" shadow="none">
-            <CardBody>
+          <Card className="bg-muted/50">
+            <CardContent className="pt-6">
               <div className="flex items-start gap-4">
                 <div className="text-4xl">⚡</div>
                 <div className="flex-1 space-y-4">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <h4 className="text-base font-semibold text-text">
-                        Real-Debrid
-                      </h4>
-                      <Chip
-                        size="sm"
-                        color={getStatusColor(realDebridStatus)}
-                        variant="flat"
-                      >
+                      <h4 className="text-base font-semibold">Real-Debrid</h4>
+                      <Badge variant={getStatusVariant(realDebridStatus)}>
                         {getStatusLabel(realDebridStatus)}
-                      </Chip>
+                      </Badge>
                     </div>
-                    <p className="text-sm text-subtext0 mb-3">
+                    <p className="text-sm text-muted-foreground mb-3">
                       Unrestricted downloader for premium links
                     </p>
                   </div>
 
-                  <Input
-                    label="API Token"
-                    placeholder="Enter your Real-Debrid API token"
-                    value={realDebridToken}
-                    onValueChange={setRealDebridToken}
-                    type="password"
-                    size="sm"
-                    classNames={{
-                      input: 'font-mono text-xs',
-                    }}
-                  />
+                  <div className="space-y-2">
+                    <Label htmlFor="realdebrid-token">API Token</Label>
+                    <Input
+                      id="realdebrid-token"
+                      placeholder="Enter your Real-Debrid API token"
+                      value={realDebridToken}
+                      onChange={(e) => setRealDebridToken(e.target.value)}
+                      type="password"
+                      className="font-mono text-xs"
+                    />
+                  </div>
 
                   {realDebridMessage && (
                     <p
                       className={`text-sm ${
                         realDebridStatus === 'configured'
-                          ? 'text-green'
+                          ? 'text-green-600'
                           : realDebridStatus === 'error'
-                            ? 'text-red'
-                            : 'text-subtext0'
+                            ? 'text-destructive'
+                            : 'text-muted-foreground'
                       }`}
                     >
                       {realDebridMessage}
@@ -361,38 +341,35 @@ export function IntegrationsPanel() {
                   <div className="flex gap-2">
                     <Button
                       size="sm"
-                      color="primary"
-                      variant="flat"
-                      onPress={handleRealDebridTest}
-                      isDisabled={!realDebridToken.trim() || isTesting}
-                      startContent={isTesting ? <Spinner size="sm" /> : null}
+                      variant="secondary"
+                      onClick={handleRealDebridTest}
+                      disabled={!realDebridToken.trim() || isTesting}
                     >
+                      {isTesting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       Test Connection
                     </Button>
                     <Button
                       size="sm"
-                      color="secondary"
-                      variant="flat"
-                      onPress={handleRealDebridSave}
-                      isDisabled={!realDebridToken.trim() || isTesting}
+                      variant="outline"
+                      onClick={handleRealDebridSave}
+                      disabled={!realDebridToken.trim() || isTesting}
                     >
                       Save Token
                     </Button>
                     <Button
                       size="sm"
-                      color="danger"
-                      variant="flat"
-                      onPress={handleRealDebridClear}
-                      isDisabled={!realDebridToken.trim() || isTesting}
+                      variant="destructive"
+                      onClick={handleRealDebridClear}
+                      disabled={!realDebridToken.trim() || isTesting}
                     >
                       Clear
                     </Button>
                   </div>
                 </div>
               </div>
-            </CardBody>
+            </CardContent>
           </Card>
-        </CardBody>
+        </CardContent>
       </Card>
     </div>
   )

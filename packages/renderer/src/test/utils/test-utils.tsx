@@ -1,9 +1,8 @@
 import { render, RenderOptions } from '@testing-library/react'
 import { ReactElement } from 'react'
-import { NextUIProvider } from '@nextui-org/react'
 
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
-  return <NextUIProvider>{children}</NextUIProvider>
+  return <>{children}</>
 }
 
 const customRender = (

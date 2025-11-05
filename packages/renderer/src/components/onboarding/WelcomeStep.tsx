@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Button } from '@nextui-org/react'
+import { Button } from '@/components/ui/button'
 
 interface WelcomeStepProps {
   onNext: () => void
@@ -60,7 +60,7 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
       >
-        <Button size="lg" color="primary" onPress={onNext} className="px-12">
+        <Button size="lg" onClick={onNext} className="px-12">
           Get Started
         </Button>
       </motion.div>

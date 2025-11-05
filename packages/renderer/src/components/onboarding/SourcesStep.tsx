@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Button, Input, Card, CardBody } from '@nextui-org/react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
 import { z } from 'zod'
 
 interface SourcesStepProps {
@@ -75,57 +78,57 @@ export function SourcesStep({
         </span>
       </div>
 
-      <Card className="bg-surface0 border-surface1">
-        <CardBody className="space-y-4">
+      <Card>
+        <CardContent className="space-y-4 pt-6">
           <div className="flex items-start gap-3">
             <span className="text-2xl">📡</span>
             <div className="flex-1 space-y-3">
               <div>
-                <h3 className="text-lg font-semibold text-text">
-                  What are sources?
-                </h3>
-                <p className="text-sm text-subtext0 mt-1">
+                <h3 className="text-lg font-semibold">What are sources?</h3>
+                <p className="text-sm text-muted-foreground mt-1">
                   Sources are JSON feeds that list available content. They help
                   you discover and browse items you can download.
                 </p>
               </div>
 
-              <Input
-                label="Source URL"
-                placeholder="https://example.com/feed.json"
-                value={sourceUrl}
-                onValueChange={handleUrlChange}
-                isInvalid={!!error}
-                errorMessage={error}
-                classNames={{
-                  inputWrapper: 'bg-surface1 border-surface2',
-                }}
-              />
+              <div className="space-y-2">
+                <Label htmlFor="source-url">Source URL</Label>
+                <Input
+                  id="source-url"
+                  placeholder="https://example.com/feed.json"
+                  value={sourceUrl}
+                  onChange={(e) => handleUrlChange(e.target.value)}
+                  className={error ? 'border-destructive' : ''}
+                />
+                {error && (
+                  <p className="text-sm text-destructive">{error}</p>
+                )}
+              </div>
 
-              <div className="bg-red/20 border border-red/50 rounded-lg p-3">
-                <p className="text-sm text-red font-semibold">⚠️ Legal Notice</p>
-                <p className="text-xs text-red/90 mt-1">
+              <div className="bg-destructive/20 border border-destructive/50 rounded-lg p-3">
+                <p className="text-sm text-destructive font-semibold">
+                  ⚠️ Legal Notice
+                </p>
+                <p className="text-xs text-destructive/90 mt-1">
                   Only add sources that provide legally authorized content. You
-                  are responsible for ensuring your use complies with
-                  applicable laws.
+                  are responsible for ensuring your use complies with applicable
+                  laws.
                 </p>
               </div>
             </div>
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
 
       <div className="flex items-center justify-between gap-4 pt-4">
-        <Button variant="flat" onPress={onBack}>
+        <Button variant="outline" onClick={onBack}>
           Back
         </Button>
         <div className="flex gap-2">
-          <Button variant="light" onPress={handleSkip}>
+          <Button variant="ghost" onClick={handleSkip}>
             Skip for Now
           </Button>
-          <Button color="primary" onPress={handleContinue}>
-            Continue
-          </Button>
+          <Button onClick={handleContinue}>Continue</Button>
         </div>
       </div>
     </motion.div>

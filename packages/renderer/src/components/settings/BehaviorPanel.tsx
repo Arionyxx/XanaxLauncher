@@ -1,14 +1,17 @@
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
+import { Card, CardContent } from '@/components/ui/card'
 import {
-  Input,
   Select,
+  SelectContent,
   SelectItem,
-  Switch,
-  Card,
-  CardBody,
-} from '@nextui-org/react'
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   BehaviorSettings,
   behaviorSettingsSchema,
@@ -76,15 +79,13 @@ export function BehaviorPanel({ settings, onUpdate }: BehaviorPanelProps) {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-surface0 border-surface1">
-        <CardBody className="space-y-6">
+      <Card>
+        <CardContent className="space-y-6 pt-6">
           {/* Auto-start on System Boot */}
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <label className="text-sm font-semibold text-text block">
-                Auto-start on System Boot
-              </label>
-              <p className="text-xs text-subtext0 mt-1">
+              <Label>Auto-start on System Boot</Label>
+              <p className="text-xs text-muted-foreground mt-1">
                 Automatically launch the application when your system starts (UI
                 only - not implemented)
               </p>
@@ -94,15 +95,12 @@ export function BehaviorPanel({ settings, onUpdate }: BehaviorPanelProps) {
               control={control}
               render={({ field }) => (
                 <Switch
-                  isSelected={field.value}
-                  onValueChange={(checked) => {
+                  checked={field.value}
+                  onCheckedChange={(checked) => {
                     field.onChange(checked)
                     handleAutoStartChange(checked)
                   }}
-                  classNames={{
-                    wrapper: 'bg-surface2',
-                  }}
-                  isDisabled={isSaving}
+                  disabled={isSaving}
                 />
               )}
             />
@@ -111,10 +109,8 @@ export function BehaviorPanel({ settings, onUpdate }: BehaviorPanelProps) {
           {/* Minimize to Tray on Close */}
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <label className="text-sm font-semibold text-text block">
-                Minimize to Tray on Close
-              </label>
-              <p className="text-xs text-subtext0 mt-1">
+              <Label>Minimize to Tray on Close</Label>
+              <p className="text-xs text-muted-foreground mt-1">
                 Keep the application running in the system tray when closed
               </p>
             </div>
@@ -123,26 +119,21 @@ export function BehaviorPanel({ settings, onUpdate }: BehaviorPanelProps) {
               control={control}
               render={({ field }) => (
                 <Switch
-                  isSelected={field.value}
-                  onValueChange={(checked) => {
+                  checked={field.value}
+                  onCheckedChange={(checked) => {
                     field.onChange(checked)
                     handleMinimizeToTrayChange(checked)
                   }}
-                  classNames={{
-                    wrapper: 'bg-surface2',
-                  }}
-                  isDisabled={isSaving}
+                  disabled={isSaving}
                 />
               )}
             />
           </div>
 
           {/* Bandwidth Limit */}
-          <div>
-            <label className="text-sm font-semibold text-text mb-2 block">
-              Bandwidth Limit
-            </label>
-            <p className="text-xs text-subtext0 mb-3">
+          <div className="space-y-2">
+            <Label htmlFor="bandwidth-limit">Bandwidth Limit</Label>
+            <p className="text-xs text-muted-foreground mb-3">
               Set a maximum download speed limit (0 = unlimited)
             </p>
             <div className="flex gap-2">
@@ -152,6 +143,7 @@ export function BehaviorPanel({ settings, onUpdate }: BehaviorPanelProps) {
                 render={({ field }) => (
                   <Input
                     {...field}
+                    id="bandwidth-limit"
                     type="number"
                     min={0}
                     step={0.1}
@@ -162,10 +154,6 @@ export function BehaviorPanel({ settings, onUpdate }: BehaviorPanelProps) {
                     }}
                     placeholder="0"
                     className="flex-1 max-w-xs"
-                    classNames={{
-                      input: 'bg-surface1 text-text',
-                      inputWrapper: 'bg-surface1 border-surface2',
-                    }}
                   />
                 )}
               />
@@ -174,42 +162,38 @@ export function BehaviorPanel({ settings, onUpdate }: BehaviorPanelProps) {
                 control={control}
                 render={({ field }) => (
                   <Select
-                    {...field}
-                    selectedKeys={[field.value]}
-                    onSelectionChange={(keys) => {
-                      const value = Array.from(keys)[0] as string
+                    value={field.value}
+                    onValueChange={(value) => {
                       field.onChange(value)
                       handleBandwidthUnitChange(value)
                     }}
-                    placeholder="Unit"
-                    className="w-32"
-                    classNames={{
-                      trigger: 'bg-surface1 border-surface2',
-                      value: 'text-text',
-                    }}
                   >
-                    {bandwidthUnits.map((unit) => (
-                      <SelectItem key={unit} value={unit}>
-                        {unit}
-                      </SelectItem>
-                    ))}
+                    <SelectTrigger className="w-32">
+                      <SelectValue placeholder="Unit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {bandwidthUnits.map((unit) => (
+                        <SelectItem key={unit} value={unit}>
+                          {unit}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                 )}
               />
             </div>
             {errors.bandwidthLimit && (
-              <p className="text-xs text-red mt-1">
+              <p className="text-xs text-destructive mt-1">
                 {errors.bandwidthLimit.message}
               </p>
             )}
             {watch('bandwidthLimit') > 0 && (
-              <p className="text-xs text-subtext0 mt-1">
-                Current limit: {watch('bandwidthLimit')}{' '}
-                {watch('bandwidthUnit')}
+              <p className="text-xs text-muted-foreground mt-1">
+                Current limit: {watch('bandwidthLimit')} {watch('bandwidthUnit')}
               </p>
             )}
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
     </div>
   )

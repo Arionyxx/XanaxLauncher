@@ -1,5 +1,8 @@
 import { useState } from 'react'
-import { Card, CardBody, Chip, Button, Spinner } from '@nextui-org/react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Loader2 } from 'lucide-react'
 import { Source } from '@/db/schema'
 
 interface SourceListItemProps {
@@ -26,18 +29,18 @@ function formatTimestamp(timestamp: number | null): string {
   return 'Just now'
 }
 
-function getStatusColor(
+function getStatusVariant(
   status: Source['status']
-): 'default' | 'success' | 'danger' | 'warning' {
+): 'default' | 'secondary' | 'destructive' | 'outline' {
   switch (status) {
     case 'synced':
-      return 'success'
-    case 'error':
-      return 'danger'
-    case 'syncing':
-      return 'warning'
-    default:
       return 'default'
+    case 'error':
+      return 'destructive'
+    case 'syncing':
+      return 'secondary'
+    default:
+      return 'outline'
   }
 }
 
@@ -75,28 +78,22 @@ export function SourceListItem({
   }
 
   return (
-    <Card className="bg-surface1 border-surface2" shadow="none">
-      <CardBody className="space-y-3">
+    <Card className="bg-muted/50">
+      <CardContent className="space-y-3 pt-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <h4 className="text-base font-semibold text-text truncate">
-                {source.name}
-              </h4>
-              <Chip
-                size="sm"
-                color={getStatusColor(source.status)}
-                variant="flat"
-              >
+              <h4 className="text-base font-semibold truncate">{source.name}</h4>
+              <Badge variant={getStatusVariant(source.status)}>
                 {getStatusLabel(source.status)}
-              </Chip>
+              </Badge>
               {source.autoSync && (
-                <Chip size="sm" variant="flat" className="bg-blue/20 text-blue">
+                <Badge variant="secondary" className="bg-primary/20">
                   Auto-sync
-                </Chip>
+                </Badge>
               )}
             </div>
-            <p className="text-xs text-subtext0 font-mono truncate">
+            <p className="text-xs text-muted-foreground font-mono truncate">
               {source.url}
             </p>
           </div>
@@ -104,47 +101,38 @@ export function SourceListItem({
           <div className="flex items-center gap-2 shrink-0">
             <Button
               size="sm"
-              variant="flat"
-              onPress={handleSync}
-              isDisabled={isSyncing || source.status === 'syncing'}
-              startContent={
-                isSyncing || source.status === 'syncing' ? (
-                  <Spinner size="sm" />
-                ) : (
-                  <span>🔄</span>
-                )
-              }
-              className="bg-surface0"
+              variant="outline"
+              onClick={handleSync}
+              disabled={isSyncing || source.status === 'syncing'}
             >
+              {isSyncing || source.status === 'syncing' ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <span className="mr-2">🔄</span>
+              )}
               Sync
             </Button>
-            <Button
-              size="sm"
-              variant="flat"
-              onPress={() => onEdit(source)}
-              className="bg-surface0"
-            >
+            <Button size="sm" variant="outline" onClick={() => onEdit(source)}>
               Edit
             </Button>
             <Button
               size="sm"
-              color="danger"
-              variant="flat"
-              onPress={() => onRemove(source.id)}
+              variant="destructive"
+              onClick={() => onRemove(source.id)}
             >
               Remove
             </Button>
           </div>
         </div>
 
-        <div className="flex items-center gap-6 text-xs text-subtext0">
+        <div className="flex items-center gap-6 text-xs text-muted-foreground">
           <div>
             <span className="font-medium">Last sync:</span>{' '}
             {formatTimestamp(source.lastSyncAt)}
           </div>
           <div>
             <span className="font-medium">Entries:</span>{' '}
-            <span className="text-text">{source.entryCount}</span>
+            <span className="font-semibold">{source.entryCount}</span>
           </div>
         </div>
 
@@ -152,18 +140,18 @@ export function SourceListItem({
           <div className="space-y-1">
             <button
               onClick={() => setShowError(!showError)}
-              className="text-xs text-red hover:underline focus:outline-none"
+              className="text-xs text-destructive hover:underline focus:outline-none"
             >
               {showError ? '▼' : '▶'} Error details
             </button>
             {showError && (
-              <div className="bg-red/10 border border-red/30 rounded p-2 text-xs text-red">
+              <div className="bg-destructive/10 border border-destructive/30 rounded p-2 text-xs text-destructive">
                 {source.errorMessage}
               </div>
             )}
           </div>
         )}
-      </CardBody>
+      </CardContent>
     </Card>
   )
 }

@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Card, CardHeader, CardBody, Button, Divider } from '@nextui-org/react'
-import { useToast } from '@/hooks/use-toast'
+import { Card, CardHeader, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { toast } from '@/hooks/use-toast'
 import { useOnboarding } from '@/hooks/useOnboarding'
 
 export function AdvancedPanel() {
-  const { toast } = useToast()
   const { resetOnboarding } = useOnboarding()
   const [isResetting, setIsResetting] = useState(false)
   const [isOpeningLogs, setIsOpeningLogs] = useState(false)
@@ -41,12 +42,18 @@ export function AdvancedPanel() {
     setIsResetting(true)
     try {
       await resetOnboarding()
-      toast.success(
-        'Onboarding reset successfully. Reload the app to see the wizard.'
-      )
+      toast({
+        title: 'Success',
+        description:
+          'Onboarding reset successfully. Reload the app to see the wizard.',
+      })
     } catch (error) {
       console.error('Failed to reset onboarding:', error)
-      toast.error('Failed to reset onboarding')
+      toast({
+        title: 'Error',
+        description: 'Failed to reset onboarding',
+        variant: 'destructive',
+      })
     } finally {
       setIsResetting(false)
     }
@@ -58,22 +65,22 @@ export function AdvancedPanel() {
       if (window.api?.logs?.openFolder) {
         await window.api.logs.openFolder()
         toast({
-          title: "Logs Opened",
-          description: "Logs folder opened successfully",
+          title: 'Logs Opened',
+          description: 'Logs folder opened successfully',
         })
       } else {
         toast({
-          title: "API Error",
-          description: "Logs API not available",
-          variant: "destructive",
+          title: 'API Error',
+          description: 'Logs API not available',
+          variant: 'destructive',
         })
       }
     } catch (error) {
       console.error('Failed to open logs folder:', error)
       toast({
-        title: "Error",
-        description: "Failed to open logs folder",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to open logs folder',
+        variant: 'destructive',
       })
     } finally {
       setIsOpeningLogs(false)
@@ -82,97 +89,93 @@ export function AdvancedPanel() {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-surface0 border-surface1">
+      <Card>
         <CardHeader>
-          <h3 className="text-xl font-semibold text-text">
-            Logs & Diagnostics
-          </h3>
+          <h3 className="text-xl font-semibold">Logs & Diagnostics</h3>
         </CardHeader>
-        <CardBody className="space-y-4">
+        <CardContent className="space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <h4 className="text-text font-medium">Application Logs</h4>
-              <p className="text-sm text-subtext0 mt-1">
+              <h4 className="font-medium">Application Logs</h4>
+              <p className="text-sm text-muted-foreground mt-1">
                 View application logs for troubleshooting and debugging issues.
               </p>
               {logPath && (
-                <p className="text-xs text-subtext1 mt-2 font-mono break-all">
+                <p className="text-xs text-muted-foreground mt-2 font-mono break-all">
                   {logPath}
                 </p>
               )}
             </div>
             <Button
-              color="primary"
-              variant="flat"
-              onPress={handleOpenLogs}
-              isLoading={isOpeningLogs}
+              variant="secondary"
+              onClick={handleOpenLogs}
+              disabled={isOpeningLogs}
             >
-              Open Logs Folder
+              {isOpeningLogs ? 'Opening...' : 'Open Logs Folder'}
             </Button>
           </div>
 
-          <Divider className="bg-surface1" />
+          <Separator />
 
-          <div className="bg-blue/20 border border-blue/50 rounded-lg p-3">
-            <p className="text-sm text-blue">
+          <div className="bg-primary/20 border border-primary/50 rounded-lg p-3">
+            <p className="text-sm text-primary">
               💡 <strong>Safe Mode:</strong> Launch the app with{' '}
-              <code className="bg-mantle px-2 py-1 rounded">--safe-mode</code>{' '}
+              <code className="bg-muted px-2 py-1 rounded">--safe-mode</code>{' '}
               flag to disable extensions and troubleshoot issues.
             </p>
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
 
-      <Card className="bg-surface0 border-surface1">
+      <Card>
         <CardHeader>
-          <h3 className="text-xl font-semibold text-text">Testing & Debug</h3>
+          <h3 className="text-xl font-semibold">Testing & Debug</h3>
         </CardHeader>
-        <CardBody className="space-y-4">
+        <CardContent className="space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <h4 className="text-text font-medium">Reset Onboarding</h4>
-              <p className="text-sm text-subtext0 mt-1">
+              <h4 className="font-medium">Reset Onboarding</h4>
+              <p className="text-sm text-muted-foreground mt-1">
                 Clear the onboarding completion flag to see the first-run wizard
                 again. Useful for testing.
               </p>
             </div>
             <Button
-              color="warning"
-              variant="flat"
-              onPress={handleResetOnboarding}
-              isLoading={isResetting}
+              variant="destructive"
+              onClick={handleResetOnboarding}
+              disabled={isResetting}
             >
-              Reset Onboarding
+              {isResetting ? 'Resetting...' : 'Reset Onboarding'}
             </Button>
           </div>
 
-          <div className="bg-yellow/20 border border-yellow/50 rounded-lg p-3">
-            <p className="text-sm text-yellow">
+          <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-3">
+            <p className="text-sm text-yellow-600">
               ⚠️ After resetting, you'll need to reload the app or navigate away
               and back to see the onboarding wizard.
             </p>
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
 
-      <Card className="bg-surface0 border-surface1">
+      <Card>
         <CardHeader>
-          <h3 className="text-xl font-semibold text-text">Application Info</h3>
+          <h3 className="text-xl font-semibold">Application Info</h3>
         </CardHeader>
-        <CardBody className="space-y-3">
+        <CardContent className="space-y-3">
           <div className="flex justify-between">
-            <span className="text-subtext0">Version</span>
-            <span className="text-text font-mono">{appVersion}</span>
+            <span className="text-muted-foreground">Version</span>
+            <span className="font-mono">{appVersion}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-subtext0">Database</span>
-            <span className="text-text">IndexedDB (Dexie)</span>
+            <span className="text-muted-foreground">Database</span>
+            <span>IndexedDB (Dexie)</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-subtext0">Theme</span>
-            <span className="text-text">Catppuccin Macchiato</span>
+            <span className="text-muted-foreground">Theme</span>
+            <span>Catppuccin Macchiato</span>
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
     </div>
   )
