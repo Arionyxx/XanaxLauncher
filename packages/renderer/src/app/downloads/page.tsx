@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { RefreshCw, Filter, Trash2, Download, Search, CheckCircle, XCircle, Clock, Play, Pause, Square } from 'lucide-react'
+import { RefreshCw, Trash2, Download, Search } from 'lucide-react'
 import { Job, JobStatus } from '@/types/provider'
 import { jobOrchestrator } from '@/services/job-orchestrator'
 import { JobCard } from '@/components/downloads/JobCard'
@@ -13,9 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Separator } from '@/components/ui/separator'
 
 type FilterType = 'all' | 'active' | 'completed' | 'failed'
 type SortType = 'newest' | 'oldest' | 'progress' | 'provider'
@@ -129,17 +127,16 @@ export default function DownloadsPage() {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
         (job) =>
-          (job.payload as any)?.url?.toLowerCase().includes(query) ||
-          (job.payload as any)?.magnet?.toLowerCase().includes(query) ||
+          job.metadata.originalUrl?.toLowerCase().includes(query) ||
           job.provider.toLowerCase().includes(query)
       )
     }
 
     filtered.sort((a, b) => {
       if (sort === 'newest') {
-        return b.createdAt.getTime() - a.createdAt.getTime()
+        return b.createdAt - a.createdAt
       } else if (sort === 'oldest') {
-        return a.createdAt.getTime() - b.createdAt.getTime()
+        return a.createdAt - b.createdAt
       } else if (sort === 'progress') {
         return (b.progress || 0) - (a.progress || 0)
       } else if (sort === 'provider') {
@@ -235,7 +232,7 @@ export default function DownloadsPage() {
                   />
                 </div>
 
-                <Select value={filter} onValueChange={setFilter}>
+                <Select value={filter} onValueChange={(value) => setFilter(value as FilterType)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Filter by status" />
                   </SelectTrigger>
@@ -247,7 +244,7 @@ export default function DownloadsPage() {
                   </SelectContent>
                 </Select>
 
-                <Select value={sort} onValueChange={setSort}>
+                <Select value={sort} onValueChange={(value) => setSort(value as SortType)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>

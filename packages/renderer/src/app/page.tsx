@@ -68,10 +68,7 @@ export default function Home() {
       if (sortBy === 'name') {
         return a.title.localeCompare(b.title)
       } else if (sortBy === 'date') {
-        return (
-          new Date(b.addedAt || 0).getTime() -
-          new Date(a.addedAt || 0).getTime()
-        )
+        return (b.createdAt || 0) - (a.createdAt || 0)
       }
       return 0
     })
@@ -296,7 +293,7 @@ export default function Home() {
                     <GameCard
                       key={game.id}
                       game={game}
-                      onClick={handleGameClick}
+                      onClick={() => handleGameClick(game)}
                       onDownload={handleDownload}
                       viewMode={viewMode}
                     />

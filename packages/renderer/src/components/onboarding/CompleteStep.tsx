@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Button, Card, CardBody } from '@nextui-org/react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 
 interface CompleteStepProps {
   onFinish: () => void
@@ -105,8 +106,8 @@ export function CompleteStep({ onFinish, summary }: CompleteStepProps) {
         transition={{ delay: 0.4 }}
         className="space-y-4"
       >
-        <h1 className="text-4xl font-bold text-text">You're All Set!</h1>
-        <p className="text-xl text-subtext0 max-w-2xl">
+        <h1 className="text-4xl font-bold text-foreground">You're All Set!</h1>
+        <p className="text-xl text-muted-foreground max-w-2xl">
           Media Manager is ready to use. Start browsing your catalog and
           downloading content.
         </p>
@@ -119,26 +120,26 @@ export function CompleteStep({ onFinish, summary }: CompleteStepProps) {
           transition={{ delay: 0.6 }}
           className="w-full max-w-md"
         >
-          <Card className="bg-surface0 border-surface1">
-            <CardBody className="space-y-2">
-              <h3 className="text-lg font-semibold text-text mb-2">
+          <Card>
+            <CardContent className="space-y-2 pt-6">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 Configuration Summary
               </h3>
               {configuredItems.map((item, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-2 text-green text-sm"
+                  className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm"
                 >
                   <span>{item}</span>
                 </div>
               ))}
               {configuredItems.length === 0 && (
-                <p className="text-subtext0 text-sm">
+                <p className="text-muted-foreground text-sm">
                   Using default configuration. You can customize settings
                   anytime from the Settings page.
                 </p>
               )}
-            </CardBody>
+            </CardContent>
           </Card>
         </motion.div>
       )}
@@ -149,10 +150,10 @@ export function CompleteStep({ onFinish, summary }: CompleteStepProps) {
         transition={{ delay: 0.8 }}
         className="space-y-3"
       >
-        <Button size="lg" color="primary" onPress={onFinish} className="px-12">
+        <Button size="lg" onClick={onFinish} className="px-12">
           Start Using Media Manager
         </Button>
-        <p className="text-sm text-subtext0">
+        <p className="text-sm text-muted-foreground">
           You can always adjust these settings later
         </p>
       </motion.div>
