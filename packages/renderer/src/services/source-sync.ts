@@ -1,5 +1,5 @@
 import { Source } from '@/db/schema'
-import { getSource, updateSource, getSources } from '@/services/storage'
+import { getSource, updateSource, getSources, syncSourceEntries } from '@/services/storage'
 import { sourceDataSchema, SourceData } from '@/types/source'
 
 export interface SyncProgress {
@@ -90,6 +90,9 @@ export async function syncSource(id: string): Promise<void> {
 
   try {
     const data = await retry(() => fetchSource(source.url))
+
+    // Sync entries to sourceEntries table
+    await syncSourceEntries(id, data.entries)
 
     await updateSource(id, {
       status: 'synced',
