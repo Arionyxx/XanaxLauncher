@@ -121,12 +121,18 @@ module.exports = {
           entryPoints: [
             {
               name: 'main_window',
+              // Only preload is bundled here - no html entry point
+              // The main process loads Next.js from localhost:3000 instead
               preload: {
                 js: path.join(__dirname, 'packages/main/src/preload.ts'),
               },
             },
           ],
         },
+        // Use port 3001 for Forge's renderer dev server (preload bundling)
+        // Next.js runs separately on port 3000
+        port: 3001,
+        loggerPort: 9001,
         devContentSecurityPolicy: "default-src 'self' 'unsafe-inline' data: http://localhost:3000 ws://localhost:3000; script-src 'self' 'unsafe-eval' 'unsafe-inline' data: http://localhost:3000",
       },
     },
