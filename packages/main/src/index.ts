@@ -22,9 +22,15 @@ let mainWindow: BrowserWindow | null = null
 
 const isDev = process.env.NODE_ENV !== 'production'
 
+// Declare MAIN_WINDOW_WEBPACK_ENTRY for Forge
+declare const MAIN_WINDOW_WEBPACK_ENTRY: string
+declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string
+
 log.transports.file.level = 'info'
 log.transports.console.level = 'debug'
 log.info('Application starting...')
+log.info('isDev:', isDev)
+log.info('NODE_ENV:', process.env.NODE_ENV)
 
 autoUpdater.logger = log
 autoUpdater.autoDownload = false
@@ -153,13 +159,18 @@ function createWindow() {
     height: 600,
     show: false,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       nodeIntegration: false,
       contextIsolation: true,
     },
   })
 
+  // In dev mode, load Next.js from localhost:3000
+  // In production, still load from localhost:3000 (Next.js must be running)
   const url = isDev ? 'http://localhost:3000' : 'http://localhost:3000'
+
+  log.info('Loading URL:', url)
+  log.info('Preload path:', MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY)
 
   mainWindow.loadURL(url)
 
