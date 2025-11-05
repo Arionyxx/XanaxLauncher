@@ -173,11 +173,11 @@ export function JobCard({
           </div>
         )}
 
-        {job.status === JobStatus.FAILED && job.error && (
+        {job.status === JobStatus.FAILED && job.metadata.errorMessage && (
           <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
             <div className="flex items-start gap-2">
               <XCircle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
-              <p className="text-sm text-destructive">{job.error}</p>
+              <p className="text-sm text-destructive">{job.metadata.errorMessage}</p>
             </div>
           </div>
         )}

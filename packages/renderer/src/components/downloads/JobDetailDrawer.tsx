@@ -47,8 +47,8 @@ export function JobDetailDrawer({
     [JobStatus.CANCELLED]: 'outline' as const,
   }
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleString()
+  const formatDate = (timestamp: number) => {
+    return new Date(timestamp).toLocaleString()
   }
 
   const formatSize = (bytes: number) => {
@@ -173,13 +173,13 @@ export function JobDetailDrawer({
             )}
 
             {/* Error */}
-            {job.error && (
+            {job.metadata.errorMessage && (
               <Alert variant="destructive">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
                   <div className="space-y-2">
                     <p className="font-medium">Error Details</p>
-                    <p className="text-sm">{job.error}</p>
+                    <p className="text-sm">{job.metadata.errorMessage}</p>
                   </div>
                 </AlertDescription>
               </Alert>
