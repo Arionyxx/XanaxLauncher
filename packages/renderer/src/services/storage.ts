@@ -1,5 +1,5 @@
 import { db } from '@/db/db'
-import { Setting, Source, Job, LibraryEntry } from '@/db/schema'
+import { Setting, Source, SourceEntry, Job, LibraryEntry } from '@/db/schema'
 
 type LibraryEntryUpsert = Omit<LibraryEntry, 'createdAt' | 'updatedAt'>
 
@@ -81,6 +81,7 @@ export async function addSource(
       status: 'never_synced',
       entryCount: 0,
       data: null,
+      errorMessage: undefined,
     }
     await db.sources.add(newSource)
     console.log(`[Storage] Source "${id}" added successfully`)
@@ -106,10 +107,83 @@ export async function updateSource(
 
 export async function removeSource(id: string): Promise<void> {
   try {
+    // Remove source and all its entries
     await db.sources.delete(id)
-    console.log(`[Storage] Source "${id}" removed successfully`)
+    await db.sourceEntries.where('sourceId').equals(id).delete()
+    console.log(`[Storage] Source "${id}" and its entries removed successfully`)
   } catch (error) {
     console.error(`[Storage] Error removing source "${id}":`, error)
+    throw error
+  }
+}
+
+// Source Entries functions
+export async function getSourceEntries(sourceId?: string): Promise<SourceEntry[]> {
+  try {
+    let query = db.sourceEntries.toCollection()
+    if (sourceId) {
+      query = db.sourceEntries.where('sourceId').equals(sourceId)
+    }
+    const entries = await query.toArray()
+    return entries.sort((a, b) => b.updatedAt - a.updatedAt)
+  } catch (error) {
+    console.error('[Storage] Error getting source entries:', error)
+    throw error
+  }
+}
+
+export async function getSourceEntry(id: string): Promise<SourceEntry | undefined> {
+  try {
+    const entry = await db.sourceEntries.get(id)
+    return entry
+  } catch (error) {
+    console.error(`[Storage] Error getting source entry "${id}":`, error)
+    throw error
+  }
+}
+
+export async function syncSourceEntries(
+  sourceId: string,
+  entries: Array<{ title: string; links: string[]; meta?: Record<string, unknown> }>
+): Promise<void> {
+  try {
+    const now = Date.now()
+    
+    // Create entry objects with IDs
+    const entryObjects = entries.map((entry, index) => ({
+      id: `${sourceId}_entry_${index}_${Date.now()}`,
+      sourceId,
+      title: entry.title,
+      links: entry.links,
+      meta: entry.meta || null,
+      createdAt: now,
+      updatedAt: now,
+    }))
+
+    // Remove existing entries for this source
+    await db.sourceEntries.where('sourceId').equals(sourceId).delete()
+    
+    // Add new entries
+    if (entryObjects.length > 0) {
+      await db.sourceEntries.bulkAdd(entryObjects)
+    }
+    
+    console.log(`[Storage] Synced ${entryObjects.length} entries for source "${sourceId}"`)
+  } catch (error) {
+    console.error(`[Storage] Error syncing source entries for "${sourceId}":`, error)
+    throw error
+  }
+}
+
+export async function searchSourceEntries(query: string): Promise<SourceEntry[]> {
+  try {
+    const entries = await db.sourceEntries
+      .where('title')
+      .startsWithIgnoreCase(query)
+      .toArray()
+    return entries.sort((a, b) => b.updatedAt - a.updatedAt)
+  } catch (error) {
+    console.error('[Storage] Error searching source entries:', error)
     throw error
   }
 }

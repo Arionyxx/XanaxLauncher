@@ -43,6 +43,16 @@ export interface OnboardingState {
   updatedAt: number
 }
 
+export interface SourceEntry {
+  id: string
+  sourceId: string
+  title: string
+  links: string[]
+  meta?: Record<string, unknown> | null
+  createdAt: number
+  updatedAt: number
+}
+
 export interface LibraryEntry {
   id: string
   title: string
@@ -60,6 +70,7 @@ export interface LibraryEntry {
 export class MediaManagerDatabase extends Dexie {
   settings!: Table<Setting, string>
   sources!: Table<Source, string>
+  sourceEntries!: Table<SourceEntry, string>
   jobs!: Table<Job, string>
   onboarding!: Table<OnboardingState, string>
   library!: Table<LibraryEntry, string>
@@ -83,6 +94,15 @@ export class MediaManagerDatabase extends Dexie {
     this.version(3).stores({
       settings: 'key, updatedAt',
       sources: 'id, name, status, lastSyncAt',
+      jobs: 'id, provider, status, createdAt, updatedAt',
+      onboarding: 'key, updatedAt',
+      library: 'id, title, installDate, lastPlayed',
+    })
+
+    this.version(4).stores({
+      settings: 'key, updatedAt',
+      sources: 'id, name, status, lastSyncAt',
+      sourceEntries: 'id, sourceId, title',
       jobs: 'id, provider, status, createdAt, updatedAt',
       onboarding: 'key, updatedAt',
       library: 'id, title, installDate, lastPlayed',

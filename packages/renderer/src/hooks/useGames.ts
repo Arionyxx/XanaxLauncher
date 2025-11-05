@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { db } from '@/db/db'
+import { getSourceEntries, getSources } from '@/services/storage'
+import { SourceEntry as DbSourceEntry } from '@/db/schema'
 import { SourceEntry } from '@/types/source'
 
 export interface GameEntry extends SourceEntry {
@@ -17,19 +18,23 @@ export function useGames() {
       setLoading(true)
       setError(null)
 
-      const sources = await db.sources.toArray()
+      // Get all source entries and sources
+      const [entries, sources] = await Promise.all([
+        getSourceEntries(),
+        getSources(),
+      ])
 
-      const allGames: GameEntry[] = []
-      for (const source of sources) {
-        if (source.data && source.data.entries && Array.isArray(source.data.entries)) {
-          const entries = source.data.entries.map((entry: SourceEntry) => ({
-            ...entry,
-            sourceId: source.id,
-            sourceName: source.name,
-          }))
-          allGames.push(...entries)
-        }
-      }
+      // Create a map of source ID to source name for quick lookup
+      const sourceMap = new Map(sources.map(s => [s.id, s.name]))
+
+      // Convert database entries to game entries
+      const allGames: GameEntry[] = entries.map((entry: DbSourceEntry) => ({
+        title: entry.title,
+        links: entry.links,
+        meta: entry.meta || {},
+        sourceId: entry.sourceId,
+        sourceName: sourceMap.get(entry.sourceId) || 'Unknown Source',
+      }))
 
       setGames(allGames)
     } catch (err) {
