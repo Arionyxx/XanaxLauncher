@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Card, CardBody, CardHeader, Switch, Button } from '@nextui-org/react'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Switch } from '@/components/ui/switch'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
 import {
   ThemeSettings,
   themeSettingsSchema,
@@ -89,11 +92,11 @@ export function ThemePanel({ settings, onUpdate }: ThemePanelProps) {
   return (
     <div className="space-y-6">
       {/* Flavor Selection */}
-      <Card className="bg-surface0 border-surface1">
+      <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-text">Theme Flavor</h3>
+          <h3 className="text-lg font-semibold">Theme Flavor</h3>
         </CardHeader>
-        <CardBody>
+        <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {catppuccinFlavors.map((flavor) => {
               const flavorColors = flavors[flavor].colors
@@ -106,16 +109,14 @@ export function ThemePanel({ settings, onUpdate }: ThemePanelProps) {
                   disabled={isSaving}
                   className={`p-4 rounded-lg border-2 transition-all ${
                     isSelected
-                      ? 'border-blue bg-surface1'
-                      : 'border-surface2 bg-surface1 hover:border-surface2 opacity-70 hover:opacity-100'
+                      ? 'border-primary bg-surface-0/70'
+                      : 'border-border bg-surface-0/50 hover:border-border/70 opacity-70 hover:opacity-100'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold text-text">
-                      {flavorLabels[flavor]}
-                    </span>
+                    <span className="font-semibold">{flavorLabels[flavor]}</span>
                     {isSelected && (
-                      <span className="text-blue text-sm">✓ Active</span>
+                      <span className="text-primary text-sm">✓ Active</span>
                     )}
                   </div>
                   <div className="flex gap-1 h-6 rounded overflow-hidden">
@@ -144,15 +145,15 @@ export function ThemePanel({ settings, onUpdate }: ThemePanelProps) {
               )
             })}
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
 
       {/* Accent Color Selection */}
-      <Card className="bg-surface0 border-surface1">
+      <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-text">Accent Color</h3>
+          <h3 className="text-lg font-semibold">Accent Color</h3>
         </CardHeader>
-        <CardBody>
+        <CardContent>
           <div className="grid grid-cols-7 gap-2">
             {catppuccinAccents.map((accent) => {
               const color = currentFlavor.colors[accent].hex
@@ -166,8 +167,8 @@ export function ThemePanel({ settings, onUpdate }: ThemePanelProps) {
                   title={accentLabels[accent]}
                   className={`aspect-square rounded-lg border-2 transition-all ${
                     isSelected
-                      ? 'border-text scale-110'
-                      : 'border-transparent hover:border-overlay0'
+                      ? 'border-foreground scale-110'
+                      : 'border-transparent hover:border-border'
                   }`}
                   style={{ backgroundColor: color }}
                 >
@@ -178,21 +179,19 @@ export function ThemePanel({ settings, onUpdate }: ThemePanelProps) {
               )
             })}
           </div>
-          <p className="text-xs text-subtext0 mt-3">
+          <p className="text-xs text-muted-foreground mt-3">
             Selected: {accentLabels[settings.accentColor]}
           </p>
-        </CardBody>
+        </CardContent>
       </Card>
 
       {/* Compact Mode */}
-      <Card className="bg-surface0 border-surface1">
-        <CardBody>
+      <Card>
+        <CardContent className="pt-6">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <label className="text-sm font-semibold text-text block">
-                Compact Mode
-              </label>
-              <p className="text-xs text-subtext0 mt-1">
+              <Label>Compact Mode</Label>
+              <p className="text-xs text-muted-foreground mt-1">
                 Reduce spacing and padding throughout the interface
               </p>
             </div>
@@ -201,28 +200,25 @@ export function ThemePanel({ settings, onUpdate }: ThemePanelProps) {
               control={control}
               render={({ field }) => (
                 <Switch
-                  isSelected={field.value}
-                  onValueChange={(checked) => {
+                  checked={field.value}
+                  onCheckedChange={(checked) => {
                     field.onChange(checked)
                     handleCompactModeChange(checked)
                   }}
-                  classNames={{
-                    wrapper: 'bg-surface2',
-                  }}
-                  isDisabled={isSaving}
+                  disabled={isSaving}
                 />
               )}
             />
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
 
       {/* Preview Area */}
-      <Card className="bg-surface0 border-surface1">
+      <Card>
         <CardHeader>
-          <h3 className="text-lg font-semibold text-text">Preview</h3>
+          <h3 className="text-lg font-semibold">Preview</h3>
         </CardHeader>
-        <CardBody>
+        <CardContent>
           <div
             className="p-6 rounded-lg"
             style={{ backgroundColor: currentFlavor.colors.base.hex }}
@@ -278,7 +274,7 @@ export function ThemePanel({ settings, onUpdate }: ThemePanelProps) {
               </div>
             </div>
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
     </div>
   )

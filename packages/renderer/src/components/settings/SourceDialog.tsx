@@ -2,15 +2,16 @@ import { useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Input,
-  Switch,
-} from '@nextui-org/react'
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { Source } from '@/db/schema'
 import { sourceFormSchema, SourceFormData } from '@/types/source'
 import { SecurityWarning } from '@/components/SecurityWarning'
@@ -67,72 +68,71 @@ export function SourceDialog({
   }
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      classNames={{
-        base: 'bg-surface0 border border-surface1',
-        header: 'border-b border-surface1',
-        body: 'py-6',
-        footer: 'border-t border-surface1',
-      }}
-    >
-      <ModalContent>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
         <form onSubmit={handleSubmit(handleSave)}>
-          <ModalHeader>
-            <h2 className="text-xl font-semibold text-text">{title}</h2>
-          </ModalHeader>
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+          </DialogHeader>
 
-          <ModalBody className="space-y-4">
-            <div>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
               <Controller
                 name="name"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    {...field}
-                    label="Name"
-                    placeholder="Enter source name"
-                    isInvalid={!!errors.name}
-                    errorMessage={errors.name?.message}
-                    classNames={{
-                      label: 'text-text',
-                      input: 'bg-surface1 text-text',
-                      inputWrapper: 'bg-surface1 border-surface2',
-                    }}
-                  />
+                  <>
+                    <Label htmlFor="source-name">Name</Label>
+                    <Input
+                      {...field}
+                      id="source-name"
+                      placeholder="Enter source name"
+                      className={errors.name ? 'border-destructive' : ''}
+                    />
+                    {errors.name && (
+                      <p className="text-sm text-destructive">
+                        {errors.name.message}
+                      </p>
+                    )}
+                  </>
                 )}
               />
             </div>
 
-            <div>
+            <div className="space-y-2">
               <Controller
                 name="url"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    {...field}
-                    label="URL"
-                    placeholder="https://example.com/feed.json"
-                    type="url"
-                    isInvalid={!!errors.url}
-                    errorMessage={errors.url?.message}
-                    classNames={{
-                      label: 'text-text',
-                      input: 'bg-surface1 text-text font-mono text-sm',
-                      inputWrapper: 'bg-surface1 border-surface2',
-                    }}
-                  />
+                  <>
+                    <Label htmlFor="source-url">URL</Label>
+                    <Input
+                      {...field}
+                      id="source-url"
+                      placeholder="https://example.com/feed.json"
+                      type="url"
+                      className={
+                        errors.url
+                          ? 'border-destructive font-mono text-sm'
+                          : 'font-mono text-sm'
+                      }
+                    />
+                    {errors.url && (
+                      <p className="text-sm text-destructive">
+                        {errors.url.message}
+                      </p>
+                    )}
+                  </>
                 )}
               />
             </div>
 
             {watchedUrl && <SecurityWarning url={watchedUrl} type="http" />}
 
-            <div className="flex items-center justify-between p-3 bg-surface1 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
               <div>
-                <p className="text-sm font-medium text-text">Auto-sync</p>
-                <p className="text-xs text-subtext0 mt-1">
+                <Label>Auto-sync</Label>
+                <p className="text-xs text-muted-foreground mt-1">
                   Automatically sync this source on app startup
                 </p>
               </div>
@@ -141,37 +141,33 @@ export function SourceDialog({
                 control={control}
                 render={({ field }) => (
                   <Switch
-                    isSelected={field.value}
-                    onValueChange={field.onChange}
-                    classNames={{
-                      wrapper: 'group-data-[selected=true]:bg-blue',
-                    }}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
                   />
                 )}
               />
             </div>
-          </ModalBody>
+          </div>
 
-          <ModalFooter>
+          <DialogFooter>
             <Button
-              variant="flat"
-              onPress={onClose}
-              isDisabled={isSubmitting}
-              className="bg-surface1"
+              variant="outline"
+              onClick={onClose}
+              disabled={isSubmitting}
+              type="button"
             >
               Cancel
             </Button>
-            <Button
-              color="primary"
-              type="submit"
-              isLoading={isSubmitting}
-              isDisabled={isSubmitting}
-            >
-              {source ? 'Save Changes' : 'Add Source'}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting
+                ? 'Saving...'
+                : source
+                  ? 'Save Changes'
+                  : 'Add Source'}
             </Button>
-          </ModalFooter>
+          </DialogFooter>
         </form>
-      </ModalContent>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   )
 }

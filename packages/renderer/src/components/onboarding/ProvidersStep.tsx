@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Button, Input, Card, CardBody } from '@nextui-org/react'
-import { useToast } from '@/hooks/use-toast'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import { toast } from '@/hooks/use-toast'
 import { TorBoxProvider } from '@/services/providers/torbox/torbox-provider'
 
 interface ProvidersStepProps {
@@ -17,7 +20,6 @@ export function ProvidersStep({
   initialTorboxToken,
   initialRealDebridToken,
 }: ProvidersStepProps) {
-  const { toast } = useToast()
   const [torboxToken, setTorboxToken] = useState(initialTorboxToken || '')
   const [realDebridToken, setRealDebridToken] = useState(
     initialRealDebridToken || ''
@@ -27,9 +29,9 @@ export function ProvidersStep({
   const handleTestTorBox = async () => {
     if (!torboxToken.trim()) {
       toast({
-        title: "Token Required",
-        description: "Please enter a TorBox API token",
-        variant: "destructive",
+        title: 'Token Required',
+        description: 'Please enter a TorBox API token',
+        variant: 'destructive',
       })
       return
     }
@@ -40,12 +42,23 @@ export function ProvidersStep({
       const result = await provider.testConnection()
 
       if (result.success) {
-        toast.success('TorBox connection successful!')
+        toast({
+          title: 'Success',
+          description: 'TorBox connection successful!',
+        })
       } else {
-        toast.error(`TorBox test failed: ${result.message || 'Unknown error'}`)
+        toast({
+          title: 'Test Failed',
+          description: `TorBox test failed: ${result.message || 'Unknown error'}`,
+          variant: 'destructive',
+        })
       }
     } catch (error) {
-      toast.error('Failed to test TorBox connection')
+      toast({
+        title: 'Error',
+        description: 'Failed to test TorBox connection',
+        variant: 'destructive',
+      })
       console.error('TorBox test error:', error)
     } finally {
       setIsTesting(false)
@@ -54,15 +67,25 @@ export function ProvidersStep({
 
   const handleTestRealDebrid = async () => {
     if (!realDebridToken.trim()) {
-      toast.error('Please enter a Real-Debrid API token')
+      toast({
+        title: 'Token Required',
+        description: 'Please enter a Real-Debrid API token',
+        variant: 'destructive',
+      })
       return
     }
 
     setIsTesting(true)
     try {
-      toast.info('Real-Debrid provider not yet implemented')
+      toast({
+        description: 'Real-Debrid provider not yet implemented',
+      })
     } catch (error) {
-      toast.error('Failed to test Real-Debrid connection')
+      toast({
+        title: 'Error',
+        description: 'Failed to test Real-Debrid connection',
+        variant: 'destructive',
+      })
       console.error('Real-Debrid test error:', error)
     } finally {
       setIsTesting(false)
@@ -99,74 +122,68 @@ export function ProvidersStep({
       </div>
 
       <div className="space-y-4">
-        <Card className="bg-surface0 border-surface1">
-          <CardBody className="space-y-3">
+        <Card>
+          <CardContent className="space-y-3 pt-6">
             <div className="flex items-center gap-2">
               <span className="text-2xl">🚀</span>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-text">TorBox</h3>
-                <p className="text-sm text-subtext0">
+                <h3 className="text-lg font-semibold">TorBox</h3>
+                <p className="text-sm text-muted-foreground">
                   Premium torrent and usenet service
                 </p>
               </div>
             </div>
-            <Input
-              type="password"
-              label="API Token"
-              placeholder="Enter your TorBox API token"
-              value={torboxToken}
-              onValueChange={setTorboxToken}
-              classNames={{
-                inputWrapper: 'bg-surface1 border-surface2',
-              }}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="torbox-token">API Token</Label>
+              <Input
+                id="torbox-token"
+                type="password"
+                placeholder="Enter your TorBox API token"
+                value={torboxToken}
+                onChange={(e) => setTorboxToken(e.target.value)}
+              />
+            </div>
             <Button
-              color="secondary"
-              variant="flat"
-              onPress={handleTestTorBox}
-              isLoading={isTesting}
-              isDisabled={!torboxToken.trim()}
-              fullWidth
+              variant="secondary"
+              onClick={handleTestTorBox}
+              disabled={isTesting || !torboxToken.trim()}
+              className="w-full"
             >
-              Test Connection
+              {isTesting ? 'Testing...' : 'Test Connection'}
             </Button>
-          </CardBody>
+          </CardContent>
         </Card>
 
-        <Card className="bg-surface0 border-surface1">
-          <CardBody className="space-y-3">
+        <Card>
+          <CardContent className="space-y-3 pt-6">
             <div className="flex items-center gap-2">
               <span className="text-2xl">⚡</span>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-text">
-                  Real-Debrid
-                </h3>
-                <p className="text-sm text-subtext0">
+                <h3 className="text-lg font-semibold">Real-Debrid</h3>
+                <p className="text-sm text-muted-foreground">
                   Multi-hoster unrestricted downloader
                 </p>
               </div>
             </div>
-            <Input
-              type="password"
-              label="API Token"
-              placeholder="Enter your Real-Debrid API token"
-              value={realDebridToken}
-              onValueChange={setRealDebridToken}
-              classNames={{
-                inputWrapper: 'bg-surface1 border-surface2',
-              }}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="realdebrid-token">API Token</Label>
+              <Input
+                id="realdebrid-token"
+                type="password"
+                placeholder="Enter your Real-Debrid API token"
+                value={realDebridToken}
+                onChange={(e) => setRealDebridToken(e.target.value)}
+              />
+            </div>
             <Button
-              color="secondary"
-              variant="flat"
-              onPress={handleTestRealDebrid}
-              isLoading={isTesting}
-              isDisabled={!realDebridToken.trim()}
-              fullWidth
+              variant="secondary"
+              onClick={handleTestRealDebrid}
+              disabled={isTesting || !realDebridToken.trim()}
+              className="w-full"
             >
-              Test Connection
+              {isTesting ? 'Testing...' : 'Test Connection'}
             </Button>
-          </CardBody>
+          </CardContent>
         </Card>
 
         <div className="bg-blue/20 border border-blue/50 rounded-lg p-3">
@@ -178,16 +195,14 @@ export function ProvidersStep({
       </div>
 
       <div className="flex items-center justify-between gap-4 pt-4">
-        <Button variant="flat" onPress={onBack}>
+        <Button variant="outline" onClick={onBack}>
           Back
         </Button>
         <div className="flex gap-2">
-          <Button variant="light" onPress={handleSkip}>
+          <Button variant="ghost" onClick={handleSkip}>
             Skip for Now
           </Button>
-          <Button color="primary" onPress={handleContinue}>
-            Continue
-          </Button>
+          <Button onClick={handleContinue}>Continue</Button>
         </div>
       </div>
     </motion.div>

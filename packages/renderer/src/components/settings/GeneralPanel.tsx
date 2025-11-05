@@ -1,14 +1,17 @@
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent } from '@/components/ui/card'
 import {
-  Input,
   Select,
+  SelectContent,
   SelectItem,
-  Button,
-  Card,
-  CardBody,
-} from '@nextui-org/react'
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   GeneralSettings,
   generalSettingsSchema,
@@ -73,51 +76,46 @@ export function GeneralPanel({ settings, onUpdate }: GeneralPanelProps) {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-surface0 border-surface1">
-        <CardBody className="space-y-6">
+      <Card>
+        <CardContent className="space-y-6 pt-6">
           {/* Language Selection */}
-          <div>
-            <label className="text-sm font-semibold text-text mb-2 block">
-              Language
-            </label>
+          <div className="space-y-2">
+            <Label htmlFor="language">Language</Label>
             <Controller
               name="language"
               control={control}
               render={({ field }) => (
                 <Select
-                  {...field}
-                  selectedKeys={[field.value]}
-                  onSelectionChange={(keys) => {
-                    const value = Array.from(keys)[0] as string
+                  value={field.value}
+                  onValueChange={(value) => {
                     field.onChange(value)
                     handleLanguageChange(value)
                   }}
-                  placeholder="Select a language"
-                  className="max-w-xs"
-                  classNames={{
-                    trigger: 'bg-surface1 border-surface2',
-                    value: 'text-text',
-                  }}
-                  isDisabled={isSaving}
+                  disabled={isSaving}
                 >
-                  {languages.map((lang) => (
-                    <SelectItem key={lang} value={lang}>
-                      {languageLabels[lang]}
-                    </SelectItem>
-                  ))}
+                  <SelectTrigger id="language" className="max-w-xs">
+                    <SelectValue placeholder="Select a language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {languages.map((lang) => (
+                      <SelectItem key={lang} value={lang}>
+                        {languageLabels[lang]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               )}
             />
             {errors.language && (
-              <p className="text-xs text-red mt-1">{errors.language.message}</p>
+              <p className="text-xs text-destructive mt-1">
+                {errors.language.message}
+              </p>
             )}
           </div>
 
           {/* Download Directory */}
-          <div>
-            <label className="text-sm font-semibold text-text mb-2 block">
-              Download Directory
-            </label>
+          <div className="space-y-2">
+            <Label htmlFor="download-dir">Download Directory</Label>
             <div className="flex gap-2">
               <Controller
                 name="downloadDirectory"
@@ -125,41 +123,32 @@ export function GeneralPanel({ settings, onUpdate }: GeneralPanelProps) {
                 render={({ field }) => (
                   <Input
                     {...field}
+                    id="download-dir"
                     placeholder="Select download directory"
                     className="flex-1"
-                    classNames={{
-                      input: 'bg-surface1 text-text',
-                      inputWrapper: 'bg-surface1 border-surface2',
-                    }}
-                    isReadOnly
+                    readOnly
                   />
                 )}
               />
-              <Button
-                color="primary"
-                onClick={handleSelectDownloadDirectory}
-                className="shrink-0"
-              >
+              <Button onClick={handleSelectDownloadDirectory} className="shrink-0">
                 Browse
               </Button>
             </div>
             {errors.downloadDirectory && (
-              <p className="text-xs text-red mt-1">
+              <p className="text-xs text-destructive mt-1">
                 {errors.downloadDirectory.message}
               </p>
             )}
             {watch('downloadDirectory') && (
-              <p className="text-xs text-subtext0 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Current: {watch('downloadDirectory')}
               </p>
             )}
           </div>
 
           {/* Temp Directory */}
-          <div>
-            <label className="text-sm font-semibold text-text mb-2 block">
-              Temporary Directory
-            </label>
+          <div className="space-y-2">
+            <Label htmlFor="temp-dir">Temporary Directory</Label>
             <div className="flex gap-2">
               <Controller
                 name="tempDirectory"
@@ -167,36 +156,29 @@ export function GeneralPanel({ settings, onUpdate }: GeneralPanelProps) {
                 render={({ field }) => (
                   <Input
                     {...field}
+                    id="temp-dir"
                     placeholder="Select temporary directory"
                     className="flex-1"
-                    classNames={{
-                      input: 'bg-surface1 text-text',
-                      inputWrapper: 'bg-surface1 border-surface2',
-                    }}
-                    isReadOnly
+                    readOnly
                   />
                 )}
               />
-              <Button
-                color="primary"
-                onClick={handleSelectTempDirectory}
-                className="shrink-0"
-              >
+              <Button onClick={handleSelectTempDirectory} className="shrink-0">
                 Browse
               </Button>
             </div>
             {errors.tempDirectory && (
-              <p className="text-xs text-red mt-1">
+              <p className="text-xs text-destructive mt-1">
                 {errors.tempDirectory.message}
               </p>
             )}
             {watch('tempDirectory') && (
-              <p className="text-xs text-subtext0 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Current: {watch('tempDirectory')}
               </p>
             )}
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
     </div>
   )

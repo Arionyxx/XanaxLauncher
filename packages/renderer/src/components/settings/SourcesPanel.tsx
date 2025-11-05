@@ -1,18 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Loader2 } from 'lucide-react'
 import {
-  Card,
-  CardBody,
-  Button,
-  Spinner,
-  useDisclosure,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from '@nextui-org/react'
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { Source } from '@/db/schema'
 import {
   getSources,
@@ -24,10 +22,9 @@ import { syncSource, syncAllSources } from '@/services/source-sync'
 import { SourceFormData, sourcesExportSchema } from '@/types/source'
 import { SourceListItem } from './SourceListItem'
 import { SourceDialog } from './SourceDialog'
-import { useToast } from '@/hooks/use-toast'
+import { toast } from '@/hooks/use-toast'
 
 export function SourcesPanel() {
-  const { toast } = useToast()
   const [sources, setSources] = useState<Source[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSyncingAll, setIsSyncingAll] = useState(false)
@@ -39,23 +36,9 @@ export function SourcesPanel() {
   const [editingSource, setEditingSource] = useState<Source | undefined>()
   const [sourceToRemove, setSourceToRemove] = useState<string | null>(null)
 
-  const {
-    isOpen: isAddDialogOpen,
-    onOpen: onAddDialogOpen,
-    onClose: onAddDialogClose,
-  } = useDisclosure()
-
-  const {
-    isOpen: isEditDialogOpen,
-    onOpen: onEditDialogOpen,
-    onClose: onEditDialogClose,
-  } = useDisclosure()
-
-  const {
-    isOpen: isRemoveDialogOpen,
-    onOpen: onRemoveDialogOpen,
-    onClose: onRemoveDialogClose,
-  } = useDisclosure()
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false)
 
   useEffect(() => {
     loadSources()
@@ -68,7 +51,7 @@ export function SourcesPanel() {
       setSources(fetchedSources)
     } catch (error) {
       console.error('Failed to load sources:', error)
-      toast.error('Failed to load sources')
+      toast({ title: 'Error', description: 'Failed to load sources', variant: 'destructive' })
     } finally {
       setIsLoading(false)
     }
@@ -81,11 +64,11 @@ export function SourcesPanel() {
         url: data.url,
         autoSync: data.autoSync,
       })
-      toast.success('Source added successfully')
+      toast({ title: 'Success', description: 'Source added successfully' })
       await loadSources()
     } catch (error) {
       console.error('Failed to add source:', error)
-      toast.error('Failed to add source')
+      toast({ title: 'Error', description: 'Failed to add source', variant: 'destructive' })
       throw error
     }
   }
@@ -99,11 +82,11 @@ export function SourcesPanel() {
         url: data.url,
         autoSync: data.autoSync,
       })
-      toast.success('Source updated successfully')
+      toast({ title: 'Success', description: 'Source updated successfully' })
       await loadSources()
     } catch (error) {
       console.error('Failed to update source:', error)
-      toast.error('Failed to update source')
+      toast({ title: 'Error', description: 'Failed to update source', variant: 'destructive' })
       throw error
     }
   }
@@ -113,24 +96,24 @@ export function SourcesPanel() {
 
     try {
       await removeSource(sourceToRemove)
-      toast.success('Source removed successfully')
+      toast({ title: 'Success', description: 'Source removed successfully' })
       await loadSources()
-      onRemoveDialogClose()
+      () => setIsRemoveDialogOpen(false)()
       setSourceToRemove(null)
     } catch (error) {
       console.error('Failed to remove source:', error)
-      toast.error('Failed to remove source')
+      toast({ title: 'Error', description: 'Failed to remove source', variant: 'destructive' })
     }
   }
 
   const handleSyncSource = async (id: string) => {
     try {
       await syncSource(id)
-      toast.success('Source synced successfully')
+      toast({ title: 'Success', description: 'Source synced successfully' })
       await loadSources()
     } catch (error) {
       console.error('Failed to sync source:', error)
-      toast.error('Failed to sync source')
+      toast({ title: 'Error', description: 'Failed to sync source', variant: 'destructive' })
       throw error
     }
   }
@@ -167,12 +150,12 @@ export function SourcesPanel() {
 
   const handleEdit = (source: Source) => {
     setEditingSource(source)
-    onEditDialogOpen()
+    () => setIsEditDialogOpen(true)()
   }
 
   const handleRemove = (id: string) => {
     setSourceToRemove(id)
-    onRemoveDialogOpen()
+    () => setIsRemoveDialogOpen(true)()
   }
 
   const handleExport = () => {
@@ -196,7 +179,7 @@ export function SourcesPanel() {
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
 
-    toast.success('Sources exported successfully')
+    toast({ title: 'Success', description: 'Sources exported successfully' })
   }
 
   const handleImport = () => {
@@ -213,7 +196,7 @@ export function SourcesPanel() {
 
         const validationResult = sourcesExportSchema.safeParse(data)
         if (!validationResult.success) {
-          toast.error('Invalid import file format')
+          toast({ title: 'Error', description: 'Invalid import file format', variant: 'destructive' })
           return
         }
 
@@ -238,7 +221,7 @@ export function SourcesPanel() {
         toast.success(`Imported ${imported} source${imported !== 1 ? 's' : ''}`)
       } catch (error) {
         console.error('Failed to import sources:', error)
-        toast.error('Failed to import sources')
+        toast({ title: 'Error', description: 'Failed to import sources', variant: 'destructive' })
       }
     }
     input.click()
@@ -247,7 +230,7 @@ export function SourcesPanel() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Spinner size="lg" color="primary" />
+        <Loader2 size="lg" color="primary" />
       </div>
     )
   }
@@ -256,7 +239,7 @@ export function SourcesPanel() {
     <div className="space-y-6">
       {/* Legal Notice */}
       <Card className="bg-yellow/10 border-yellow/30 border">
-        <CardBody>
+        <CardContent className="pt-6">
           <div className="flex items-start gap-3">
             <span className="text-2xl">⚠️</span>
             <div className="flex-1">
@@ -272,27 +255,27 @@ export function SourcesPanel() {
               </p>
             </div>
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
 
       {/* Action Buttons */}
       <Card className="bg-surface0 border-surface1">
-        <CardBody>
+        <CardContent className="pt-6">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-2">
               <Button
                 color="primary"
-                onPress={onAddDialogOpen}
+                onClick={() => setIsAddDialogOpen(true)}
                 startContent={<span>➕</span>}
               >
                 Add Source
               </Button>
               <Button
                 variant="flat"
-                onPress={handleSyncAll}
-                isDisabled={sources.length === 0 || isSyncingAll}
+                onClick={handleSyncAll}
+                disabled={sources.length === 0 || isSyncingAll}
                 startContent={
-                  isSyncingAll ? <Spinner size="sm" /> : <span>🔄</span>
+                  isSyncingAll ? <Loader2 size="sm" /> : <span>🔄</span>
                 }
                 className="bg-surface1"
               >
@@ -306,7 +289,7 @@ export function SourcesPanel() {
               <Button
                 size="sm"
                 variant="flat"
-                onPress={handleImport}
+                onClick={handleImport}
                 startContent={<span>📥</span>}
                 className="bg-surface1"
               >
@@ -315,8 +298,8 @@ export function SourcesPanel() {
               <Button
                 size="sm"
                 variant="flat"
-                onPress={handleExport}
-                isDisabled={sources.length === 0}
+                onClick={handleExport}
+                disabled={sources.length === 0}
                 startContent={<span>📤</span>}
                 className="bg-surface1"
               >
@@ -324,7 +307,7 @@ export function SourcesPanel() {
               </Button>
             </div>
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
 
       {/* Sources List */}
@@ -333,11 +316,11 @@ export function SourcesPanel() {
           <CardBody className="py-12">
             <div className="text-center">
               <p className="text-subtext0 mb-4">No sources configured</p>
-              <Button color="primary" onPress={onAddDialogOpen}>
+              <Button color="primary" onClick={() => setIsAddDialogOpen(true)}>
                 Add Your First Source
               </Button>
             </div>
-          </CardBody>
+          </CardContent>
         </Card>
       ) : (
         <div className="space-y-3">
@@ -356,7 +339,7 @@ export function SourcesPanel() {
       {/* Add Source Dialog */}
       <SourceDialog
         isOpen={isAddDialogOpen}
-        onClose={onAddDialogClose}
+        onClose={() => setIsAddDialogOpen(false)}
         onSave={handleAddSource}
         title="Add Source"
       />
@@ -365,7 +348,7 @@ export function SourcesPanel() {
       <SourceDialog
         isOpen={isEditDialogOpen}
         onClose={() => {
-          onEditDialogClose()
+          () => setIsEditDialogOpen(false)()
           setEditingSource(undefined)
         }}
         onSave={handleEditSource}
@@ -376,7 +359,7 @@ export function SourcesPanel() {
       {/* Remove Confirmation Dialog */}
       <Modal
         isOpen={isRemoveDialogOpen}
-        onClose={onRemoveDialogClose}
+        onClose={() => setIsRemoveDialogOpen(false)}
         classNames={{
           base: 'bg-surface0 border border-surface1',
           header: 'border-b border-surface1',
@@ -396,12 +379,12 @@ export function SourcesPanel() {
           <ModalFooter>
             <Button
               variant="flat"
-              onPress={onRemoveDialogClose}
+              onClick={() => setIsRemoveDialogOpen(false)}
               className="bg-surface1"
             >
               Cancel
             </Button>
-            <Button color="danger" onPress={handleRemoveSource}>
+            <Button color="danger" onClick={handleRemoveSource}>
               Remove
             </Button>
           </ModalFooter>
