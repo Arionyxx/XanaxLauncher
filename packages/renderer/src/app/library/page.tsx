@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Search, SlidersHorizontal, LayoutGrid, Rows3, Loader2 } from 'lucide-react'
+import { Search, SlidersHorizontal, LayoutGrid, Rows2, Loader2 } from 'lucide-react'
 import { AppLayout } from '@/components/AppLayout'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

@@ -117,6 +117,34 @@ export async function removeSource(id: string): Promise<void> {
   }
 }
 
+export async function clearSourceCache(): Promise<void> {
+  try {
+    await db.transaction('rw', db.sourceEntries, db.sources, async () => {
+      await db.sourceEntries.clear()
+      await db.sources.toCollection().modify((source) => {
+        source.entryCount = 0
+        source.lastSyncAt = null
+        source.status = 'never_synced'
+        source.errorMessage = undefined
+      })
+    })
+    console.log('[Storage] Source cache cleared successfully')
+  } catch (error) {
+    console.error('[Storage] Error clearing source cache:', error)
+    throw error
+  }
+}
+
+export async function clearDownloadHistory(): Promise<void> {
+  try {
+    await db.jobs.clear()
+    console.log('[Storage] Download history cleared successfully')
+  } catch (error) {
+    console.error('[Storage] Error clearing download history:', error)
+    throw error
+  }
+}
+
 // Source Entries functions
 export async function getSourceEntries(sourceId?: string): Promise<SourceEntry[]> {
   try {
