@@ -11,6 +11,7 @@ import {
   Job,
   JobStatus,
   StartJobPayload,
+  StartJobResponse,
   JobFile,
   JobMetadata,
   ProviderError,
@@ -40,7 +41,41 @@ class JobOrchestrator {
 
     const provider = providerRegistry.getProvider(providerName)
 
-    const response = await provider.startJob(payload)
+    let response: StartJobResponse
+    try {
+      response = await provider.startJob(payload)
+    } catch (error) {
+      // If job creation fails, create a failed job with error information
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      const jobId = `failed_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+      
+      const failedJob: Job = {
+        id: jobId,
+        provider: providerName,
+        status: JobStatus.FAILED,
+        progress: 0,
+        files: [],
+        metadata: {
+          originalUrl: payload.url || payload.magnet,
+          errorMessage,
+        },
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }
+
+      await db.jobs.add({
+        id: failedJob.id,
+        provider: failedJob.provider,
+        status: failedJob.status,
+        progress: failedJob.progress,
+        files: failedJob.files,
+        metadata: failedJob.metadata,
+        createdAt: failedJob.createdAt,
+        updatedAt: failedJob.updatedAt,
+      })
+
+      return failedJob
+    }
 
     const now = Date.now()
     const job: Job = {
@@ -263,14 +298,30 @@ class JobOrchestrator {
     }
 
     const provider = providerRegistry.getProvider(job.provider)
-    const statusResponse = await provider.getStatus(jobId)
+    
+    try {
+      const statusResponse = await provider.getStatus(jobId)
 
-    await this.updateJobStatus(jobId, {
-      status: statusResponse.status,
-      progress: statusResponse.progress,
-      files: statusResponse.files,
-      metadata: statusResponse.metadata,
-    })
+      await this.updateJobStatus(jobId, {
+        status: statusResponse.status,
+        progress: statusResponse.progress,
+        files: statusResponse.files,
+        metadata: statusResponse.metadata,
+      })
+    } catch (error) {
+      // Mark job as failed and store error information
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      
+      await this.updateJobStatus(jobId, {
+        status: JobStatus.FAILED,
+        metadata: {
+          errorMessage,
+        },
+      })
+      
+      // Re-throw the error so callers can handle it if needed
+      throw error
+    }
 
     return (await this.getJob(jobId))!
   }
