@@ -5,12 +5,15 @@
   "description": "Electron main process",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "npm run build:main && npm run build:preload",
+    "build:main": "tsc",
+    "build:preload": "esbuild src/preload.ts --bundle --platform=node --outfile=dist/preload.js --external:electron",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
+    "esbuild": "^0.25.12",
     "typescript": "^5.3.3"
   }
 }

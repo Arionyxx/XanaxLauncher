@@ -23,12 +23,13 @@ import {
 
 let mainWindow: BrowserWindow | null = null
 
-const isDev = process.env.NODE_ENV === 'development'
+const isDev = !app.isPackaged
 
 log.transports.file.level = 'info'
 log.transports.console.level = 'debug'
 log.info('Application starting...')
 log.info('isDev:', isDev)
+log.info('isPackaged:', app.isPackaged)
 log.info('NODE_ENV:', process.env.NODE_ENV)
 
 autoUpdater.logger = log
@@ -203,9 +204,10 @@ function createWindow() {
 
   const url = isDev
     ? 'http://localhost:3000'
-    : `file://${path.join(__dirname, '../renderer/out/index.html')}`
+    : `file://${path.join(__dirname, '../../renderer/out/index.html')}`
 
   log.info('Loading URL:', url)
+  log.info('__dirname:', __dirname)
 
   mainWindow.loadURL(url)
 
