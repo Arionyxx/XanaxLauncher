@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "concurrently \"pnpm --filter renderer dev\" \"pnpm run electron:dev\"",
-    "electron:dev": "wait-on http://localhost:3000 && pnpm --filter main build && electron packages/main/dist/index.js",
+    "electron:dev": "wait-on http://localhost:3000 && pnpm --filter main build && pnpm --filter main exec electron packages/main/dist/index.js",
     "build": "pnpm --filter renderer build",
     "build:main": "pnpm --filter main build",
     "package": "pnpm build && pnpm build:main && pnpm --filter main package",
