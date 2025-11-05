@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode, useEffect } from 'react'
-import { Toaster } from 'sonner'
+import { Toaster } from '@/components/ui/toaster'
 import { initializeDatabase } from '@/db/db'
 import { autoSyncSources } from '@/services/source-sync'
 import { OnboardingGate } from '@/components/onboarding/OnboardingGate'
@@ -41,7 +41,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <AppContent>
           <OnboardingGate>{children}</OnboardingGate>
         </AppContent>
-        <Toaster position="bottom-right" theme="dark" richColors />
+        <Toaster />
       </div>
     </ErrorBoundary>
   )

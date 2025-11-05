@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Card, CardHeader, CardBody, Button, Divider } from '@nextui-org/react'
-import { toast } from 'sonner'
+import { useToast } from '@/hooks/use-toast'
 import { useOnboarding } from '@/hooks/useOnboarding'
 
 export function AdvancedPanel() {
+  const { toast } = useToast()
   const { resetOnboarding } = useOnboarding()
   const [isResetting, setIsResetting] = useState(false)
   const [isOpeningLogs, setIsOpeningLogs] = useState(false)
@@ -56,13 +57,24 @@ export function AdvancedPanel() {
     try {
       if (window.api?.logs?.openFolder) {
         await window.api.logs.openFolder()
-        toast.success('Logs folder opened')
+        toast({
+          title: "Logs Opened",
+          description: "Logs folder opened successfully",
+        })
       } else {
-        toast.error('Logs API not available')
+        toast({
+          title: "API Error",
+          description: "Logs API not available",
+          variant: "destructive",
+        })
       }
     } catch (error) {
       console.error('Failed to open logs folder:', error)
-      toast.error('Failed to open logs folder')
+      toast({
+        title: "Error",
+        description: "Failed to open logs folder",
+        variant: "destructive",
+      })
     } finally {
       setIsOpeningLogs(false)
     }

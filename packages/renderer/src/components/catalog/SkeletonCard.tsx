@@ -1,19 +1,28 @@
 'use client'
 
+import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+
 export function SkeletonCard() {
   return (
-    <div className="card bg-base-200 shadow-xl">
-      <figure className="aspect-[3/4] bg-base-300 animate-pulse"></figure>
-      <div className="card-body p-4 space-y-3">
-        <div className="h-5 w-3/4 bg-base-300 rounded animate-pulse"></div>
-        <div className="h-4 w-1/2 bg-base-300 rounded animate-pulse"></div>
-        <div className="flex gap-2">
-          <div className="h-6 w-16 bg-base-300 rounded-full animate-pulse"></div>
-          <div className="h-6 w-16 bg-base-300 rounded-full animate-pulse"></div>
-        </div>
-        <div className="h-8 w-full bg-base-300 rounded animate-pulse"></div>
+    <Card className="overflow-hidden">
+      <div className="aspect-[3/4] bg-muted">
+        <Skeleton className="w-full h-full" />
       </div>
-    </div>
+      <CardHeader className="p-4 pb-2">
+        <Skeleton className="h-6 w-3/4" />
+        <Skeleton className="h-4 w-1/2" />
+      </CardHeader>
+      <CardContent className="p-4 pt-0 pb-2">
+        <div className="flex gap-2">
+          <Skeleton className="h-5 w-16 rounded-full" />
+          <Skeleton className="h-5 w-20 rounded-full" />
+        </div>
+      </CardContent>
+      <CardFooter className="p-4 pt-0">
+        <Skeleton className="h-10 w-full" />
+      </CardFooter>
+    </Card>
   )
 }
 

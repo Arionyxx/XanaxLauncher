@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button, Input, Card, CardBody } from '@nextui-org/react'
-import { toast } from 'sonner'
+import { useToast } from '@/hooks/use-toast'
 import { TorBoxProvider } from '@/services/providers/torbox/torbox-provider'
 
 interface ProvidersStepProps {
@@ -17,6 +17,7 @@ export function ProvidersStep({
   initialTorboxToken,
   initialRealDebridToken,
 }: ProvidersStepProps) {
+  const { toast } = useToast()
   const [torboxToken, setTorboxToken] = useState(initialTorboxToken || '')
   const [realDebridToken, setRealDebridToken] = useState(
     initialRealDebridToken || ''
@@ -25,7 +26,11 @@ export function ProvidersStep({
 
   const handleTestTorBox = async () => {
     if (!torboxToken.trim()) {
-      toast.error('Please enter a TorBox API token')
+      toast({
+        title: "Token Required",
+        description: "Please enter a TorBox API token",
+        variant: "destructive",
+      })
       return
     }
 

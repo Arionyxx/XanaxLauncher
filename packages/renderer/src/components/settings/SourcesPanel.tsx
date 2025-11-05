@@ -24,9 +24,10 @@ import { syncSource, syncAllSources } from '@/services/source-sync'
 import { SourceFormData, sourcesExportSchema } from '@/types/source'
 import { SourceListItem } from './SourceListItem'
 import { SourceDialog } from './SourceDialog'
-import { toast } from 'sonner'
+import { useToast } from '@/hooks/use-toast'
 
 export function SourcesPanel() {
+  const { toast } = useToast()
   const [sources, setSources] = useState<Source[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSyncingAll, setIsSyncingAll] = useState(false)
@@ -147,10 +148,17 @@ export function SourcesPanel() {
       })
 
       await loadSources()
-      toast.success('All sources synced')
+      toast({
+        title: "Sync Complete",
+        description: "All sources synced successfully",
+      })
     } catch (error) {
       console.error('Failed to sync all sources:', error)
-      toast.error('Failed to sync all sources')
+      toast({
+        title: "Sync Failed",
+        description: "Failed to sync all sources",
+        variant: "destructive",
+      })
     } finally {
       setIsSyncingAll(false)
       setSyncProgress(null)
