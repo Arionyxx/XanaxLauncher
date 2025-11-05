@@ -2,20 +2,22 @@
   "name": "workspace-root",
   "version": "1.0.0",
   "private": true,
-  "description": "pnpm workspace with Next.js and Electron",
+  "description": "npm workspace with Next.js and Electron",
   "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
+    "node": ">=18.0.0"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "concurrently \"pnpm --filter renderer dev\" \"pnpm run electron:dev\"",
-    "electron:dev": "wait-on http://localhost:3000 && pnpm --filter main build && pnpm --filter main exec electron packages/main/dist/index.js",
-    "build": "pnpm --filter renderer build",
-    "build:main": "pnpm --filter main build",
-    "package": "pnpm build && pnpm build:main && pnpm --filter main package",
+    "dev": "concurrently \"npm run dev --workspace=packages/renderer\" \"npm run electron:dev\"",
+    "electron:dev": "wait-on http://localhost:3000 && npm run build --workspace=packages/main && npm exec --workspace=packages/main electron packages/main/dist/index.js",
+    "build": "npm run build --workspace=packages/renderer",
+    "build:main": "npm run build --workspace=packages/main",
+    "package": "npm run build && npm run build:main && npm run package --workspace=packages/main",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "npm run typecheck --workspaces --if-present",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "test": "vitest run",

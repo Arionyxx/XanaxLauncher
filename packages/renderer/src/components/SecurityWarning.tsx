@@ -10,7 +10,6 @@ interface SecurityWarningProps {
 
 export function SecurityWarning({ url, type = 'http' }: SecurityWarningProps) {
   const isHttp = url.startsWith('http:')
-  const isHttps = url.startsWith('https:')
 
   if (!isHttp && type === 'http') {
     return null

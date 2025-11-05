@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "pnpm exec tsc --noEmit",
+    "typecheck": "npx tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },

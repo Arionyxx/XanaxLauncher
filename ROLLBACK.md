@@ -68,8 +68,8 @@ Consider rolling back when:
 
 4. **Build and Test**
    ```bash
-   pnpm test
-   pnpm package
+   npm test
+   npm run package
    # Test installer manually
    ```
 
@@ -107,7 +107,7 @@ Consider rolling back when:
 
 3. **Build and Release**
    ```bash
-   pnpm package
+   npm run package
    git tag v1.2.1
    git push origin v1.2.1
    # Create GitHub Release
