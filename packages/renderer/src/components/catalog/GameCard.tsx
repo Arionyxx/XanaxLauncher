@@ -1,13 +1,14 @@
-import { Card, CardBody, Button, Chip, Tooltip } from '@nextui-org/react'
 import { motion } from 'framer-motion'
+import { FiDownload, FiLink } from 'react-icons/fi'
 import { GameEntry } from '@/hooks/useGames'
 
 interface GameCardProps {
   game: GameEntry
   onClick: () => void
+  onDownload: (game: GameEntry) => void
 }
 
-export function GameCard({ game, onClick }: GameCardProps) {
+export function GameCard({ game, onClick, onDownload }: GameCardProps) {
   const coverImage = game.meta?.coverImage as string | undefined
   const size = game.meta?.size as string | undefined
   const platform = game.meta?.platform as string | undefined
@@ -18,83 +19,57 @@ export function GameCard({ game, onClick }: GameCardProps) {
       transition={{ duration: 0.2, ease: 'easeOut' }}
       className="h-full"
     >
-      <Card
-        isPressable
-        onPress={onClick}
-        className="bg-surface0 border-surface1 hover:border-blue hover:shadow-lg hover:shadow-blue/20 transition-all h-full"
+      <div
+        className="card bg-base-200 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all h-full cursor-pointer"
+        onClick={onClick}
       >
-        <CardBody className="p-0 flex flex-col">
-          {/* Cover Image */}
-          <div className="aspect-[3/4] bg-surface1 flex items-center justify-center overflow-hidden relative">
-            {coverImage ? (
-              <img
-                src={coverImage}
-                alt={game.title}
-                loading="lazy"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <span className="text-6xl">🎮</span>
+        <figure className="aspect-[3/4] bg-base-300 relative overflow-hidden">
+          {coverImage ? (
+            <img
+              src={coverImage}
+              alt={game.title}
+              loading="lazy"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="flex items-center justify-center w-full h-full">
+              <span className="text-6xl opacity-40">🎮</span>
+            </div>
+          )}
+          <div className="absolute top-2 right-2">
+            <div className="badge badge-neutral badge-sm">{game.sourceName}</div>
+          </div>
+        </figure>
+        <div className="card-body p-4">
+          <h2 className="card-title text-base line-clamp-2 min-h-[3rem]">
+            {game.title}
+          </h2>
+          <div className="flex flex-wrap gap-1 mt-2">
+            {platform && (
+              <div className="badge badge-primary badge-sm">{platform}</div>
             )}
-            {/* Source Badge */}
-            <div className="absolute top-2 right-2">
-              <Tooltip content={`From source: ${game.sourceName}`}>
-                <Chip
-                  size="sm"
-                  className="bg-mantle/90 text-text font-medium"
-                  variant="flat"
-                >
-                  {game.sourceName}
-                </Chip>
-              </Tooltip>
-            </div>
+            {size && <div className="badge badge-secondary badge-sm">{size}</div>}
+            {game.links.length > 1 && (
+              <div className="badge badge-accent badge-sm">
+                <FiLink className="mr-1" />
+                {game.links.length}
+              </div>
+            )}
           </div>
-
-          {/* Game Info */}
-          <div className="p-4 flex flex-col gap-2">
-            <h3 className="font-semibold text-text line-clamp-2 min-h-[2.5rem]">
-              {game.title}
-            </h3>
-
-            {/* Meta Info */}
-            <div className="flex flex-wrap gap-1">
-              {platform && (
-                <Tooltip content="Platform">
-                  <Chip size="sm" color="primary" variant="flat">
-                    {platform}
-                  </Chip>
-                </Tooltip>
-              )}
-              {size && (
-                <Tooltip content="File size">
-                  <Chip size="sm" color="secondary" variant="flat">
-                    {size}
-                  </Chip>
-                </Tooltip>
-              )}
-              {game.links.length > 1 && (
-                <Tooltip content="Multiple download sources available">
-                  <Chip size="sm" color="warning" variant="flat">
-                    {game.links.length} links
-                  </Chip>
-                </Tooltip>
-              )}
-            </div>
-
-            {/* Download Button */}
-            <Tooltip content="View details and start download">
-              <Button
-                color="primary"
-                size="sm"
-                className="w-full mt-2"
-                onPress={onClick}
-              >
-                Download
-              </Button>
-            </Tooltip>
+          <div className="card-actions justify-end mt-4">
+            <button
+              className="btn btn-primary btn-sm w-full"
+              onClick={(e) => {
+                e.stopPropagation()
+                onDownload(game)
+              }}
+            >
+              <FiDownload />
+              Download
+            </button>
           </div>
-        </CardBody>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   )
 }

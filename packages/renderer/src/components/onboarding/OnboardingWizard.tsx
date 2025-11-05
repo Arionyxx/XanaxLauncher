@@ -1,205 +1,80 @@
-import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { AnimatePresence } from 'framer-motion'
-import { Modal, ModalContent, Progress } from '@nextui-org/react'
-import { toast } from 'sonner'
-import { useOnboarding, OnboardingData } from '@/hooks/useOnboarding'
-import { useSettings } from '@/hooks/useSettings'
-import { WelcomeStep } from './WelcomeStep'
-import { FoldersStep } from './FoldersStep'
-import { SourcesStep } from './SourcesStep'
-import { ProvidersStep } from './ProvidersStep'
-import { CompleteStep } from './CompleteStep'
-import { db } from '@/db/db'
+'use client'
 
-const TOTAL_STEPS = 5
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useOnboarding } from '@/hooks/useOnboarding'
+import { toast } from 'sonner'
 
 export function OnboardingWizard() {
   const router = useRouter()
-  const { currentStep, data, saveProgress, completeOnboarding } =
-    useOnboarding()
-  const { updateGeneralSettings, updateIntegrationsSettings } = useSettings()
+  const { completeOnboarding } = useOnboarding()
+  const [step, setStep] = useState(0)
 
-  const [step, setStep] = useState(currentStep)
-  const [stepData, setStepData] = useState<OnboardingData>(data)
-  const [isProcessing, setIsProcessing] = useState(false)
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && step > 0 && step < TOTAL_STEPS - 1) {
-        handleSkipAll()
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [step])
-
-  const handleNext = useCallback(
-    async (newData: Partial<OnboardingData> = {}) => {
-      const updatedData = { ...stepData, ...newData }
-      setStepData(updatedData)
-
-      const nextStep = step + 1
-      setStep(nextStep)
-
-      if (nextStep < TOTAL_STEPS - 1) {
-        await saveProgress(nextStep, updatedData)
-      }
+  const steps = [
+    {
+      title: 'Welcome to XanaxLauncher',
+      description:
+        'A modern media management application built with Electron, Next.js, and DaisyUI.',
+      icon: '🚀',
     },
-    [step, stepData, saveProgress]
-  )
+    {
+      title: 'Getting Started',
+      description:
+        'Configure your settings, add media sources, and start downloading!',
+      icon: '⚙️',
+    },
+    {
+      title: 'Ready to Go!',
+      description:
+        'You\'re all set! Let\'s explore your new media manager.',
+      icon: '✨',
+    },
+  ]
 
-  const handleBack = useCallback(() => {
-    if (step > 0) {
-      setStep(step - 1)
+  const currentStep = steps[step]
+
+  const handleNext = () => {
+    if (step < steps.length - 1) {
+      setStep(step + 1)
+    } else {
+      completeOnboarding()
+      toast.success('Welcome to XanaxLauncher!')
     }
-  }, [step])
+  }
 
-  const handleSkipAll = useCallback(() => {
-    setStep(TOTAL_STEPS - 1)
-  }, [])
-
-  const handleFinish = useCallback(async () => {
-    if (isProcessing) return
-
-    setIsProcessing(true)
-
-    try {
-      if (stepData.downloadDir || stepData.tempDir) {
-        await updateGeneralSettings({
-          downloadDirectory: stepData.downloadDir,
-          tempDirectory: stepData.tempDir,
-        })
-      }
-
-      if (stepData.torboxToken || stepData.realDebridToken) {
-        await updateIntegrationsSettings({
-          torboxApiToken: stepData.torboxToken || '',
-          realDebridApiToken: stepData.realDebridToken || '',
-        })
-      }
-
-      if (stepData.sourceUrl) {
-        try {
-          await db.sources.add({
-            id: crypto.randomUUID(),
-            name: 'Onboarding Source',
-            url: stepData.sourceUrl,
-            autoSync: true,
-            lastSyncAt: null,
-            status: 'never_synced',
-            entryCount: 0,
-            data: null,
-          })
-          toast.success('Source added successfully')
-        } catch (error) {
-          console.error('Failed to add source:', error)
-          toast.error('Failed to add source')
-        }
-      }
-
-      await completeOnboarding()
-      toast.success('Welcome to Media Manager!')
-
-      router.push('/')
-    } catch (error) {
-      console.error('Failed to complete onboarding:', error)
-      toast.error('Failed to save settings')
-    } finally {
-      setIsProcessing(false)
-    }
-  }, [
-    isProcessing,
-    stepData,
-    updateGeneralSettings,
-    updateIntegrationsSettings,
-    completeOnboarding,
-    router,
-  ])
-
-  const progress = ((step + 1) / TOTAL_STEPS) * 100
-
-  const summary = {
-    hasCustomFolders: !!(stepData.downloadDir || stepData.tempDir),
-    hasSource: !!stepData.sourceUrl,
-    hasTorBox: !!stepData.torboxToken,
-    hasRealDebrid: !!stepData.realDebridToken,
+  const handleSkip = () => {
+    completeOnboarding()
   }
 
   return (
-    <Modal
-      isOpen={true}
-      isDismissable={false}
-      hideCloseButton
-      size="5xl"
-      classNames={{
-        base: 'bg-mantle',
-        backdrop: 'bg-crust/80',
-      }}
-    >
-      <ModalContent className="p-8">
-        <div className="space-y-6">
-          {step < TOTAL_STEPS - 1 && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-subtext0">
-                  Step {step + 1} of {TOTAL_STEPS}
-                </span>
-                <span className="text-subtext0">{Math.round(progress)}%</span>
-              </div>
-              <Progress
-                value={progress}
-                classNames={{
-                  indicator: 'bg-blue',
-                  track: 'bg-surface0',
-                }}
-              />
-            </div>
-          )}
+    <div className="hero min-h-screen bg-base-200">
+      <div className="hero-content text-center">
+        <div className="max-w-md">
+          <div className="text-8xl mb-8">{currentStep.icon}</div>
+          <h1 className="text-5xl font-bold mb-4">{currentStep.title}</h1>
+          <p className="text-lg mb-8">{currentStep.description}</p>
 
-          <div className="min-h-[500px] flex items-center justify-center">
-            <AnimatePresence mode="wait">
-              {step === 0 && (
-                <WelcomeStep key="welcome" onNext={() => handleNext()} />
-              )}
-              {step === 1 && (
-                <FoldersStep
-                  key="folders"
-                  onNext={(data) => handleNext(data)}
-                  onBack={handleBack}
-                  initialDownloadDir={stepData.downloadDir}
-                  initialTempDir={stepData.tempDir}
-                />
-              )}
-              {step === 2 && (
-                <SourcesStep
-                  key="sources"
-                  onNext={(data) => handleNext(data)}
-                  onBack={handleBack}
-                  initialSourceUrl={stepData.sourceUrl}
-                />
-              )}
-              {step === 3 && (
-                <ProvidersStep
-                  key="providers"
-                  onNext={(data) => handleNext(data)}
-                  onBack={handleBack}
-                  initialTorboxToken={stepData.torboxToken}
-                  initialRealDebridToken={stepData.realDebridToken}
-                />
-              )}
-              {step === 4 && (
-                <CompleteStep
-                  key="complete"
-                  onFinish={handleFinish}
-                  summary={summary}
-                />
-              )}
-            </AnimatePresence>
+          <div className="flex gap-2 items-center justify-center mb-8">
+            {steps.map((_, index) => (
+              <div
+                key={index}
+                className={`h-2 w-12 rounded-full ${
+                  index === step ? 'bg-primary' : 'bg-base-300'
+                }`}
+              />
+            ))}
+          </div>
+
+          <div className="flex gap-4 justify-center">
+            <button className="btn btn-ghost" onClick={handleSkip}>
+              Skip
+            </button>
+            <button className="btn btn-primary" onClick={handleNext}>
+              {step < steps.length - 1 ? 'Next' : 'Get Started'}
+            </button>
           </div>
         </div>
-      </ModalContent>
-    </Modal>
+      </div>
+    </div>
   )
 }

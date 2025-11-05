@@ -1,6 +1,5 @@
 'use client'
 
-import { NextUIProvider } from '@nextui-org/react'
 import { ReactNode, useEffect } from 'react'
 import { Toaster } from 'sonner'
 import { initializeDatabase } from '@/db/db'
@@ -23,7 +22,6 @@ export function Providers({ children }: { children: ReactNode }) {
       if (success) {
         console.log('[App] Database ready for use')
 
-        // Auto-sync enabled sources on startup
         try {
           await autoSyncSources()
         } catch (error) {
@@ -39,24 +37,12 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <ErrorBoundary>
-      <NextUIProvider className="h-full">
-        <div className="dark text-foreground bg-background h-full">
-          <AppContent>
-            <OnboardingGate>{children}</OnboardingGate>
-          </AppContent>
-          <Toaster
-            position="bottom-right"
-            theme="dark"
-            toastOptions={{
-              style: {
-                background: 'rgb(var(--surface0))',
-                border: '1px solid rgb(var(--surface1))',
-                color: 'rgb(var(--text))',
-              },
-            }}
-          />
-        </div>
-      </NextUIProvider>
+      <div className="h-full">
+        <AppContent>
+          <OnboardingGate>{children}</OnboardingGate>
+        </AppContent>
+        <Toaster position="bottom-right" theme="dark" richColors />
+      </div>
     </ErrorBoundary>
   )
 }

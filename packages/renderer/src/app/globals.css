@@ -2,27 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Catppuccin Macchiato colors */
-  --ctp-base: #24273a;
-  --ctp-mantle: #1e2030;
-  --ctp-crust: #181926;
-  --ctp-text: #cad3f5;
-  --ctp-subtext0: #a5adcb;
-  --ctp-subtext1: #b8c0e0;
-  --ctp-surface0: #363a4f;
-  --ctp-surface1: #494d64;
-  --ctp-surface2: #5b6078;
-  --ctp-overlay0: #6e738d;
-  --ctp-overlay1: #8087a2;
-  --ctp-overlay2: #939ab7;
+html,
+body {
+  @apply h-full;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  background-color: #24273a;
-  color: #cad3f5;
+  @apply bg-base-100 text-base-content;
   overflow: hidden;
 }
 
@@ -30,26 +18,19 @@ body {
   box-sizing: border-box;
 }
 
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Focus indicators for accessibility */
 *:focus-visible {
-  outline: 2px solid rgb(138, 173, 244);
-  outline-offset: 2px;
-  border-radius: 4px;
+  @apply outline-primary outline-2 outline-offset-2 rounded;
 }
 
-/* Better focus for buttons */
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid rgb(138, 173, 244);
-  outline-offset: 2px;
+  @apply outline-primary outline-2 outline-offset-2;
 }
 
-/* Animation performance */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

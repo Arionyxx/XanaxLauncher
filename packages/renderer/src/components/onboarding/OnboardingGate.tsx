@@ -1,5 +1,4 @@
 import { ReactNode } from 'react'
-import { Spinner } from '@nextui-org/react'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { OnboardingWizard } from './OnboardingWizard'
 
@@ -12,8 +11,8 @@ export function OnboardingGate({ children }: OnboardingGateProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen w-screen bg-base">
-        <Spinner size="lg" color="primary" />
+      <div className="flex items-center justify-center h-screen w-screen">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
     )
   }

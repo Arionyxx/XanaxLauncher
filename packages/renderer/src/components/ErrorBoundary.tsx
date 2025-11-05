@@ -1,7 +1,6 @@
 'use client'
 
 import React, { Component, ReactNode } from 'react'
-import { Button } from '@nextui-org/react'
 
 interface Props {
   children: ReactNode
@@ -43,30 +42,32 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="flex items-center justify-center min-h-screen bg-base">
-          <div className="max-w-md p-8 bg-surface0 rounded-lg border border-surface1 text-center">
-            <div className="text-6xl mb-4">⚠️</div>
-            <h1 className="text-2xl font-bold text-red mb-2">
-              Oops! Something went wrong
-            </h1>
-            <p className="text-subtext0 mb-4">
-              The application encountered an unexpected error. Don't worry, your
-              data is safe.
-            </p>
-            {this.state.error && (
-              <div className="mb-4 p-3 bg-mantle rounded text-left">
-                <p className="text-xs text-subtext1 font-mono break-all">
-                  {this.state.error.message}
-                </p>
+        <div className="flex items-center justify-center min-h-screen bg-base-100">
+          <div className="card bg-base-200 shadow-xl max-w-md">
+            <div className="card-body text-center">
+              <div className="text-6xl mb-4">⚠️</div>
+              <h1 className="text-2xl font-bold text-error mb-2">
+                Oops! Something went wrong
+              </h1>
+              <p className="text-base-content/70 mb-4">
+                The application encountered an unexpected error. Don't worry,
+                your data is safe.
+              </p>
+              {this.state.error && (
+                <div className="alert alert-error mb-4">
+                  <p className="text-xs font-mono break-all text-left">
+                    {this.state.error.message}
+                  </p>
+                </div>
+              )}
+              <div className="card-actions justify-center gap-2">
+                <button className="btn btn-primary" onClick={this.handleReload}>
+                  Reload Application
+                </button>
+                <button className="btn btn-ghost" onClick={this.handleReset}>
+                  Try Again
+                </button>
               </div>
-            )}
-            <div className="flex gap-3 justify-center">
-              <Button color="primary" onPress={this.handleReload}>
-                Reload Application
-              </Button>
-              <Button color="default" variant="flat" onPress={this.handleReset}>
-                Try Again
-              </Button>
             </div>
           </div>
         </div>
